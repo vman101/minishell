@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/16 14:06:56 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 14:45:27 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #define ENVIRONMENT_SIZE 1024
 
-static uint32_t	get_split_size(const char **environment)
+uint32_t	get_split_size(const char **environment)
 {
 	uint32_t	i;
 

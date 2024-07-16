@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 00:06:08 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/15 15:30:20 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:54:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,18 +139,4 @@ void	check_redirections(char **tokens, char **env)
 		}
 		i++;
 	}
-	if (ft_strncmp(tokens[0], "echo", ft_strlen(tokens[0])) == 0)
-	{
-		ft_echo(tokens, STDOUT_FILENO);
-	}
-	else if (ft_strncmp(tokens[0], "pwd", ft_strlen(tokens[0])) == 0)
-	{
-		ft_pwd(STDOUT_FILENO, env);
-	}
-	else if (ft_strncmp(tokens[0], "env", ft_strlen(tokens[0])) == 0)
-	{
-		ft_env(env, STDOUT_FILENO);
-	}
-	else
-		exec_command(tokens); // if its a command from subject call ft_"command" instead of exec command
 }
