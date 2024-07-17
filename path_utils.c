@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/16 09:19:58 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 22:16:16 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static char	*print_error(char *input)
 	return (NULL);
 }
 
-static char	*check_paths(const char *path, char *path_abs, char *input)
+char	*check_paths(const char *path, char *path_abs, char *input)
 {
 	while (path)
 	{
@@ -72,18 +72,16 @@ static char	*check_paths(const char *path, char *path_abs, char *input)
 		if (path)
 			path++;
 	}
-	return (print_error(input));
+	ft_free((void **)&path_abs);
+	return (NULL);
 }
 
 char	*find_absolute_path(const char *path_variable, char *input)
 {
 	char	*path_abs;
-	int		i;
 
-	i = 0;
 	if (ft_strchr(input, '/'))
 		return (print_error(input));
-	path_variable = ft_strchr(path_variable, '/');
 	path_abs = malloc(find_longest_path(path_variable) + ft_strlen(input) + 2);
 	lst_memory(path_abs, &free, ADD);
 	return (check_paths(path_variable, path_abs, input));

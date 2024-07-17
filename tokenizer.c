@@ -6,86 +6,90 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 14:24:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/16 15:16:07 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 18:51:02 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 #include <stdint.h>
 
-typedef uint32_t t_symbol ;
+#define BUFFER_SIZE 2048
 
-#define LESS_THAN "<"
-#define MORE_THAN ">"
-#define PARANTHESIS_OPEN "("
-#define PARANTHESIS_CLOSED ")"
-#define SINGLE_QUOTE "\'"
-#define DOUBLE_QUOTE "\""
-#define AMPERSNAD "&"
-#define ASTERIX	"*"
-#define PIPE "|"
+#define TOKENS_MAX_AMOUNT 1024
 
-enum	e_symbol_types
+char	*input_extract_word(char *command_input, uint32_t *i)
 {
-	COMMAND,
-	PUNCTUATION,
-	OPERATOR,
-	OPTION
-};
+	uint32_t	j;
 
-typedef struct	s_token
-{
-	char		*value;
-	t_symbol	symbol;
-}				t_token;
+	j = 0;
+	while (ft_isprint(command_input[j]) && !is_operator(command_input[j]))
+		j++;
+	*i += j;
+	return (ft_substr(command_input, 0, j));
+}
 
-void	tokens_destroy(void	*tokens_input)
+void	token_destroy(void *token_input)
 {
 	t_token		**tokens;
 	uint32_t	i;
 
-	tokens = (t_token **)tokens_input;
+	tokens = (t_token **)token_input;
 	i = 0;
 	while (tokens[i])
 	{
 		ft_free((void **)&tokens[i]->value);
 		ft_free((void **)&tokens[i]);
+		i++;
 	}
-	ft_free((void **)tokens);
+	ft_free((void **)&tokens);
 }
 
-void	tokenizer(const char *command_input)
+t_token	*token_create(char *value, t_symbol symbol)
 {
-	t_token		**tokens;
-	uint32_t	split_cursor;
-	uint32_t	token_cursor;
-	char		**input_split;
+	t_token	*token;
 
-	input_split = ft_split(command_input, ' ');
-	if (!input_split)
-		return (ft_putendl_fd("Failed to allocate memory for tokens", 1), lst_memory(NULL, NULL, CLEAN));
-	split_cursor = 0;
-	token_cursor = 0;
-	tokens = ft_calloc(get_split_size((const char **)input_split) + 1, sizeof(tokens));
-	lst_memory(tokens, tokens_destroy, ADD);
-	while (input_split[split_cursor])
+	token = ft_calloc(1, sizeof(*token));
+	token->value = value;
+	token->symbol = symbol;
+	return (token);
+}
+
+t_token	**tokenizer(char *command_input, const char **environement)
+{
+	uint32_t	i;
+	uint32_t	k;
+	t_token		**tokens;
+
+	i = 0;
+	k = 0;
+	tokens = ft_calloc(TOKENS_MAX_AMOUNT, sizeof(tokens));
+	lst_memory(tokens, token_destroy, ADD);
+	while (command_input[i])
 	{
-		tokens[token_cursor] = ft_calloc(1, sizeof(**tokens));
-		if (!tokens[token_cursor])
-			return (ft_putendl_fd("Failed to allocate memory for tokens", 1), lst_memory(NULL, NULL, CLEAN));
-		if (ft_strlen(input_split[split_cursor]) < 2)
-			return (ft_putendl_fd("invalid input", 1));
-		if (ft_memcmp(input_split[split_cursor], LESS_THAN, 2) \
-			|| ft_memcmp(input_split[split_cursor], MORE_THAN, 2) \
-			|| ft_memcmp(input_split[split_cursor], PIPE, 2))
-			tokens[token_cursor]->symbol = OPERATOR;
-		else if (ft_memcmp(input_split[split_cursor], SINGLE_QUOTE, 2) \
-				|| ft_memcmp(input_split[split_cursor], DOUBLE_QUOTE, 2))
-			tokens[token_cursor]->symbol = PUNCTUATION;
-		else if (*input_split[split_cursor] == '-')
-			tokens[token_cursor]->symbol = OPTION;
-		tokens[token_cursor]->value = input_split[split_cursor];
-		token_cursor++;
-		split_cursor++;
+		if (command_input[i] == '\"')
+			tokens[k++] = token_create(interpret_double_quotes(&command_input[i + 1], \
+													environement, &i), TOKEN_STRING_LITERAL);
+		else if (command_input[i] == '\'')
+			tokens[k++] = token_create(interpret_single_quote(&command_input[i], &i), TOKEN_STRING_LITERAL);
+		else if (is_operator(command_input[i]))
+			tokens[k++] = find_operator(&command_input[i], &i);
+		else if (ft_isalpha(command_input[i]))
+			tokens[k++] = token_create(input_extract_word(&command_input[i], &i), TOKEN_WORD);
+		else if (command_input[i] == '$')
+		{
+			tokens[k] = token_create(extract_variable(&command_input[i++], environement), TOKEN_STRING_LITERAL);
+			if (tokens[k]->value)
+				i += ft_strlen(tokens[k]->value);
+			k++;
+		}
+		else
+			i++;
+		while (command_input[i] == ' ')
+			i++;
+		if (k == TOKENS_MAX_AMOUNT)
+			return (lst_memory(tokens, NULL, FREE), \
+					ft_putendl_fd("Too Many tokens! (Max = 1024)", 1), NULL);
 	}
+	return (tokens);
 }

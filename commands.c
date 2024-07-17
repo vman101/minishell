@@ -6,13 +6,13 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 17:02:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 21:16:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	buildin_execute(char const *command, char const **argv)
+bool	buildin_execute(const char *command, const char **argv)
 {
 	if (ft_strncmp(command, "exit\0", 5) == 0)
 		ft_exit();
@@ -24,9 +24,9 @@ bool	buildin_execute(char const *command, char const **argv)
 	return (false);
 }
 
-void	command_execute(char const *command_path,
-						char const *argv[],
-						char const **env)
+void	command_execute(const char *command_path, \
+						const char *argv[], \
+						const char **env)
 {
 	pid_t	child_process;
 

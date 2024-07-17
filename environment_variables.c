@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/16 14:45:27 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 21:06:34 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,4 +115,34 @@ void	environment_variable_print(	const char *variable, \
 		i++;
 	}
 	ft_free((void **)&variable_findable_name);
+}
+
+char	*environment_variable_get( const char *variable, \
+									const char **environment)
+{
+	uint32_t	i;
+	uint64_t	variable_length;
+	char		*variable_findable_name;
+
+	if (!variable || !environment)
+		return (NULL);
+	i = 0;
+	variable_length = ft_strlen(variable);
+	variable_findable_name = ft_calloc(variable_length + 2, sizeof(*variable));
+	if (!variable_findable_name)
+		return (lst_memory(NULL, NULL, CLEAN), NULL);
+	ft_strlcpy(variable_findable_name, variable, variable_length + 1);
+	ft_strlcpy(variable_findable_name + variable_length, "=", 2);
+	variable_length = ft_strlen(variable_findable_name);
+	while (environment[i])
+	{
+		if (ft_strncmp(variable_findable_name, environment[i], \
+						variable_length) == 0)
+		{
+			return (free(variable_findable_name), ft_strdup(environment[i] + variable_length));
+		}
+		i++;
+	}
+	free(variable_findable_name);
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 13:48:27 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/15 13:49:45 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/17 18:00:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ void	handle_dollar_sign(char **single_token, char **env)
 {
 	char	*temp;
 
-	
 	temp = NULL;
 	custom_memmove_chars(*single_token, *single_token + 1, 1);
 	while (*env)

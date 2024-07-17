@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/10 10:33:58 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/16 20:03:51 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void	prompt_string_insert(char *string_to_insert, char **current_input, char *po
 	uint32_t	current_input_length;
 
 	current_input_length = ft_strlen(*current_input);
-	prompt_buffer_size_manage(current_input, size_of_to_insert + current_input_length + 1);
+	prompt_buffer_size_manage(current_input, size_of_to_insert + current_input_length + 1, PROMPT_INPUT_BUFFER_SIZE);
 	ft_memmove(position_to_insert + size_of_to_insert, position_to_insert + 1, size_of_to_insert);
 	ft_strlcpy(position_to_insert, string_to_insert, size_of_to_insert);
 }

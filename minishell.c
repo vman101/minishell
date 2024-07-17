@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 13:48:47 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 22:39:11 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,104 @@ void	setup(char **path_variable)
 	ft_printf(CURSOR_MOVE_HOME);
 }
 
+typedef struct s_tree_node
+{
+	t_type	node_type;
+	char	*value;
+	char	**argv;
+	int32_t	fd_in;
+	int32_t	fd_out;
+	char	**env_ptr;
+}				t_tree_node;
+
+uint8_t	is_file_or_directory(char *path)
+{
+	struct stat	sa;
+	mode_t t;
+
+	if (stat(path, &sa) == 0)
+	{
+		if (S_ISREG(sa.st_mode) == 0)
+			return (1);
+		else if (S_ISDIR(sa.st_mode) == 0)
+			return (2);
+	}
+	return (0);
+}
+
+t_tree_node tree_node_create_from_string(t_token *token, const char *path_variable)
+{
+	t_tree_node	node;
+	char		*value_ptr;
+
+	node = (t_tree_node){0};
+	if (token->symbol == TOKEN_STRING_LITERAL)
+	{
+		node.value = token->value;
+		token->value = NULL;
+		return (node);
+	}
+	value_ptr = find_absolute_path(path_variable, token->value);
+	return (node);
+}
+
+t_tree_node tree_node_create_from_redirection(t_token *token)
+{
+	t_tree_node	node_new;
+
+	node_new = (t_tree_node){0};
+	return (node_new);
+}
+
+t_tree_node tree_node_create_from_conditional(t_token *token)
+{
+	t_tree_node	node_new;
+
+	node_new = (t_tree_node){0};
+	return (node_new);
+}
+
+void	ast_create(t_token **tokens, const char *path_variable)
+{
+	t_tree_node	*tree_node;
+	uint32_t	i;
+
+	while (tokens[i])
+	{
+		ft_putstr_fd(tokens[i]->value, 1);
+		i++;
+	}
+	tree_node = ft_calloc(i, sizeof(*tree_node));
+	i = 0;
+	while (tokens[i])
+	{
+		if (tokens[i]->symbol < 2)
+			tree_node[i] = tree_node_create_from_string(tokens[i], path_variable);
+		else if (tokens[i]->symbol < 7)
+			tree_node[i] = tree_node_create_from_redirection(tokens[i]);
+		else if (tokens[i]->symbol < 13)
+			tree_node[i] = tree_node_create_from_conditional(tokens[i]);
+		i++;
+	}
+}
+
+void	command_handler(char *command, char **environment)
+{
+	t_token		**tokens;
+	uint32_t	i;
+
+	i = 0;
+	tokens = tokenizer(command, (const char **)environment);
+	while (tokens[i])
+	{
+		ft_putstr_fd(tokens[i]->value, 1);
+		ft_putchar_fd('$', 1);
+		i++;
+	}
+	lst_memory(tokens, NULL, FREE);
+	ft_putchar_fd('\n', 1);
+}
+
 int	main(int argc, char **argv, const char **env)
 {
 	t_prompt	*prompt;
@@ -40,7 +138,7 @@ int	main(int argc, char **argv, const char **env)
 	setup(&path_variable);
 	environment = environment_create(env);
 	prompt = prompt_create((const char **)environment);
-	while (1)
+	while (g_signal_flag != 2)
 	{
 		command_input = prompt_get(prompt);
 		if (g_signal_flag == 1 || !command_input)
@@ -55,7 +153,7 @@ int	main(int argc, char **argv, const char **env)
 		}
 		if (command_input && *command_input != '\n')
 		{
-			m_tokenizer(command_input, (const char **)environment, path_variable);
+			command_handler(command_input, environment);
 			prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;

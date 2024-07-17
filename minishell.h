@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 14:46:59 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/17 22:33:48 by vvobis           ###   ########.fr       */
 /*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 # include <stdio.h>
 # include <dirent.h>
 # include <string.h>
@@ -56,6 +57,36 @@
 # define SCREEN_CLEAR "\033[2J"
 # define SCREEN_CLEAR_TO_EOF "\033[J"
 
+typedef enum e_symbol
+{
+	TOKEN_WORD,
+	TOKEN_STRING_LITERAL,
+
+	TOKEN_PIPE,
+	TOKEN_LESS_THAN,
+	TOKEN_MORE_THAN,
+	TOKEN_DOUBLE_LESS_THAN,
+	TOKEN_DOUBLE_MORE_THAN,
+
+	TOKEN_PARANTHESIS_OPEN,
+	TOKEN_PARANTHESIS_CLOSED,
+
+	TOKEN_AMPERSAND,
+	TOKEN_ASTRIX,
+	TOKEN_DOUBLE_AMPERSAND,
+	TOKEN_DOUBLE_PIPE,
+	TOKEN_DUMMY
+}				t_symbol ;
+
+typedef enum e_type
+{
+	COMMAND,
+	FILE_,
+	REDIRECTION,
+	PIPE,
+	OPTION
+}				t_type ;
+
 typedef struct s_prompt
 {
 	char		*command;
@@ -66,13 +97,11 @@ typedef struct s_prompt
 	char		**env_ptr;
 }				t_prompt;
 
-enum e_alloc
+typedef struct s_token
 {
-	ADD,
-	CLEAN,
-	END,
-	FREE,
-};
+	char		*value;
+	t_symbol	symbol;
+}				t_token;
 
 typedef struct s_clean
 {
@@ -80,6 +109,14 @@ typedef struct s_clean
 	void			(*clean)(void *del);
 	struct s_clean	*next;
 }					t_clean;
+
+enum e_alloc
+{
+	ADD,
+	CLEAN,
+	END,
+	FREE,
+};
 
 extern int32_t g_signal_flag;
 
@@ -98,6 +135,7 @@ void		setup_signal_handlers();
 
 /* Input */
 void		free_split(void *back);
+uint32_t	get_split_length(char **split);
 
 /* List Memory */
 void		lst_memory(void *mem, void (*del)(void *c), int mode);
@@ -129,14 +167,14 @@ char		*prompt_get_input(t_prompt *prompt);
 
 /* Prompt Buffer Management */
 void		prompt_refresh_line(char *input, uint32_t cursor_position_current[2]);
-void		prompt_buffer_size_manage(char **input, uint32_t input_new_size);
+void		prompt_buffer_size_manage(char **input, uint32_t input_new_size, int32_t buffer_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
 void		check_redirections(char **tokens, char **env);
 
 /* Tab Completion */
-uint32_t		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
+uint32_t	handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
 
 /* Termios */
 void		terminal_raw_mode_enable();
@@ -171,5 +209,19 @@ void		environment_variable_print(const char *variable, const char **environment)
 void		environment_print(char **environment);
 char		**environment_create(const char **env);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
+char		*environment_variable_get( const char *variable, const char **environment);
+/* Tokenizer */
+t_token	**tokenizer(char *command_input, const char **environement);
+t_token	*token_create(char *value, t_symbol symbol);
 
+/* Quotes */
+
+char	*interpret_single_quote(char *command_input, uint32_t *i);
+char	*interpret_double_quotes(	char *command_input, const char **environement, uint32_t *i);
+char	*extract_variable(char *command_input, const char **environement);
+
+/* Operator_token */
+
+t_token	*find_operator(const char *command_input, uint32_t *i);
+bool	is_operator(char c);
 #endif

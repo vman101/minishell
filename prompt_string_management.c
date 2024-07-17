@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/07/10 14:34:41 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/16 20:03:17 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,16 @@ void	prompt_refresh_line(char *input, uint32_t cursor_position_current[2])
 	cursor_position_set(cursor_position_current[0], cursor_position_current[1]);
 }
 
-void prompt_buffer_size_manage(char **input, uint32_t input_new_size)
+void prompt_buffer_size_manage(char **input, uint32_t input_new_size, int32_t buffer_size)
 {
 	char		*input_free_ptr;
 	uint32_t	buffer_size_multipler;
 
-	buffer_size_multipler = input_new_size / PROMPT_INPUT_BUFFER_SIZE;
-	if ((PROMPT_INPUT_BUFFER_SIZE * (buffer_size_multipler + (buffer_size_multipler < 1))) < input_new_size)
+	buffer_size_multipler = input_new_size / buffer_size;
+	if ((buffer_size * (buffer_size_multipler + (buffer_size_multipler < 1))) < input_new_size)
 	{
 		input_free_ptr = *input;
-		*input = ft_calloc(1, PROMPT_INPUT_BUFFER_SIZE + input_new_size + 1);
+		*input = ft_calloc(1, buffer_size + input_new_size + 1);
 		if (!*input)
 			lst_memory(NULL, NULL, CLEAN);
 		ft_memcpy(*input, input_free_ptr, input_new_size);
