@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/17 22:33:48 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/19 11:37:45 by victor           ###   ########.fr       */
 /*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -80,11 +80,20 @@ typedef enum e_symbol
 
 typedef enum e_type
 {
+	UNDEFINED,
 	COMMAND,
-	FILE_,
-	REDIRECTION,
+	EXISTING_FILE,
+	EXISTING_DIRECTORY,
+	NEW_FILE,
+	NEW_DIRECTORY,
+	REDIRECTION_INPUT,
+	HERE_DOC,
+	REDIRECTION_OUTPUT,
+	REDIRECTION_OUTPUT_APPEND,
 	PIPE,
-	OPTION
+	LOGICAL_AND,
+	LOGICAL_OR,
+	FINAL,
 }				t_type ;
 
 typedef struct s_prompt

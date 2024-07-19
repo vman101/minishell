@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/16 14:20:46 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/19 11:36:16 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ uint32_t	prompt_display(void)
 	uint32_t	prompt_length;
 
 	pwd = getcwd(NULL, 0);
-	prompt_length = ft_strlen(pwd) + 2;
+	prompt_length = ft_strlen(pwd) + 4;
 	ft_printf(GREEN);
-	ft_printf("%s$ ", pwd);
+	ft_printf("[%s]$ ", pwd);
 	ft_printf(RESET);
 	ft_free((void **)&pwd);
 	return (prompt_length);

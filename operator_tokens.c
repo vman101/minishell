@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 17:03:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/17 18:35:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/19 16:24:04 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,25 +19,25 @@ bool	is_operator(char c)
 
 static t_symbol	which_operator(char operator, bool is_double)
 {
-	if (operator == TOKEN_LESS_THAN)
+	if (operator == '<')
 	{
 		if (is_double)
 			return (TOKEN_DOUBLE_LESS_THAN);
 		return (TOKEN_LESS_THAN);
 	}
-	else if (operator == TOKEN_MORE_THAN)
+	else if (operator == '>')
 	{
 		if (is_double)
 			return (TOKEN_DOUBLE_MORE_THAN);
 		return (TOKEN_MORE_THAN);
 	}
-	else if (operator == TOKEN_AMPERSAND)
+	else if (operator == '&')
 	{
 		if (is_double)
 			return (TOKEN_DOUBLE_AMPERSAND);
 		return (TOKEN_AMPERSAND);
 	}
-	else if (operator == TOKEN_PIPE)
+	else if (operator == '|')
 	{
 		if (is_double)
 			return (TOKEN_DOUBLE_PIPE);
@@ -48,28 +48,32 @@ static t_symbol	which_operator(char operator, bool is_double)
 
 t_token	*find_operator(const char *command_input, uint32_t *i)
 {
-	t_token	*token;
-	char	*return_value;
-	bool	is_double;
+	t_token		*token;
+	uint32_t	j;
+	uint32_t	k;
+	char		*return_value;
+	bool		is_double;
 
+	k = 0;
+	return_value = NULL;
 	if (*command_input == *(command_input + 1))
 	{
-		return_value = ft_calloc(3, sizeof(*return_value));
-		if (!return_value)
-			lst_memory(NULL, NULL, CLEAN);
-		ft_strlcpy(return_value, command_input, 3);
-		(*i)++;
+		j = 2;
 		is_double = true;
 	}
-	else
+	else if (*command_input + 1)
 	{
-		return_value = ft_calloc(2, sizeof(*return_value));
-		if (!return_value)
-			lst_memory(NULL, NULL, CLEAN);
-		ft_strlcpy(return_value, command_input, 2);
+		j = 1;
 		is_double = false;
 	}
-	(*i)++;
+	while (command_input[j] && command_input[j] == ' ')
+		j++;
+	while (command_input[j + k] && command_input[j + k] != ' ')
+		k++;
+	return_value = ft_substr(command_input, j, k);
+	if (!return_value)
+		lst_memory(NULL, NULL, CLEAN);
+	*i += j + k;
 	token = token_create(return_value, which_operator(*command_input, is_double));
 	return (token);
 }

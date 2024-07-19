@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/17 22:16:16 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/19 16:35:25 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ static char	*print_error(char *input)
 	}
 	else
 		p_stderr(STDERR_FILENO, "minishell: %s: command not found\n", input);
+	ft_free((void **)&input);
 	return (NULL);
 }
 
@@ -72,8 +73,7 @@ char	*check_paths(const char *path, char *path_abs, char *input)
 		if (path)
 			path++;
 	}
-	ft_free((void **)&path_abs);
-	return (NULL);
+	return (print_error(input));
 }
 
 char	*find_absolute_path(const char *path_variable, char *input)
