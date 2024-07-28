@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 21:52:40 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 14:46:51 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,14 @@ void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
 
 void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
 {
-	if (save_ptr_left->fd_in)
+	if (save_ptr_left->fd_file_in)
 	{
-		ft_close(save_ptr_left->fd_in, "redir");
-		save_ptr_left->fd_in = 0;
+		ft_close(save_ptr_left->fd_file_in, "redir");
+		save_ptr_left->fd_file_in = 0;
 	}
-	ft_open(&save_ptr_left->fd_in, redir_node->file,
+	ft_open(&save_ptr_left->fd_file_in, redir_node->file,
 		save_ptr_left->flags, 0644);
-	if (save_ptr_left->fd_in == -1)
+	if (save_ptr_left->fd_file_in == -1)
 	{
 		*error_catched = 1;
 		return ;
@@ -95,14 +95,14 @@ void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catche
 
 void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
 {
-	if (save_ptr_left->fd_out)
+	if (save_ptr_left->fd_file_out)
 	{
-		ft_close(save_ptr_left->fd_out, "redir");
-		save_ptr_left->fd_out = 0;
+		ft_close(save_ptr_left->fd_file_out, "redir");
+		save_ptr_left->fd_file_out = 0;
 	}
-	ft_open(&save_ptr_left->fd_out, redir_node->file,
+	ft_open(&save_ptr_left->fd_file_out, redir_node->file,
 		save_ptr_left->flags, 0644);
-	if (save_ptr_left->fd_out == -1)
+	if (save_ptr_left->fd_file_out == -1)
 	{
 		*error_catched = 1;
 		return ;
@@ -117,7 +117,7 @@ void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched
 
 void	setup_left_command_node(t_ast *redir_node, t_ast **head)
 {
-	if (redir_node->left == NULL)
+	if (redir_node->left == NULL || redir_node->left->type == NODE_LOGICAL_OPERATOR)
 	{
 		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
 		lst_memory(temp, free, ADD);
@@ -125,7 +125,7 @@ void	setup_left_command_node(t_ast *redir_node, t_ast **head)
 		redir_node->left = temp;
 		*head = temp;
 	}
-	while (redir_node->left)
+	while (redir_node->left && redir_node->left->type != NODE_LOGICAL_OPERATOR)
 	{
 		if (redir_node->left->type == NODE_COMMAND && !redir_node->left->is_done)
 			break ;

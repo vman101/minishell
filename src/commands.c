@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 23:15:33 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 14:43:19 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,8 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 		{
 			check_valid_logical_operator(ast, error_catched);
 		}
-		if (*error_catched)
-			return ;
+		// if (*error_catched)
+		// 	return ;
 		ast = ast->right;
 	}
 }
@@ -116,17 +116,6 @@ void	print_tokens(t_token *tokens)
 		i++;
 	}
 	printf("------------\n");
-}
-
-void	skip_up_to_logical_operator(t_ast *ast)
-{
-	while (ast)
-	{
-		if (ast->type == NODE_LOGICAL_OPERATOR)
-			break ;
-		ast->is_done = 1;
-		ast = ast->right;
-	}
 }
 
 void	*m_tokenizer(const char *input, const char **env,
@@ -146,7 +135,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	ast = parse_tokens(tokens);
 	traverse_tree(ast, &ast, &error_catched);
 	if (error_catched)
-		skip_up_to_logical_operator(ast);
+	{
+		skip_up_to_next_logical_operator(&ast);
+	}
 	execute_commands(ast, path_variable, env, &error_catched);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
