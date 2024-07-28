@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 13:32:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 17:22:09 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,8 +312,8 @@ void	redirect_fd_into_file(t_ast *command);
 void	handle_fds_child_proccess(t_ast *command);
 void	handle_fds_parent_proccess(t_ast *command);
 /*handle_logical_operator.c*/
-void		skip_up_to_next_logical_operator(t_ast **ast);
-void		handle_logical_operator(t_ast **logical_node, int exit_status);
+void		skip_up_to_next_logical_operator(t_ast *ast);
+void		handle_logical_operator(t_ast *logical_node, int exit_status);
 /* handle_pipes.c */
 void		handle_pipe(t_ast *pipe_node, int *error_catched);
 /*handle_redirs.c*/

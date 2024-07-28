@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 14:46:51 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 17:11:59 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 char	**cat_args(char **left, char **right)
 {
@@ -117,13 +118,24 @@ void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched
 
 void	setup_left_command_node(t_ast *redir_node, t_ast **head)
 {
-	if (redir_node->left == NULL || redir_node->left->type == NODE_LOGICAL_OPERATOR)
+	if (redir_node->left == NULL)
 	{
 		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
 		lst_memory(temp, free, ADD);
 		temp->right = redir_node;
 		redir_node->left = temp;
 		*head = temp;
+	}
+	else if (redir_node->left->type == NODE_LOGICAL_OPERATOR)
+	{
+		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
+		temp->right = redir_node;
+		temp->left = redir_node->left;
+		if (temp->left)
+		{
+			redir_node->left->right = temp;
+		}
+		redir_node->left = temp;
 	}
 	while (redir_node->left && redir_node->left->type != NODE_LOGICAL_OPERATOR)
 	{

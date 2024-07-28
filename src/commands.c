@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 14:43:19 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 17:31:41 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 	current = ast;
 	while (current)
 	{
-		if (current->type == NODE_COMMAND && !current->is_done)
+		if (current->type == NODE_COMMAND && !current->is_done && current->args)
 		{
 			handle_command(current, path_variable, env, &exit_status);
 		}
 		else if (current->type == NODE_LOGICAL_OPERATOR)
 		{
-			handle_logical_operator(&current, exit_status);
+			handle_logical_operator(current, exit_status);
 		}
 		current = current->right;
 	}
@@ -89,10 +89,18 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 		if (ast->type == NODE_REDIRECTION)
 		{
 			handle_redir(ast, head, error_catched);
+			if (*error_catched)
+			{
+				skip_up_to_next_logical_operator(ast);
+			}
 		}
 		else if (ast->type == NODE_PIPE)
 		{
 			handle_pipe(ast, error_catched);
+			if (*error_catched)
+			{
+				skip_up_to_next_logical_operator(ast);
+			}
 		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
@@ -134,10 +142,6 @@ void	*m_tokenizer(const char *input, const char **env,
 	tokens = lexical_analysis(input, env);
 	ast = parse_tokens(tokens);
 	traverse_tree(ast, &ast, &error_catched);
-	if (error_catched)
-	{
-		skip_up_to_next_logical_operator(&ast);
-	}
 	execute_commands(ast, path_variable, env, &error_catched);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
