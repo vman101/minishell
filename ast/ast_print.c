@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast_print.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:48 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 19:29:47 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 22:10:18 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void	print_ast(t_ast *head)
 			printf("FD_OUT: %d\n", head->fd_out);
 			printf("STD_FD: %d\n", head->std_fd);
 			printf("FLAGS: %d\n", head->flags);
+			printf("ERROR_FOUND: %d\n", head->error_found);
 			printf("IS_DONE: %d\n", head->is_done);
 			i++;
 			printf("\n");

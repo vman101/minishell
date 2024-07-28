@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 17:31:41 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 23:01:50 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,22 @@ void	command_execute(const char *command_path,
 }
 
 void	execute_commands(t_ast *ast, const char *path_variable,
-					const char **env, int *error_catched)
+					const char **env)
 {
 	static int	exit_status;
 	t_ast		*current;
 
-	exit_status = *error_catched;
+	exit_status = 0;
 	current = ast;
 	while (current)
 	{
-		if (current->type == NODE_COMMAND && !current->is_done && current->args)
+		if (current->error_found == 1)
+		{
+			exit_status = 1;
+			current = skip_up_to_next_logical_operator(current);
+			continue ;
+		}
+		else if (current->type == NODE_COMMAND && !current->is_done && current->args)
 		{
 			handle_command(current, path_variable, env, &exit_status);
 		}
@@ -77,7 +83,21 @@ void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)
 {
 	if (!logical_node->left || !logical_node->right)
 	{
-		printf("minishell: syntax error near unexpected token `&&'\n");
+		if (logical_node->token_type == TOKEN_AND)
+			printf("minishell: syntax error near unexpected token `&&'\n");
+		if (logical_node->token_type == TOKEN_OR)
+			printf("minishell: syntax error near unexpected token `||'\n");
+		*error_catched = 1;
+	}
+	else if (logical_node->right->type == NODE_LOGICAL_OPERATOR
+		|| logical_node->right->type == NODE_PIPE)
+	{
+		if (logical_node->right->token_type == TOKEN_AND)
+			printf("minishell: syntax error near unexpected token `&&'\n");
+		if (logical_node->right->token_type == TOKEN_OR)
+			printf("minishell: syntax error near unexpected token `||'\n");
+		if (logical_node->right->type == NODE_PIPE)
+			printf("minishell: syntax error near unexpected token `|'\n");
 		*error_catched = 1;
 	}
 }
@@ -89,25 +109,22 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 		if (ast->type == NODE_REDIRECTION)
 		{
 			handle_redir(ast, head, error_catched);
-			if (*error_catched)
+			if (ast->error_found)
 			{
-				skip_up_to_next_logical_operator(ast);
+				ast = skip_up_to_next_logical_operator(ast);
+				continue ;
 			}
 		}
 		else if (ast->type == NODE_PIPE)
 		{
 			handle_pipe(ast, error_catched);
-			if (*error_catched)
-			{
-				skip_up_to_next_logical_operator(ast);
-			}
 		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
 			check_valid_logical_operator(ast, error_catched);
 		}
-		// if (*error_catched)
-		// 	return ;
+		if (*error_catched)
+			return ;
 		ast = ast->right;
 	}
 }
@@ -142,7 +159,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	tokens = lexical_analysis(input, env);
 	ast = parse_tokens(tokens);
 	traverse_tree(ast, &ast, &error_catched);
-	execute_commands(ast, path_variable, env, &error_catched);
+	if (error_catched)
+		return (NULL);
+	execute_commands(ast, path_variable, env);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
 }

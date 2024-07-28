@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 17:11:59 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 23:03:10 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
 	}
 }
 
-void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
+void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node)
 {
 	if (save_ptr_left->fd_file_in)
 	{
@@ -83,7 +83,8 @@ void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catche
 		save_ptr_left->flags, 0644);
 	if (save_ptr_left->fd_file_in == -1)
 	{
-		*error_catched = 1;
+		save_ptr_left->error_found = 1;
+		redir_node->error_found = 1;
 		return ;
 	}
 	save_ptr_left->file = redir_node->file;
@@ -94,7 +95,7 @@ void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catche
 	}
 }
 
-void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
+void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node)
 {
 	if (save_ptr_left->fd_file_out)
 	{
@@ -105,7 +106,8 @@ void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched
 		save_ptr_left->flags, 0644);
 	if (save_ptr_left->fd_file_out == -1)
 	{
-		*error_catched = 1;
+		save_ptr_left->error_found = 1;
+		redir_node->error_found = 1;
 		return ;
 	}
 	save_ptr_left->file = redir_node->file;
@@ -161,15 +163,17 @@ void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 		if (redir_node->token_type == TOKEN_REDIRECT_IN 
 			|| redir_node->token_type == TOKEN_REDIRECT_APPEND)
 		{
-			handle_redir_in(save_ptr_left, redir_node, error_catched);
+			handle_redir_in(save_ptr_left, redir_node);
 		}
 		else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
 		{
-			handle_redir_out(save_ptr_left, redir_node, error_catched);
+			handle_redir_out(save_ptr_left, redir_node);
 		}
 		redir_node->is_done = 1;
 		redir_node = redir_node->right;
-		if (*error_catched)
+		if (*error_catched || save_ptr_left->error_found)
+		{
 			return ;
+		}
 	}
 }
