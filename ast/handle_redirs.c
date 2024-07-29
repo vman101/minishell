@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/29 16:11:10 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/29 18:58:16 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,63 +103,84 @@ void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node)
 	}
 }
 
-void	setup_left_command_node(t_ast *redir_node, t_ast **head)
+t_ast	*create_left_command_node(t_ast *redir_node, t_ast **head)
 {
+	t_ast	*temp;
+ 
+	temp = create_command_node(TOKEN_WORD, NULL);
+	lst_memory(temp, free, ADD);
+	temp->right = redir_node;
+	redir_node->left = temp;
+	*head = temp;
+	return (temp);
+}
+
+t_ast	*create_node_between_logic_and_redir(t_ast *redir_node)
+{
+	t_ast *temp; 
+	
+	temp = create_command_node(TOKEN_WORD, NULL);
+	temp->right = redir_node;
+	temp->left = redir_node->left;
+	if (temp->left)
+	{
+		redir_node->left->right = temp;
+	}
+	redir_node->left = temp;
+	return (temp);
+}
+
+t_ast	*setup_left_command_node(t_ast *redir_node, t_ast **head)
+{
+	t_ast *current;
+
 	if (redir_node->left == NULL)
-	{
-		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
-		lst_memory(temp, free, ADD);
-		temp->right = redir_node;
-		redir_node->left = temp;
-		*head = temp;
-	}
+    {
+        current = create_left_command_node(redir_node, head);
+    }
 	else if (redir_node->left->type == NODE_LOGICAL_OPERATOR)
-	{
-		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
-		temp->right = redir_node;
-		temp->left = redir_node->left;
-		if (temp->left)
-		{
-			redir_node->left->right = temp;
-		}
-		redir_node->left = temp;
-	}
+    {
+        current = create_node_between_logic_and_redir(redir_node);
+    }
 	else
     {
-        t_ast *current = redir_node;
+		current = redir_node;
         while (current->left && current->left->type != NODE_LOGICAL_OPERATOR)
         {
             if (current->left->type == NODE_COMMAND && !current->left->is_done)
-                break;
+			{
+				current = current->left;
+				break;
+			}
             current = current->left;
         }
     }
+	return (current);
 }
-
-void	handle_redir(t_ast *redir_node, t_ast **head)
+void handle_redir(t_ast *redir_node, t_ast **head)
 {
-	t_ast	*save_ptr_left;
-
-	setup_left_command_node(redir_node, head);
-	save_ptr_left = redir_node->left;
-	save_ptr_left->right = redir_node;
-	while (redir_node && redir_node->type == NODE_REDIRECTION)
-	{
-		setup_flags_and_fds(redir_node, save_ptr_left);
-		if (redir_node->token_type == TOKEN_REDIRECT_IN 
-			|| redir_node->token_type == TOKEN_REDIRECT_APPEND)
-		{
-			handle_redir_in(save_ptr_left, redir_node);
-		}
-		else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
-		{
-			handle_redir_out(save_ptr_left, redir_node);
-		}
-		redir_node->is_done = 1;
-		redir_node = redir_node->right;
-		if (save_ptr_left->error_found)
-		{
-			return ;
-		}
-	}
+    t_ast *save_ptr_left = setup_left_command_node(redir_node, head);
+    if (!save_ptr_left)
+    {
+        // Handle the case where the left command node could not be set up
+        return;
+    }
+    while (redir_node && redir_node->type == NODE_REDIRECTION)
+    {
+        setup_flags_and_fds(redir_node, save_ptr_left);
+        if (redir_node->token_type == TOKEN_REDIRECT_IN || redir_node->token_type == TOKEN_REDIRECT_APPEND)
+        {
+            handle_redir_in(save_ptr_left, redir_node);
+        }
+        else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
+        {
+            handle_redir_out(save_ptr_left, redir_node);
+        }
+        redir_node->is_done = 1;
+        redir_node = redir_node->right;  // Safe traversal without modifying the structure
+        if (save_ptr_left->error_found)
+        {
+            return;
+        }
+    }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_logical_operator.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 13:31:08 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 21:34:22 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/29 19:49:59 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 
 t_ast *skip_up_to_next_logical_operator(t_ast *ast)
 {
-	t_ast *current = ast->right;
-	if (!current)
-		return NULL;
+	t_ast	*current;
 
+	current = ast->right;
+	if (!current)
+		return (NULL);
 	while (current)
 	{
 		if (current->type == NODE_LOGICAL_OPERATOR)
 		{
-			// Ensure we only mark the current node and not right
 			current->is_done = 1;
-			break;
+			break ;
 		}
-		current->is_done = 1; // Mark the current node as done
-		current = current->right; // Move to the next node
+		current->is_done = 1;
+		current = current->right;
 	}
-	return current; // Return the next logical operator or NULL if not found
+	return (current);
 }
 
 void	handle_logical_operator(t_ast *logical_node, int exit_status)

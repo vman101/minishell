@@ -6,12 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/29 16:21:23 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/29 19:45:19 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdio.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
