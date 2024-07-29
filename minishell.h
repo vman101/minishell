@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 22:10:02 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/29 12:03:34 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@
 # define SCREEN_MAX "\033[9999;9999H"
 # define DEL 127
 # define EOT 4
-# define ESC 27
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"
@@ -317,10 +316,13 @@ void	handle_fds_parent_proccess(t_ast *command);
 t_ast *skip_up_to_next_logical_operator(t_ast *ast);
 void		handle_logical_operator(t_ast *logical_node, int exit_status);
 /* handle_pipes.c */
-void		handle_pipe(t_ast *pipe_node, int *error_catched);
+void		handle_pipe(t_ast *pipe_node);
 /*handle_redirs.c*/
-void		handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
-
+void		handle_redir(t_ast *redir_node, t_ast **head);
+/*syntax_checks.c*/
+void	check_valid_redir(t_ast *redir_node, int *error_catched);
+void	check_valid_pipe(t_ast *pipe_node, int *error_catched);
+void	check_valid_logical_operator(t_ast *logical_node, int *error_catched);
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens);
 

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 20:49:34 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/27 20:25:00 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/29 12:15:47 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	restore_data(t_ast *pipe_node, t_ast *save_ptr_left,
     pipe_node->is_done = 1;
 }
 
-void	handle_pipe(t_ast *pipe_node, int *error_catched)
+void	handle_pipe(t_ast *pipe_node)
 {
     int		pipe_fd[2];
 	int		left_command_found;
@@ -73,12 +73,9 @@ void	handle_pipe(t_ast *pipe_node, int *error_catched)
 		setup_pipe(pipe_node, pipe_fd, &left_command_found, &right_command_found);
     }
 	if (!left_command_found || !right_command_found)
-		close_pipe(pipe_fd);
-	if ((!left_command_found && !save_ptr_left)
-		|| (!right_command_found && !save_ptr_right))
 	{
-		printf("minishell: syntax error near unexpected token `|'\n");
-		*error_catched = 1;
+		close_pipe(pipe_fd);
+		pipe_node->error_found = 1;
 	}
 	restore_data(pipe_node, save_ptr_left, save_ptr_right);
 }

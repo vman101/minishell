@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 23:03:10 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/29 16:11:10 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdio.h>
 
 char	**cat_args(char **left, char **right)
 {
@@ -37,20 +36,6 @@ char	**cat_args(char **left, char **right)
 		i++;
 	}
 	return (new_arr);
-}
-
-void	check_valid_redir(t_ast *redir_node, int *error_catched)
-{
-	if (!redir_node->file)
-	{
-		printf("minishell: syntax error near unexpected token 'newline'\n");
-		*error_catched = 1;
-	}
-	else if (is_double_special(redir_node->file) || is_single_special(redir_node->file))
-	{
-		printf("minishell: syntax error near unexpected token '%s'\n", redir_node->file);
-		*error_catched = 1;
-	}
 }
 
 void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
@@ -139,21 +124,22 @@ void	setup_left_command_node(t_ast *redir_node, t_ast **head)
 		}
 		redir_node->left = temp;
 	}
-	while (redir_node->left && redir_node->left->type != NODE_LOGICAL_OPERATOR)
-	{
-		if (redir_node->left->type == NODE_COMMAND && !redir_node->left->is_done)
-			break ;
-		redir_node->left = redir_node->left->left;
-	}
+	else
+    {
+        t_ast *current = redir_node;
+        while (current->left && current->left->type != NODE_LOGICAL_OPERATOR)
+        {
+            if (current->left->type == NODE_COMMAND && !current->left->is_done)
+                break;
+            current = current->left;
+        }
+    }
 }
 
-void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
+void	handle_redir(t_ast *redir_node, t_ast **head)
 {
 	t_ast	*save_ptr_left;
 
-	check_valid_redir(redir_node, error_catched);
-	if (*error_catched)
-		return ;
 	setup_left_command_node(redir_node, head);
 	save_ptr_left = redir_node->left;
 	save_ptr_left->right = redir_node;
@@ -171,7 +157,7 @@ void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 		}
 		redir_node->is_done = 1;
 		redir_node = redir_node->right;
-		if (*error_catched || save_ptr_left->error_found)
+		if (save_ptr_left->error_found)
 		{
 			return ;
 		}

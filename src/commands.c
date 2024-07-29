@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 23:01:50 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/29 16:21:23 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
@@ -79,54 +80,56 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 	}
 }
 
-void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)
-{
-	if (!logical_node->left || !logical_node->right)
-	{
-		if (logical_node->token_type == TOKEN_AND)
-			printf("minishell: syntax error near unexpected token `&&'\n");
-		if (logical_node->token_type == TOKEN_OR)
-			printf("minishell: syntax error near unexpected token `||'\n");
-		*error_catched = 1;
-	}
-	else if (logical_node->right->type == NODE_LOGICAL_OPERATOR
-		|| logical_node->right->type == NODE_PIPE)
-	{
-		if (logical_node->right->token_type == TOKEN_AND)
-			printf("minishell: syntax error near unexpected token `&&'\n");
-		if (logical_node->right->token_type == TOKEN_OR)
-			printf("minishell: syntax error near unexpected token `||'\n");
-		if (logical_node->right->type == NODE_PIPE)
-			printf("minishell: syntax error near unexpected token `|'\n");
-		*error_catched = 1;
-	}
-}
-
-void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
+int	traverse_tree(t_ast	*ast, t_ast **head)
 {
 	while (ast)
 	{
 		if (ast->type == NODE_REDIRECTION)
 		{
-			handle_redir(ast, head, error_catched);
+			handle_redir(ast, head);
 			if (ast->error_found)
 			{
 				ast = skip_up_to_next_logical_operator(ast);
 				continue ;
 			}
 		}
+		if (ast->type == NODE_PIPE)
+		{
+			handle_pipe(ast);
+			if (ast->error_found)
+			{
+				return (0);
+			}
+		}
+		ast = ast->right;
+	}
+	return (1);
+}
+
+int	check_syntax_errors(t_ast *ast)
+{
+	int error_catched;
+
+	error_catched = 0;
+	while (ast)
+	{
+		if (ast->type == NODE_REDIRECTION)
+		{
+			check_valid_redir(ast, &error_catched);
+		}
 		else if (ast->type == NODE_PIPE)
 		{
-			handle_pipe(ast, error_catched);
+			check_valid_pipe(ast, &error_catched);
 		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
-			check_valid_logical_operator(ast, error_catched);
+			check_valid_logical_operator(ast, &error_catched);
 		}
-		if (*error_catched)
-			return ;
+		if (error_catched)
+			return (0);
 		ast = ast->right;
 	}
+	return (1);
 }
 
 void	print_tokens(t_token *tokens)
@@ -158,8 +161,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
 	ast = parse_tokens(tokens);
-	traverse_tree(ast, &ast, &error_catched);
-	if (error_catched)
+	if (!check_syntax_errors(ast))
+		return (NULL);
+	if (!traverse_tree(ast, &ast))
 		return (NULL);
 	execute_commands(ast, path_variable, env);
 	restore_fd(original_stdin, original_stdout);

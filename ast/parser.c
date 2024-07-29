@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 12:22:42 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/29 15:45:21 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void	parse_redirection(t_ast **head, int *i, t_token *tokens)
 
 	current_node = NULL;
 	len_tokens = get_tokens_len(tokens);
-	if (*i + 1 < len_tokens)
+	if (*i + 1 < len_tokens && tokens[*i + 1].token_type == TOKEN_WORD)
 	{
 		current_node = create_redireciton_node(tokens[*i].token_type,
 				tokens[*i + 1].token_value);
