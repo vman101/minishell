@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/29 19:45:19 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/30 14:18:38 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*ast;
 	int		original_stdin;
 	int		original_stdout;
-	int	error_catched;
+	int		error_catched;
 
 	error_catched = 0;
 	original_stdin = dup(STDIN_FILENO);
@@ -160,9 +160,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
 	ast = parse_tokens(tokens);
-	if (!check_syntax_errors(ast))
-		return (NULL);
-	if (!traverse_tree(ast, &ast))
+	if (!check_syntax_errors(ast) || !traverse_tree(ast, &ast))
 		return (NULL);
 	execute_commands(ast, path_variable, env);
 	restore_fd(original_stdin, original_stdout);

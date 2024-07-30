@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/29 18:58:16 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/30 12:24:56 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,26 +159,24 @@ t_ast	*setup_left_command_node(t_ast *redir_node, t_ast **head)
 }
 void handle_redir(t_ast *redir_node, t_ast **head)
 {
-    t_ast *save_ptr_left = setup_left_command_node(redir_node, head);
-    if (!save_ptr_left)
-    {
-        // Handle the case where the left command node could not be set up
-        return;
-    }
+    t_ast *save_ptr_left_command; 
+	
+	save_ptr_left_command = setup_left_command_node(redir_node, head);
     while (redir_node && redir_node->type == NODE_REDIRECTION)
     {
-        setup_flags_and_fds(redir_node, save_ptr_left);
-        if (redir_node->token_type == TOKEN_REDIRECT_IN || redir_node->token_type == TOKEN_REDIRECT_APPEND)
+        setup_flags_and_fds(redir_node, save_ptr_left_command);
+        if (redir_node->token_type == TOKEN_REDIRECT_IN
+		|| redir_node->token_type == TOKEN_REDIRECT_APPEND)
         {
-            handle_redir_in(save_ptr_left, redir_node);
+            handle_redir_in(save_ptr_left_command, redir_node);
         }
         else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
         {
-            handle_redir_out(save_ptr_left, redir_node);
+            handle_redir_out(save_ptr_left_command, redir_node);
         }
         redir_node->is_done = 1;
-        redir_node = redir_node->right;  // Safe traversal without modifying the structure
-        if (save_ptr_left->error_found)
+        redir_node = redir_node->right;
+        if (save_ptr_left_command->error_found)
         {
             return;
         }
