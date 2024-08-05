@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 19:42:43 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:37:13 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	variable_expand(char **input, \
 	variable_count = determine_variables(*input);
 	variable_pointers = ft_calloc(variable_count + 1, sizeof(char *));
 	if (!variable_pointers)
-		return (lst_memory(NULL, NULL, CLEAN));
+		return (lst_memory(NULL, NULL, CLEAN, 0));
 	while (*temp_move && !is_special_char(*temp_move) && *temp_move != '$')
 		temp_move++;
 	if (*temp_move != ' ')
@@ -46,7 +46,8 @@ void	variable_expand(char **input, \
 	ft_free(&variable_pointers);
 }
 
-t_token	create_token_env_var(char **input, const char **environement)
+t_token	create_token_env_var(char **input, const char **environement,
+						int *exit_status)
 {
 	char		*buffer;
 	char		*temp_move;
@@ -58,10 +59,16 @@ t_token	create_token_env_var(char **input, const char **environement)
 		*input = temp_move + 1;
 		temp_move = ft_strrchr(*input, ')');
 		if (!temp_move)
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		*temp_move = 0;
 		buffer = execute_subshell(*input, environement);
 		*input = temp_move + 1;
+	}
+	else if (*temp_move == '?')
+	{
+		buffer = ft_itoa(*exit_status);
+		lst_memory(buffer, free, ADD, 0);
+		*input =  temp_move + 1;
 	}
 	else
 	{

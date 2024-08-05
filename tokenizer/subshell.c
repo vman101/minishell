@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   subshell.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 18:20:59 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 19:33:09 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:23:33 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	subshell_child_execute(	char *input, \
 	ft_dup2(pipefd[1], STDOUT_FILENO, "execute_subshell stdout");
 	ft_close(pipefd[1], "close in execute_subshell");
 	m_tokenizer(input, environement, path_variable);
-	lst_memory(NULL, NULL, END);
+	lst_memory(NULL, NULL, END, 0);
 }
 
 static void	subshell_parent_execute(char *input_subshell, int32_t pipefd[2])
@@ -42,7 +42,7 @@ static void	subshell_parent_execute(char *input_subshell, int32_t pipefd[2])
 		if (bytes_read == -1)
 		{
 			perror("read");
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		}
 		else if (bytes_read == 0)
 			break ;
@@ -62,7 +62,7 @@ char	*execute_subshell(char *input, const char **environement)
 	input_subshell = NULL;
 	input_subshell = ft_calloc(PROMPT_INPUT_BUFFER_SIZE, \
 								sizeof(*input_subshell));
-	lst_memory(input_subshell, free, ADD);
+	lst_memory(input_subshell, free, ADD, 0);
 	ft_pipe(pipefd, "in execute_subshell");
 	ft_fork(&pid, "execute_subshell");
 	if (pid == 0)

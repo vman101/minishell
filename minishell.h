@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 17:09:07 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/05 17:16:53 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,12 +170,12 @@ extern int32_t g_signal_flag;
 void set_non_blocking();
 /* Builtins */
 int32_t		ft_echo(char **args);
-void		ft_cd(const char **environment, const char **args);
-void		ft_pwd(const char **env);
-void		ft_env(const char **env);
-void		ft_unset(char **environment, const char **args);
-void		ft_export(char ***environment, const char **args);
-void		ft_exit();
+int			ft_cd(const char **environment, const char **args);
+int			ft_pwd(const char **env);
+int			ft_env(const char **env);
+int			ft_unset(char **environment, const char **args);
+int			ft_export(char ***environment, const char **args);
+void		ft_exit(char **args, int *exit_status);
 
 /* Commands */
 bool		buildin_execute(t_ast *node, const char **environment, int *exit_status);
@@ -191,7 +191,7 @@ uint32_t    get_split_size(const char **split);
 uint32_t    get_split_length(char **split);
 
 /* List Memory */
-void		lst_memory(void *mem, void (*del)(void *c), int mode);
+void		lst_memory(void *mem, void (*del)(void *c), int mode, int success_exit_status);
 int			p_stderr(int stderr_fd, const char *error, const char *specifier);
 
 /* List */
@@ -293,7 +293,8 @@ char	*interpret_single_quote(const char *command_input);
 
 /*create_token_env_var.c*/
 int			is_env_var(const char input);
-t_token		create_token_env_var(char **input, const char **env);
+t_token		create_token_env_var(char **input, const char **environement,
+						int *exit_status);
 void		extract_variable(char **variable_counter, const char *command_input, const char **environement, uint32_t variable_count);
 void		variable_expand(char **input, char **buffer, const char **environement, char *temp_move);
 
@@ -335,7 +336,8 @@ void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
 char		*execute_subshell(char *input, const char **environement);
 
 /*tokenizer.c*/
-t_token		*lexical_analysis(const char *input, const char **env);
+t_token		*lexical_analysis(const char *input, const char **env,
+						int *exit_status);
 
 /* PARSING AND AST */
 /*ast_create_node.c*/

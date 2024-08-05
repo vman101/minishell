@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment_variables.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 13:35:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:19:29 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	**environment_create(const char **env)
 	uint32_t	i;
 
 	environment_new = ft_calloc(ENVIRONMENT_SIZE + 1, sizeof(*environment_new));
-	lst_memory(environment_new, free, ADD);
+	lst_memory(environment_new, free, ADD, 0);
 	i = 0;
 	while (env[i])
 	{
@@ -30,7 +30,7 @@ char	**environment_create(const char **env)
 	if (!pwd)
 	{
 		perror("getcwd");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	environment_variable_value_change((const char **)environment_new, "PWD", pwd);
 	ft_free(&pwd);
@@ -62,8 +62,8 @@ static void	environment_buffer_extend(	char ***environment, \
 	{
 		env_ptr = environment;
 		*environment = environment_create((const char **)env_ptr);
-		lst_memory(env_ptr, NULL, FREE);
-		lst_memory(environment, free_split, ADD);
+		lst_memory(env_ptr, NULL, FREE, 0);
+		lst_memory(environment, free_split, ADD, 0);
 	}
 }
 
@@ -85,7 +85,7 @@ char	**environment_variable_add(	char **environment,
 	variable_to_add = ft_calloc(variable_new_name_length \
 								+ variable_new_value_length + 2, \
 								sizeof(*variable_to_add));
-	lst_memory(variable_to_add, free, ADD);
+	lst_memory(variable_to_add, free, ADD, 0);
 	ft_strlcpy(variable_to_add, variable_new_name, \
 				ft_strlen(variable_new_name) + 1);
 	ft_strlcpy(variable_to_add + variable_new_name_length, "=", 2);
@@ -131,7 +131,7 @@ void	environment_variable_print(	const char *variable, \
 	variable_length = ft_strlen(variable);
 	variable_findable_name = ft_calloc(variable_length + 2, sizeof(*variable));
 	if (!variable_findable_name)
-		return (lst_memory(NULL, NULL, CLEAN));
+		return (lst_memory(NULL, NULL, CLEAN, 0));
 	ft_strlcpy(variable_findable_name, variable, variable_length + 1);
 	ft_strlcpy(variable_findable_name + variable_length, "=", 2);
 	variable_length = ft_strlen(variable_findable_name);
@@ -182,7 +182,7 @@ char	**environment_variable_get( const char *variable, \
 	variable_length = ft_strlen(variable);
 	variable_findable_name = ft_calloc(variable_length + 2, sizeof(*variable));
 	if (!variable_findable_name)
-		return (lst_memory(NULL, NULL, CLEAN), NULL);
+		return (lst_memory(NULL, NULL, CLEAN, 0), NULL);
 	ft_strlcpy(variable_findable_name, variable, variable_length + 1);
 	ft_strlcpy(variable_findable_name + variable_length, "=", 2);
 	variable_length = ft_strlen(variable_findable_name);
@@ -208,9 +208,9 @@ void	environment_variable_value_change(const char **environment, const char *var
 		return ;
 	new_variable_length = ft_strlen(variable_name) + ft_strlen(variable_new_value) + 2;
 	new_variable = ft_calloc(new_variable_length, sizeof(*new_variable));
-	lst_memory(new_variable, free, ADD);
+	lst_memory(new_variable, free, ADD, 0);
 	if (!new_variable)
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	ft_strlcpy(new_variable, variable_name, ft_strlen(variable_name) + 1);
 	ft_strlcpy(new_variable + ft_strlen(new_variable), "=", 2);
 	ft_strlcpy(new_variable + ft_strlen(new_variable), variable_new_value, ft_strlen(variable_new_value) + 1);

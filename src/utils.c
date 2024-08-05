@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/07/29 21:23:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:20:12 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	ft_close(int fd, const char *specifier)
 	{
 		p_stderr(2, "minishell: %s: ", specifier);
 		perror("close");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	return (1);
 }
@@ -31,7 +31,7 @@ void	ft_pipe(int pipefd[2], const char *specifier)
 	{
 		p_stderr(2, "pipex: %s: ", specifier);
 		perror("pipe");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 }
 
@@ -51,7 +51,7 @@ void	ft_fork(pid_t *pid, const char *specifier)
 	{
 		p_stderr(2, "pipex: %s: ", specifier);
 		perror("fork");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 }
 
@@ -89,7 +89,7 @@ int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
 			return (0);
 		ft_free(input);
 		perror("read");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	return (bytes_read);
 }

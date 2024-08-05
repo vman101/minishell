@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 11:00:34 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:19:35 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	main(int argc, char **argv, const char **env)
 		}
 		if (command_input)
 		{
-			lst_memory(command_input, free, ADD);
+			lst_memory(command_input, free, ADD, 0);
 			m_tokenizer(command_input, (const char **)environment, path_variable);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:00:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:24:25 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*prompt_get(const char **environment)
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
 	input = ft_strdup(prompt.command);
 	if (!input)
-		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
+		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN, 0), NULL);
 	return (input);
 }
 
@@ -79,7 +79,7 @@ t_prompt	prompt_create(const char **env, uint8_t mode)
 
 	tmp = (t_prompt){0};
 	tmp.history_entries = ft_calloc(16, sizeof(*tmp.history_entries));
-	lst_memory(tmp.history_entries, free, ADD);
+	lst_memory(tmp.history_entries, free, ADD, 0);
 	tmp.history_count = 0;
 	tmp.env_ptr = (char **)env;
 	tmp.exists = true;

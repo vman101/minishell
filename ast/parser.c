@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:30:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:21:48 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	**custom_realloc(void ***args, int old_capacity, int new_capacity)
 	if (!new_args)
 	{
 		perror("Malloc failed while reallocing memory");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	ft_memcpy(new_args, *args, old_capacity * sizeof(void *));
 	free(*args);
@@ -36,7 +36,7 @@ void	fill_args(char ***args, int count, char *token_value, int *capacity)
 		if (!args)
 		{
 			perror("calloc in parse tokens");
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		}
 		*capacity *= 2;
 	}

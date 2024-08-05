@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:15:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:22:35 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	copy_matches(	const char *path, \
 	*directory_entries = ft_calloc(get_matches_size(path, to_match) + 1, \
 									sizeof(**directory_entries));
 	if (!directory_entries)
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	ft_opendir(&tmp_dir, path);
 	to_match_length = ft_strlen(to_match);
 	while (1)

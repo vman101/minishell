@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 13:48:22 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:25:01 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 		if (ft_isprint(buffer[0]))
 			return (*do_refresh = handle_new_character_to_input(input, buffer[0], cursor_position_current, input_length_current), 1);
 		else if (buffer[0] == EOT && input_length_current == 0)
-			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN), 1);
+			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN, 0), 1);
 	}
 	else
 	{
@@ -193,7 +193,7 @@ char	*prompt_get_input(t_prompt *prompt, uint32_t prompt_initial_size, const cha
 	input = ft_calloc(prompt_initial_size, sizeof(*input));
 	if (!input)
 		return (perror("malloc"), NULL);
-	lst_memory(input, free, ADD);
+	lst_memory(input, free, ADD, 0);
 	prompt->prompt_length = prompt_display_string_set(prompt, (const char **)prompt->env_ptr, NULL);
 	prompt->prompt_display_func(prompt->prompt);
 	terminal_raw_mode_enable(ECHOCTL | ICANON);

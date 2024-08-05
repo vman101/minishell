@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 11:59:28 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/05 16:51:23 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	variable_exists(const char **environment, const char *variable_name)
 		*variable_name_terminator = '=';
 }
 
-void	ft_export(char ***environment, const char **args)
+int	ft_export(char ***environment, const char **args)
 {
 	uint32_t	args_size;
 	uint32_t	i;
@@ -93,7 +93,7 @@ void	ft_export(char ***environment, const char **args)
 
 	args_size = get_split_size(args);
 	if (args_size == 1)
-		return (environment_print_sorted((const char **)*environment));
+		return (environment_print_sorted((const char **)*environment), 0);
 	i = 1;
 	while (args[i])
 	{
@@ -105,4 +105,5 @@ void	ft_export(char ***environment, const char **args)
 		environment_variable_add(*environment, variable_name, variable_value);
 		i++;
 	}
+	return (0);
 }

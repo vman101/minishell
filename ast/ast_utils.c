@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 12:20:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:17:36 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ char	**copy_args(t_ast *node, char **src)
 	{
 		free(node);
 		perror("calloc in copy args");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
-	lst_memory(node->args, free_split, ADD);
+	lst_memory(node->args, free_split, ADD, 0);
 	temp = node->args;
 	while (*src)
 	{
@@ -46,7 +46,7 @@ char	**copy_args(t_ast *node, char **src)
 		{
 			free(node);
 			perror("strdup in copy args");
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		}
 		src++;
 		node->args++;

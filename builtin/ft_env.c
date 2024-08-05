@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ft_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 13:56:33 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 14:00:15 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 16:50:24 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_env(const char **environment)
+int	ft_env(const char **environment)
 {
 	environment_print(environment);
+	return (0);
 }

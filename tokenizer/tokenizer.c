@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 14:29:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:20:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,20 @@ static t_token	*initialise_tokens(uint32_t word_count)
 	t_token	*tokens;
 
 	tokens = ft_calloc(word_count + 1, sizeof(t_token));
-	lst_memory(tokens, free_tokens, ADD);
+	lst_memory(tokens, free_tokens, ADD, 0);
 	tokens[word_count].token_type = TOKEN_EOL;
 	return (tokens);
 }
 
 static t_token	check_symbol_and_create_token(const char **input,
-					const char **env)
+					const char **env, int *exit_status)
 {
 	if (is_double_special(*input))
 		return (create_token_double_special_symbol((char **)input));
 	else if (is_single_special(**input))
 		return (create_token_single_special_symbol(input));
 	else if (is_env_var(**input))
-		return (create_token_env_var((char **)input, env));
+		return (create_token_env_var((char **)input, env, exit_status));
 	else if (is_quote(**input))
 		return (create_token_quotes(input, env));
 	else
@@ -82,7 +82,8 @@ static uint32_t	get_word_count(char *input)
 	return (word_count);
 }
 
-t_token	*lexical_analysis(const char *input, const char **env)
+t_token	*lexical_analysis(const char *input, const char **env, int
+					*exit_status)
 {
 	t_token		*tokens;
 	uint32_t	i;
@@ -95,7 +96,7 @@ t_token	*lexical_analysis(const char *input, const char **env)
 			input++;
 		if (*input == '\0')
 			break ;
-		tokens[i++] = check_symbol_and_create_token(&input, env);
+		tokens[i++] = check_symbol_and_create_token(&input, env, exit_status);
 	}
 	return (tokens);
 }

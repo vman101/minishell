@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:30:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:17:58 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 	if (!args)
 	{
 		perror("calloc in parse tokens");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	i = 0;
 	while (tokens[i].token_type != TOKEN_EOL \
@@ -175,7 +175,7 @@ t_ast	*parse_tokens(t_token *tokens)
 	i = 0;
 	tree_count = determine_trees(tokens);
 	tree = ft_calloc(tree_count + 1, sizeof(t_ast));
-	lst_memory(tree, tree_destroy, ADD);
+	lst_memory(tree, tree_destroy, ADD, 0);
 	tree[tree_count].type = NODE_END;
 	while (tree[i].type != NODE_END)
 	{

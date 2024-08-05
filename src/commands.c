@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 17:13:35 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/05 17:18:28 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	command_execute(const char *command_path,
 	{
 		execve(command_path, (char **)argv, (char **)env);
 		perror("execve");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	else
 	{
@@ -41,19 +41,17 @@ void	command_execute(const char *command_path,
 }
 
 void	execute_commands(t_ast *tree, const char *path_variable,
-					const char **env, int *error_catched)
+					const char **env, int *exit_status)
 {
-	static int	exit_status;
 	uint32_t	i;
 
-	exit_status = *error_catched;
 	i = 0;
 	while (tree[i].type != NODE_END)
 	{
-		handle_command(&tree[i], path_variable, env, &exit_status);
-		if (tree[i].connection_type == TREE_LOGICAL_OR && exit_status == 0)
+		handle_command(&tree[i], path_variable, env, exit_status);
+		if (tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0)
 			i++;
-		else if (tree[i].connection_type == TREE_LOGICAL_AND && exit_status != 0)
+		else if (tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0)
 			i++;
 		i++;
 	}
@@ -146,18 +144,20 @@ int	check_syntax_errors(t_token *token)
 void	*m_tokenizer(const char *input, const char **env,
 			const char *path_variable)
 {
-	t_token	*tokens;
-	t_ast	*tree;
-	int	error_catched;
+	static int	exit_status = 0;
+	t_token		*tokens;
+	t_ast		*tree;
+	int			error_catched;
 
 	error_catched = 0;
-	tokens = lexical_analysis(input, env);
+	tokens = lexical_analysis(input, env, &exit_status);
+	print_tokens(tokens);
 	if (!check_syntax_errors(tokens))
 		return (NULL);
 	tree = parse_tokens(tokens);
 	/*if (error_catched)*/
 	/*	skip_up_to_logical_operator(tree);*/
-	execute_commands(tree, path_variable, env, &error_catched);
-	lst_memory(tokens, NULL, FREE);
+	execute_commands(tree, path_variable, env,  &exit_status);
+	lst_memory(tokens, NULL, FREE, 0);
 	return (NULL);
 }

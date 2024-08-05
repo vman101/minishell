@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   evaluate_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/02 12:40:37 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:24:06 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ uint32_t	evaluate_variable(char **input, uint32_t input_length, const char **env
 	if (!input_new)
 	{
 		perror("ft_calloc");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	ft_strlcpy(input_new, *input, input_length + 1);
 	i = 0;
@@ -37,7 +37,7 @@ uint32_t	evaluate_variable(char **input, uint32_t input_length, const char **env
 			if (!ft_strchr(&input_new[i + 1], '\''))
 			{
 				p_stderr(2, "%s: Invalid SINGLE Quotes\n", *input);
-				lst_memory(NULL, NULL, CLEAN);
+				lst_memory(NULL, NULL, CLEAN, 0);
 			}
 			else
 			{
@@ -128,7 +128,7 @@ void	evaluate_single_quotes(char **input, uint32_t *i, uint32_t input_length)
 	if (!temp_move)
 	{
 		UNIMPLEMENTED("Error single quote missing");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
 }

@@ -55,7 +55,7 @@ char	*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t size_t
 		input_free_ptr = *input;
 		*input = ft_calloc(1, size_multiplier * PROMPT_INPUT_BUFFER_SIZE + 1);
 		if (!*input)
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		ft_memcpy(*input, input_free_ptr, old_size);
 		ft_free(&input_free_ptr);
 	}

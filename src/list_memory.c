@@ -6,13 +6,13 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:21:13 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 21:59:03 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:17:10 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	lst_memory(void *mem, void (*del)(void *c), int mode)
+void	lst_memory(void *mem, void (*del)(void *c), int mode, int success_exit_status)
 {
 	static t_clean	*list;
 	t_clean			*new;
@@ -22,7 +22,7 @@ void	lst_memory(void *mem, void (*del)(void *c), int mode)
 		return (terminal_raw_mode_disable(ECHOCTL | ICANON), \
 				lst_list_clean(&list), exit(EXIT_FAILURE));
 	if (mode == END)
-		return (terminal_raw_mode_disable(ECHOCTL | ICANON), lst_list_clean(&list), exit(EXIT_SUCCESS));
+		return (terminal_raw_mode_disable(ECHOCTL | ICANON), lst_list_clean(&list), exit(success_exit_status));
 	if (mode == FREE)
 		return (lst_node_del_clean(&list, mem));
 	if (!mem)

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 09:21:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:19:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,6 @@ char	*find_absolute_path(const char *path_variable, char *input)
 		return (print_error(input));
 	path_variable = ft_strchr(path_variable, '/');
 	path_abs = malloc(find_longest_path(path_variable) + ft_strlen(input) + 2);
-	lst_memory(path_abs, &free, ADD);
+	lst_memory(path_abs, &free, ADD, 0);
 	return (check_paths(path_variable, path_abs, input));
 }

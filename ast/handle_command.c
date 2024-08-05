@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:40:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:17:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
 
 void	handle_pipe_in_child(t_ast *command)
 {
@@ -42,7 +43,7 @@ int	execute_command(t_ast *command, const char **env)
 			handle_fds_child_proccess(command);
 		execve(command->path, command->args, (char **)env);
 		perror("execve");
-		lst_memory(NULL, NULL, CLEAN);
+		lst_memory(NULL, NULL, CLEAN, 0);
 	}
 	else
 	{
@@ -77,18 +78,18 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 	if (node->args[0] && !*node->args[0])
 		return (false);
 	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_echo(node->args), 1);
+		return (buildin_apply_pipe(node), *exit_status = ft_echo(node->args), true);
 	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_env(environment), 1);
+		return (buildin_apply_pipe(node), *exit_status = ft_env(environment), true);
 	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_cd(environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node), *exit_status = ft_cd(environment, (const char **)node->args), true);
 	else if (ft_strncmp(node->args[0], "unset", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_unset((char **)environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node), *exit_status = ft_unset((char **)environment, (const char **)node->args), true);
 	else if (ft_strncmp(node->args[0], "export", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_export((char ***)&environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node),  *exit_status = ft_export((char ***)&environment, (const char **)node->args), true);
 	else if (ft_strncmp(node->args[0], "exit", ft_strlen(node->args[0])) == 0)
-		return (lst_memory(NULL, NULL, END), 1);
-	return (0);
+		return (ft_exit(node->args, exit_status), true);
+	return (false);
 }
 
 void	handle_command(t_ast *current, const char *path_variable,

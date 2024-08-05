@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 13:50:41 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:55 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/05 17:20:21 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	custom_memmove_strings(char **dest, char **src)
 		temp = ft_strdup(*src); // protect it
 		if (!temp)
 		{
-			lst_memory(NULL, NULL, CLEAN);
+			lst_memory(NULL, NULL, CLEAN, 0);
 		}
 		free(*dest);
 		*dest = temp;
