@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/05 17:25:01 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/05 19:32:17 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 		if (ft_isprint(buffer[0]))
 			return (*do_refresh = handle_new_character_to_input(input, buffer[0], cursor_position_current, input_length_current), 1);
 		else if (buffer[0] == EOT && input_length_current == 0)
-			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN, 0), 1);
+			return (ft_putstr_fd("\nexit\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, END, 0), 1);
 	}
 	else
 	{
