@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/04 14:38:14 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/09 13:18:13 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,4 +132,5 @@ void	handle_command(t_ast *current, const char *path_variable,
 			ft_dup2(stdout_org, STDOUT_FILENO, "dup2 in handle_command");
 		}
 	}
+	ft_close(stdout_org, "in handle_command");
 }

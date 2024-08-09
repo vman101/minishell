@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/07 15:20:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/09 13:20:22 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ void	restore_fd(int original_stdin, int original_stdout)
 	ft_close(STDOUT_FILENO, "STDOUT in restore_fd");
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
-	ft_close(original_stdin, "stdin in restore_fd");
-	ft_close(original_stdout, "stdout in restore_fd");
+
 }
 
 void	command_execute(const char *command_path,
@@ -67,13 +66,16 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 		if (*exit_status == -1)
 			return (*exit_status = 2, (void)0);
 		handle_command(&tree[i], path_variable, env, exit_status);
+		if (tree[i].connection_type != TREE_PIPE)
+			restore_fd(stdin_org, stdin_org);
 		if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
 			i++;
 		else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
 			i++;
 		i++;
 	}
-	restore_fd(stdin_org, stdout_org);
+	ft_close(stdin_org, "stdin in restore_fd");
+	ft_close(stdout_org, "stdout in restore_fd");
 }
 
 void	print_tokens(t_token *tokens)
@@ -98,16 +100,10 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*tree;
 
 	tokens = lexical_analysis(input, env);
-	print_tokens(tokens);
 	check_and_expand_wildcards(&tokens);
-	print_tokens(tokens);
 	tree = parse_tokens(tokens, env, exit_status);
 	if (tree)
 		execute_commands(tree, path_variable, env, exit_status);
-	// tree = parse_tokens(tokens);
-	// /*if (error_catched)*/
-	// /*	skip_up_to_logical_operator(tree);*/
-	// execute_commands(tree, path_variable, env, &error_catched);
 	lst_memory(tokens, NULL, FREE);
 	return (NULL);
 }

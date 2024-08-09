@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 12:55:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/09 13:16:05 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ static t_ast	collect_redirection(t_token *token, const char **environment, bool 
 					if (has_syntax_error)
 						return (branch);
 					if (branch.has_redir_out == true)
-						ft_close(branch.fd_in, "fd_append in collect_redirection");
-					ft_open(&branch.fd_in, token[i + 1].token_value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+						ft_close(branch.fd_out, "fd_append in collect_redirection");
+					ft_open(&branch.fd_out, token[i + 1].token_value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 					branch.has_redir_out = true;
 				}
 				else if (token[i].token_type == TOKEN_HEREDOC)
