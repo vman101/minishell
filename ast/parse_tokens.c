@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/09 13:16:05 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/09 14:07:14 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 static uint32_t	determine_trees(t_token *tokens)
 {
@@ -182,10 +183,7 @@ int	check_syntax_errors(t_token *token)
 
 	error_catched = 0;
 	i = 0;
-	while (token[i].token_type != TOKEN_EOL \
-			&& token[i].token_type != TOKEN_AND \
-			&& token[i].token_type != TOKEN_OR \
-			&& token[i].token_type != TOKEN_PIPE)
+	while (token[i].token_type != TOKEN_EOL)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
