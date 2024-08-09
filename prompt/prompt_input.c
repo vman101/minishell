@@ -100,8 +100,16 @@ void	prompt_handle_history(t_prompt *prompt, char *input)
 	if (!input)
 		return ;
 	prompt->command = input;
-	prompt->history_entries[prompt->history_count] = prompt->command;
-	prompt->history_count++;
+	if (prompt->history_count == PROMPT_COMMAND_STACK_SIZE)
+	{
+		ft_memmove(prompt->history_entries[0], prompt->history_entries[1], PROMPT_COMMAND_STACK_SIZE);
+		prompt->history_entries[prompt->history_count] = prompt->command;
+	}
+	else
+	{
+		prompt->history_entries[prompt->history_count] = prompt->command;
+		prompt->history_count++;
+	}
 	prompt->history_position_current = prompt->history_count;
 }
 

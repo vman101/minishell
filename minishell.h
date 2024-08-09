@@ -94,11 +94,11 @@ typedef enum
     TOKEN_PIPE,
     TOKEN_AND,
     TOKEN_OR,
-    TOKEN_SEMICOLON,
+    TOKEN_NEWLINE,
 	TOKEN_EOL,
     TOKEN_ENV,
     TOKEN_EXIT_STATUS,
-	TOKEN_DONE,
+    TOKEN_DONE,
 } t_token_type;
 
 typedef enum
@@ -107,6 +107,7 @@ typedef enum
 	TREE_PIPE = 7,
 	TREE_LOGICAL_AND,
 	TREE_LOGICAL_OR,
+	TREE_NEWLINE,
 	TREE_INVALID
 } t_tree_connection_type;
 
@@ -377,7 +378,7 @@ void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
 char		*execute_subshell(char *input, const char **environement);
 
 /*tokenizer.c*/
-t_token		*lexical_analysis(const char *input, const char **env);
+t_token		*lexical_analysis(char *input, const char **env);
 
 /* PARSING AND AST */
 /*ast_create_node.c*/
@@ -433,6 +434,7 @@ t_ast		parse_word(int *i, t_token *tokens);
 void		parse_logical_operator(t_ast **head, int *i, t_token *tokens);
 void		parse_redirection(t_ast **head, int *i, t_token *tokens);
 void		parse_pipe(t_ast **head, int *i, t_token *tokens);
+bool		is_delimiter_token(t_token *token);
 
 /*syntax_check.c*/
 void		check_valid_redir(t_token *token, int index,

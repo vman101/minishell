@@ -302,7 +302,7 @@ void	check_and_expand_wildcards(t_token	**tokens_ptr)
 	{
 		lst_memory(*tokens_ptr, NULL, FREE);
 		*tokens_ptr = tokens;
-		lst_memory(*tokens_ptr, free_tokens, ADD);
+		lst_memory(*tokens_ptr, free, ADD);
 	}
 }
 

@@ -22,7 +22,10 @@ static uint32_t	determine_trees(t_token *tokens)
 	tree_count = 1;
 	while (tokens[i].token_type != TOKEN_EOL)
 	{
-		if (tokens[i].token_type == TOKEN_AND || tokens[i].token_type == TOKEN_OR || tokens[i].token_type == TOKEN_PIPE)
+		if (tokens[i].token_type == TOKEN_AND \
+			|| tokens[i].token_type == TOKEN_OR \
+			|| tokens[i].token_type == TOKEN_PIPE \
+			|| tokens[i].token_type == TOKEN_NEWLINE)
 			tree_count++;
 		i++;
 	}
@@ -74,6 +77,7 @@ bool	is_delimiter_token(t_token *token)
 	return  (token->token_type == TOKEN_EOL \
 			|| token->token_type == TOKEN_AND \
 			|| token->token_type == TOKEN_OR \
+			|| token->token_type == TOKEN_NEWLINE \
 			|| token->token_type == TOKEN_PIPE);
 }
 
@@ -130,7 +134,7 @@ static t_ast	collect_redirection(t_token *token, const char **environment, bool 
 				handle_redir_out(&branch, &token[i], &token[i + 1], environment);
 				handle_redir_append(&branch, &token[i], &token[i + 1], environment);
 				handle_redir_heredoc(&branch, &token[i], &token[i + 1], environment);
-				i++;
+				// i++;
 			}
 		}
 		i++;

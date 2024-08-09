@@ -37,7 +37,7 @@ t_token	create_token_word(const char **input)
 		else
 			temp_move++;
 	}
-	if (*temp_move && ft_isspace(*temp_move))
+	if (*temp_move && ft_isspace(*temp_move) && *temp_move != '\n')
 	{
 		*temp_move = 0;
 		input_next = temp_move + 1;

@@ -101,18 +101,20 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_token	*tokens;
 	t_ast	*tree;
 
-	tokens = lexical_analysis(input, env);
-	// handle_heredoc(tokens);
-	print_tokens(tokens);
-	check_and_expand_wildcards(&tokens);
-	print_tokens(tokens);
-	tree = parse_tokens(tokens, env, exit_status);
-	if (tree)
-		execute_commands(tree, path_variable, env, exit_status);
-	// tree = parse_tokens(tokens);
-	// /*if (error_catched)*/
-	// /*	skip_up_to_logical_operator(tree);*/
-	// execute_commands(tree, path_variable, env, &error_catched);
-	lst_memory(tokens, NULL, FREE);
+	tokens = lexical_analysis((char *)input, env);
+	if (tokens)
+	{
+		// print_tokens(tokens);
+		check_and_expand_wildcards(&tokens);
+		// print_tokens(tokens);
+		tree = parse_tokens(tokens, env, exit_status);
+		if (tree)
+			execute_commands(tree, path_variable, env, exit_status);
+		// tree = parse_tokens(tokens);
+		// /*if (error_catched)*/
+		// /*	skip_up_to_logical_operator(tree);*/
+		// execute_commands(tree, path_variable, env, &error_catched);
+		lst_memory(tokens, NULL, FREE);
+	}
 	return (NULL);
 }

@@ -12,21 +12,23 @@
 
 #include "../minishell.h"
 #include <readline/readline.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 
 int32_t	volatile g_signal_flag;
 
-int32_t	minishell_single_command(	const char *command, \
+int32_t	minishell_single_command(	char *command, \
 									char **environment, \
 									char *path_variable)
 {
-	char	*tmp;
-	int32_t	exit_status;
+	char		*tmp;
+	int32_t		exit_status;
+	uint32_t	input_length;
 
 	exit_status = 0;
-	tmp = ft_strrchr(command, '\n');
-	if (tmp)
-		*tmp = 0;
+	input_length = ft_strlen(command);
+	// if (command[input_length - 1] == '\n')
+	// 	command[input_length - 1] = 0;
 	m_tokenizer(command, (const char **)environment, path_variable, &exit_status);
 	lst_memory(NULL, NULL, END);
 	exit(exit_status);
@@ -101,7 +103,7 @@ int	setup(	char **path_variable, \
 		if (argc > 2)
 			return (-1);
 		else
-			return (minishell_single_command(argv[1], \
+			return (minishell_single_command((char *)argv[1], \
 					environment, *path_variable));
 	}
 	return (1);
