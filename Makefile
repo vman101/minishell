@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/07 14:53:01 by anarama          ###   ########.fr        #
+#    Updated: 2024/08/09 12:31:35 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -97,6 +97,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME) $(TEST_NAME)
+	make fclean -C libft
 
 re: fclean all
 
