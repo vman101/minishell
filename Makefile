@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/09 12:31:35 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/09 14:00:21 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,13 +34,13 @@ PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 				prompt/prompt_utils.c prompt/tab_completion.c \
 				prompt/escape_sequences.c prompt/arrowkeys.c \
 				prompt/prompt_print.c prompt/tab_get_word.c \
-				prompt/non_blocking_mode.c prompt/prompt_handle_chars.c
+				prompt/non_blocking_mode.c prompt/prompt_handle_chars.c \
 
 AST_SRC		:=	ast/ast_utils.c \
 				ast/handle_command.c ast/handle_fds.c \
 				ast/parse_tokens.c ast/parser.c \
 				ast/handle_pipes.c ast/handle_logical_operator.c \
-				ast/syntax_check.c
+				ast/syntax_check.c ast/handle_redirs.c
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \

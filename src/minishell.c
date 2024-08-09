@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <readline/readline.h>
 #include <sys/ioctl.h>
 
 int32_t	volatile g_signal_flag;
@@ -23,7 +24,7 @@ int32_t	minishell_single_command(	const char *command, \
 	int32_t	exit_status;
 
 	exit_status = 0;
-	tmp = ft_strchr(command, '\n');
+	tmp = ft_strrchr(command, '\n');
 	if (tmp)
 		*tmp = 0;
 	m_tokenizer(command, (const char **)environment, path_variable, &exit_status);
@@ -65,7 +66,7 @@ char	*check_redir_input()
 		{
 			if ((ft_strlen(input) + ft_strlen(buffer)) >  capacity)
 				input = ft_realloc_string(&input, &capacity);
-			ft_strlcat(input, buffer, ft_strlen(input) + ft_strlen(buffer) + 1);
+			ft_strlcpy(input, buffer, ft_strlen(input) + ft_strlen(buffer) + 1);
 		}
 		else if (bytes_read == 0)
 			break ;

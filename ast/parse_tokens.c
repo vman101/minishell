@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <unistd.h>
 
 static uint32_t	determine_trees(t_token *tokens)
 {
@@ -68,6 +69,14 @@ void	tree_destroy(void *tree_ptr)
 	ft_free(&tree);
 }
 
+bool	is_delimiter_token(t_token *token)
+{
+	return  (token->token_type == TOKEN_EOL \
+			|| token->token_type == TOKEN_AND \
+			|| token->token_type == TOKEN_OR \
+			|| token->token_type == TOKEN_PIPE);
+}
+
 static void	parse_branch(t_token *tokens, t_ast *branch)
 {
 	char	**args;
@@ -84,10 +93,7 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	i = 0;
-	while (tokens[i].token_type != TOKEN_EOL \
-			&& tokens[i].token_type != TOKEN_AND \
-			&& tokens[i].token_type != TOKEN_OR \
-			&& tokens[i].token_type != TOKEN_PIPE)
+	while (!is_delimiter_token(&tokens[i]))
 	{
 		if (tokens[i].token_type != TOKEN_DONE)
 		{
@@ -115,58 +121,15 @@ static t_ast	collect_redirection(t_token *token, const char **environment, bool 
 	branch = (t_ast){0};
 	branch.fd_in = STDIN_FILENO;
 	branch.fd_out = STDOUT_FILENO;
-	while (token[i].token_type != TOKEN_EOL \
-			&& token[i].token_type != TOKEN_AND \
-			&& token[i].token_type != TOKEN_OR \
-			&& token[i].token_type != TOKEN_PIPE
-			&& branch.connection_type != TREE_INVALID)
+	while (!is_delimiter_token(&token[i]))
 	{
-		if (token[i].token_type != TOKEN_DONE
-			&& (token[i].token_type == TOKEN_REDIRECT_IN \
-			|| token[i].token_type == TOKEN_REDIRECT_OUT \
-			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
-			|| token[i].token_type == TOKEN_HEREDOC)
-		   )
 		{
-			if  (token[i + 1].token_type == TOKEN_WORD || token[i + 1].token_type == TOKEN_ENV || has_syntax_error)
+			if  (token[i + 1].token_type == TOKEN_WORD)
 			{
-				if (token[i].token_type == TOKEN_REDIRECT_IN)
-				{
-					if (has_syntax_error)
-						return (branch);
-					if (branch.has_redir_in == true)
-						ft_close(branch.fd_in, "fd_in in collect_redirection");
-					ft_open(&branch.fd_in, token[i + 1].token_value, O_RDONLY, 0644);
-					if (branch.fd_in == -1)
-						branch.connection_type = TREE_INVALID;
-					branch.has_redir_in = true;
-				}
-				else if (token[i].token_type == TOKEN_REDIRECT_OUT)
-				{
-					if (has_syntax_error)
-						return (branch);
-					if (branch.has_redir_out == true)
-						ft_close(branch.fd_out, "fd_out in collect_redirection");
-					ft_open(&branch.fd_out, token[i + 1].token_value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-					branch.has_redir_out = true;
-				}
-				else if (token[i].token_type == TOKEN_REDIRECT_APPEND)
-				{
-					if (has_syntax_error)
-						return (branch);
-					if (branch.has_redir_out == true)
-						ft_close(branch.fd_in, "fd_append in collect_redirection");
-					ft_open(&branch.fd_in, token[i + 1].token_value, O_WRONLY | O_CREAT | O_APPEND, 0644);
-					branch.has_redir_out = true;
-				}
-				else if (token[i].token_type == TOKEN_HEREDOC)
-				{
-					token_heredoc_get(&token[i], token[i + 1].token_value, environment);
-					token[i + 1].token_type = TOKEN_DONE;
-					continue ;
-				}
-				token[i].token_type = TOKEN_DONE;
-				token[i + 1].token_type = TOKEN_DONE;
+				handle_redir_in(&branch, &token[i], &token[i + 1], environment);
+				handle_redir_out(&branch, &token[i], &token[i + 1], environment);
+				handle_redir_append(&branch, &token[i], &token[i + 1], environment);
+				handle_redir_heredoc(&branch, &token[i], &token[i + 1], environment);
 				i++;
 			}
 		}
@@ -182,27 +145,18 @@ int	check_syntax_errors(t_token *token)
 
 	error_catched = 0;
 	i = 0;
-	while (token[i].token_type != TOKEN_EOL \
-			&& token[i].token_type != TOKEN_AND \
-			&& token[i].token_type != TOKEN_OR \
-			&& token[i].token_type != TOKEN_PIPE)
+	while (!is_delimiter_token(&token[i]) || token[i].token_type == TOKEN_PIPE)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
 			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
 			|| token[i].token_type == TOKEN_HEREDOC)
-		{
 			check_valid_redir(token, i, &error_catched);
-		}
 		else if (token[i].token_type == TOKEN_PIPE)
-		{
 			check_valid_pipe(token, i, &error_catched);
-		}
 		else if (token[i].token_type == TOKEN_AND \
 				|| token[i].token_type == TOKEN_OR)
-		{
 			check_valid_logical_operator(token, i, &error_catched);
-		}
 		if (error_catched)
 			return (0);
 		i++;
@@ -212,8 +166,8 @@ int	check_syntax_errors(t_token *token)
 
 t_ast	*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status)
 {
-	t_ast	*tree;
-	int		i;
+	t_ast		*tree;
+	int			i;
 	uint32_t	tree_count;
 	bool		has_syntax_error;
 

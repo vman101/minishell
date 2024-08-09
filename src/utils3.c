@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 
 int	ft_close(int fd, const char *specifier)
 {

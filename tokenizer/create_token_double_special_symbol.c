@@ -34,12 +34,6 @@ char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 			g_signal_flag = 0;
 		return (NULL);
 	}
-	else
-	{
-		tmp = ft_strrchr(heredoc_input, '\n');
-		if (tmp)
-			*tmp = 0;
-	}
 	return (heredoc_input);
 }
 

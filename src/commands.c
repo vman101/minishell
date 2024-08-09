@@ -18,8 +18,6 @@ void	restore_fd(int original_stdin, int original_stdout)
 	ft_close(STDOUT_FILENO, "STDOUT in restore_fd");
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
-	ft_close(original_stdin, "stdin in restore_fd");
-	ft_close(original_stdout, "stdout in restore_fd");
 }
 
 void	command_execute(const char *command_path,
@@ -65,15 +63,21 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 		}
 		evaluate_input(&tree->args, env, exit_status, 0);
 		if (*exit_status == -1)
-			return (*exit_status = 2, (void)0);
+		{
+			*exit_status = 2;
+			break ;
+		}
 		handle_command(&tree[i], path_variable, env, exit_status);
+		if (tree[i].connection_type != TREE_PIPE)
+			restore_fd(stdin_org, stdout_org);
 		if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
 			i++;
 		else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
 			i++;
 		i++;
 	}
-	restore_fd(stdin_org, stdout_org);
+	ft_close(stdin_org, "stdin in restore_fd");
+	ft_close(stdout_org, "stdout in restore_fd");
 }
 
 void	print_tokens(t_token *tokens)
@@ -98,6 +102,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*tree;
 
 	tokens = lexical_analysis(input, env);
+	// handle_heredoc(tokens);
 	print_tokens(tokens);
 	check_and_expand_wildcards(&tokens);
 	print_tokens(tokens);

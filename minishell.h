@@ -219,7 +219,7 @@ void	prompt_print_custom_string(char *string);
 void	prompt_print_pwd(char *prompt);
 
 /* Lexer */
-void	evaluate_input(char ***input, const char **environment, int32_t *exit_status, bool error_caught);
+void	evaluate_input(char **input[], const char **environment, int32_t *exit_status, bool error_caught);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -410,7 +410,10 @@ void		handle_logical_operator(t_ast **logical_node, int exit_status);
 void		handle_pipe(t_ast *pipe_node, int *error_catched);
 
 /*handle_redirs.c*/
-void		handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
+void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
+void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
+void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
+void	handle_redir_heredoc(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status);

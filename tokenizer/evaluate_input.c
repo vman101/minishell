@@ -156,7 +156,7 @@ bool	evaluate_single_quotes(char **input, uint32_t *i, uint32_t *input_length)
 	return (false);
 }
 
-void	evaluate_input(char ***input, const char **environment, int32_t *exit_status, bool error_caught)
+void	evaluate_input(char **input[], const char **environment, int32_t *exit_status, bool error_caught)
 {
 	uint32_t	input_length;
 	uint32_t	i;

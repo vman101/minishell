@@ -78,7 +78,7 @@ static char	*handle_input(	t_prompt *prompt, \
 		bytes_read = ft_read(0, buffer, &input, 20);
 		if (g_signal_flag == 1)
 			return (ft_putstr_fd("^C\n", 1), NULL);
-		if (bytes_read > 5)
+		if (bytes_read > 3)
 			handle_rapid_input(buffer, cursor_position, input, \
 								cursor_position_base);
 		else if (bytes_read >= 1)

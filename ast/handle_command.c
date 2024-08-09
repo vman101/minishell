@@ -11,11 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 void	handle_pipe_in_child(t_ast *command)
 {
@@ -132,4 +127,5 @@ void	handle_command(t_ast *current, const char *path_variable,
 			ft_dup2(stdout_org, STDOUT_FILENO, "dup2 in handle_command");
 		}
 	}
+	ft_close(stdout_org, "stdorg_in hanlde_command");
 }
