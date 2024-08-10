@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 12:20:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:26:32 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,41 +53,6 @@ char	**copy_args(t_ast *node, char **src)
 	}
 	return (temp);
 }
-/**/
-/*void	append_node(t_ast **head, t_ast *new_node)*/
-/*{*/
-/*	t_ast	*tmp;*/
-/**/
-/*	if (!new_node)*/
-/*		return ;*/
-/*	if (*head)*/
-/*	{*/
-/*		tmp = *head;*/
-/*		while (tmp->right)*/
-/*			tmp = tmp->right;*/
-/*		new_node->left = tmp;*/
-/*		tmp->right = new_node;*/
-/*	}*/
-/*	else*/
-/*		*head = new_node;*/
-/*}*/
-/**/
-/*void	clear_ast(void *head)*/
-/*{*/
-/*	t_ast	*copy_head;*/
-/*	t_ast	*temp;*/
-/**/
-/*	temp = NULL;*/
-/*	copy_head = (t_ast *)head;*/
-/*	while (copy_head)*/
-/*	{*/
-/*		if (copy_head->args)*/
-/*			free(copy_head->args);*/
-/*		temp = copy_head;*/
-/*		copy_head = copy_head->right;*/
-/*		free(temp);*/
-/*	}*/
-/*}*/
 
 int	is_redirection(t_token_type	token_type)
 {

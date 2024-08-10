@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/07 15:20:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/10 22:46:37 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
@@ -39,10 +40,35 @@ void	command_execute(const char *command_path,
 	}
 }
 
-void	execute_commands(t_ast *tree, const char *path_variable,
-					const char **env, int *exit_status)
+void	execution_loop(t_ast *tree, const char **env, int *exit_status, int32_t std[2])
 {
 	uint32_t	i;
+
+	i = 0;
+	while (tree[i].type != NODE_END)
+	{
+		if (tree[i].connection_type != TREE_INVALID)
+		{
+			evaluate_input(&tree->args, env, exit_status, 0);
+			if (*exit_status == -1)
+			{
+				*exit_status = 2;
+				break ;
+			}
+			handle_command(&tree[i], env, exit_status);
+			if (tree[i].connection_type != TREE_PIPE)
+				restore_fd(std[0], std[1]);
+			if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
+				i++;
+			else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
+				i++;
+		}
+		i++;
+	}
+}
+
+void	execute_commands(t_ast *tree, const char **env, int *exit_status)
+{
 	int32_t		stdin_org;
 	int32_t		stdout_org;
 
@@ -53,29 +79,7 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 		perror("dup");
 		lst_memory(NULL, NULL, CLEAN);
 	}
-	i = 0;
-	while (tree[i].type != NODE_END)
-	{
-		if (tree[i].connection_type == TREE_INVALID)
-		{
-			i++;
-			continue ;
-		}
-		evaluate_input(&tree->args, env, exit_status, 0);
-		if (*exit_status == -1)
-		{
-			*exit_status = 2;
-			break ;
-		}
-		handle_command(&tree[i], path_variable, env, exit_status);
-		if (tree[i].connection_type != TREE_PIPE)
-			restore_fd(stdin_org, stdout_org);
-		if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
-			i++;
-		else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
-			i++;
-		i++;
-	}
+	execution_loop(tree, env, exit_status, (int[2]){stdin_org, stdout_org});
 	ft_close(stdin_org, "stdin in restore_fd");
 	ft_close(stdout_org, "stdout in restore_fd");
 }
@@ -95,25 +99,18 @@ void	print_tokens(t_token *tokens)
 	printf("------------\n");
 }
 
-void	*m_tokenizer(const char *input, const char **env,
-			const char *path_variable, int *exit_status)
+void	*m_tokenizer(const char *input, const char **env, int *exit_status)
 {
 	t_token	*tokens;
 	t_ast	*tree;
 
-	tokens = lexical_analysis((char *)input, env);
+	tokens = lexical_analysis((char *)input);
 	if (tokens)
 	{
-		// print_tokens(tokens);
 		check_and_expand_wildcards(&tokens);
-		// print_tokens(tokens);
 		tree = parse_tokens(tokens, env, exit_status);
 		if (tree)
-			execute_commands(tree, path_variable, env, exit_status);
-		// tree = parse_tokens(tokens);
-		// /*if (error_catched)*/
-		// /*	skip_up_to_logical_operator(tree);*/
-		// execute_commands(tree, path_variable, env, &error_catched);
+			execute_commands(tree, env, exit_status);
 		lst_memory(tokens, NULL, FREE);
 	}
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/06 16:49:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/10 22:46:56 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void		ft_exit(const char **args);
 /* Commands */
 bool		buildin_execute(t_ast *node, const char **environment, int *exit_status);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
-void		*m_tokenizer(const char *input, const char **env, const char *path_variable, int *exit_status);
+void		*m_tokenizer(const char *input, const char **env, int *exit_status);
 /* Handle signal */
 void		handle_sigint(int sig);
 void		setup_signal_handlers();
@@ -321,7 +321,7 @@ int			ft_is_double_quote(char c, int *second_double_found);
 
 /*create_token_double_special_symbol.c*/
 int			is_double_special(const char *input);
-t_token		create_token_double_special_symbol(char **input, const char **environmnet);
+t_token		create_token_double_special_symbol(char **input);
 void		token_heredoc_get(t_token *token, const char *delimiter, const char **environment);
 
 /*quotes */
@@ -378,7 +378,7 @@ void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
 char		*execute_subshell(char *input, const char **environement);
 
 /*tokenizer.c*/
-t_token		*lexical_analysis(char *input, const char **env);
+t_token		*lexical_analysis(char *input);
 
 /* PARSING AND AST */
 /*ast_create_node.c*/
@@ -397,8 +397,7 @@ void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
 /*handle_command.c*/
-void		handle_command(t_ast *current, const char *path_variable,
-					const char **env, int *exit_status);
+void		handle_command(t_ast *current, const char **env, int *exit_status);
 /*handle_fds.c*/
 void		redirect_fd_into_file(t_ast *command);
 void		handle_fds_child_proccess(t_ast *command);

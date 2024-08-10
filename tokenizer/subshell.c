@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 18:20:59 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 19:33:09 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:33:17 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ void	manage_buffer_size_subshel(char **input_subshell, uint32_t *buffer_size)
 static void	subshell_parent_execute(char **input_subshell, int32_t pipefd[2])
 {
 	int64_t		bytes_read;
-	uint32_t	current_buffer_size;
 	uint32_t	string_size;
 
 	ft_close(pipefd[1], "close in execute_subshell");

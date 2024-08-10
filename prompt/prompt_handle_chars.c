@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   prompt_hanlde_chars.c                              :+:      :+:    :+:   */
+/*   prompt_handle_chars.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:11:28 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/02 17:16:49 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 21:49:44 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@ uint8_t	handle_single_char_input(	char **input, char buffer[], \
 	if (new_buffer_length == 1)
 	{
 		if (ft_isprint(buffer[0]) || buffer[0] == '\n')
-		{
 			return (*do_refresh = \
 					handle_new_character_to_input(input, buffer[0], \
 						cursor_position_current, input_length_current), 1);
-		}
-		else if (buffer[0] == EOT && (input_length_current == 0 || (*input)[input_length_current - 1] == '\n'))
+		else if (buffer[0] == EOT \
+				&& (input_length_current == 0 \
+				|| (*input)[input_length_current - 1] == '\n'))
 			return (ft_putstr_fd("\n", 1), \
 					terminal_raw_mode_disable(ECHOCTL), \
 					g_signal_flag = 2, 1);

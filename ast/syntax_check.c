@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/04 17:25:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/10 22:14:19 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	print_error_logical_operator(t_token_type token_type)
 		printf("minishell: syntax error near unexpected token `||'\n");
 }
 
-void	print_error_pipe()
+void	print_error_pipe(void)
 {
 	printf("minishell: syntax error near unexpected token `|'\n");
 }
@@ -85,7 +85,9 @@ void	check_valid_pipe(t_token *token, int index, int *error_catched)
 	}
 }
 
-void	check_valid_logical_operator(t_token *token, int index, int *error_catched)
+void	check_valid_logical_operator(	t_token *token, \
+										int index, \
+										int *error_catched)
 {
 	if (index == 0 || token[index + 1].token_type == TOKEN_EOL)
 	{

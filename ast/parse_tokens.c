@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 12:55:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:13:20 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	tree_destroy(void *tree_ptr)
 
 bool	is_delimiter_token(t_token *token)
 {
-	return  (token->token_type == TOKEN_EOL \
+	return (token->token_type == TOKEN_EOL \
 			|| token->token_type == TOKEN_AND \
 			|| token->token_type == TOKEN_OR \
 			|| token->token_type == TOKEN_NEWLINE \
@@ -83,40 +83,36 @@ bool	is_delimiter_token(t_token *token)
 
 static void	parse_branch(t_token *tokens, t_ast *branch)
 {
-	char	**args;
-	int		capacity;
-	int		count;
+	int			capacity;
+	int			count;
 	uint32_t	i;
 
 	count = 0;
 	capacity = INITIAL_TOKEN_CAPACITY;
-	args = ft_calloc(capacity + 1, sizeof(char *));
-	if (!args)
+	branch->args = ft_calloc(capacity + 1, sizeof(char *));
+	if (!branch->args)
 	{
 		perror("calloc in parse tokens");
 		lst_memory(NULL, NULL, CLEAN);
 	}
-	i = 0;
-	while (!is_delimiter_token(&tokens[i]))
+	i = -1;
+	while (!is_delimiter_token(&tokens[++i]))
 	{
 		if (tokens[i].token_type != TOKEN_DONE)
 		{
-			fill_args(&args, count, tokens[i].token_value, &capacity);
+			fill_args(&branch->args, count++, tokens[i].token_value, &capacity);
 			tokens[i].token_type = TOKEN_DONE;
-			count++;
 		}
-		i++;
 	}
-	if (tokens[i].token_type != TOKEN_EOL)
-	{
-		branch->connection_type = (t_tree_connection_type)tokens[i].token_type;
-		tokens[i].token_type = TOKEN_DONE;
-		tokens[i].token_value = NULL;
-	}
-	branch->args = args;
+	if (tokens[i].token_type == TOKEN_EOL)
+		return ;
+	branch->connection_type = (t_tree_connection_type)tokens[i].token_type;
+	tokens[i].token_type = TOKEN_DONE;
 }
 
-static t_ast	collect_redirection(t_token *token, const char **environment, bool has_syntax_error)
+static t_ast	collect_redirection(t_token *token, \
+									const char **env, \
+									bool has_syntax_error)
 {
 	uint32_t	i;
 	t_ast		branch;
@@ -128,13 +124,15 @@ static t_ast	collect_redirection(t_token *token, const char **environment, bool 
 	while (!is_delimiter_token(&token[i]))
 	{
 		{
-			if  (token[i + 1].token_type == TOKEN_WORD)
+			if (token[i + 1].token_type == TOKEN_WORD)
 			{
-				handle_redir_in(&branch, &token[i], &token[i + 1], environment);
-				handle_redir_out(&branch, &token[i], &token[i + 1], environment);
-				handle_redir_append(&branch, &token[i], &token[i + 1], environment);
-				handle_redir_heredoc(&branch, &token[i], &token[i + 1], environment);
-				// i++;
+				if (!has_syntax_error)
+				{
+					handle_redir_in(&branch, &token[i], &token[i + 1], env);
+					handle_redir_out(&branch, &token[i], &token[i + 1], env);
+					handle_redir_append(&branch, &token[i], &token[i + 1], env);
+				}
+				handle_redir_heredoc(&branch, &token[i], &token[i + 1], env);
 			}
 		}
 		i++;
@@ -144,8 +142,8 @@ static t_ast	collect_redirection(t_token *token, const char **environment, bool 
 
 int	check_syntax_errors(t_token *token)
 {
-	int error_catched;
-	int i;
+	int	error_catched;
+	int	i;
 
 	error_catched = 0;
 	i = 0;
@@ -168,7 +166,9 @@ int	check_syntax_errors(t_token *token)
 	return (1);
 }
 
-t_ast	*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status)
+t_ast	*parse_tokens(	t_token *tokens, \
+						const char **environment, \
+						int32_t *exit_status)
 {
 	t_ast		*tree;
 	int			i;
@@ -192,10 +192,6 @@ t_ast	*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_sta
 		i++;
 	}
 	if (has_syntax_error == true)
-	{
-		*exit_status = 2;
-		lst_memory(tree, NULL, FREE);
-		return (NULL);
-	}
+		return (*exit_status = 2, lst_memory(tree, NULL, FREE), NULL);
 	return (tree);
 }

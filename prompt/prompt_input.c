@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/04 10:55:15 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 21:55:05 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-void	handle_accepted_input(	t_prompt *prompt, \
+static void	handle_accepted_input(	t_prompt *prompt, \
 								uint32_t cursor_position[2], \
 								char **input, \
 								char buffer[])
@@ -54,7 +54,8 @@ static bool	is_delimiter(char *input, const char *delimiter)
 	delimiter_length = ft_strlen(delimiter);
 	tmp = ft_strrchr(input - (*input == '\n' && ft_strlen(input) > 0), '\n');
 	if (tmp)
-		if (tmp++ && ((*tmp == *delimiter && delimiter_length == 1) || ft_strncmp(tmp, delimiter, delimiter_length) == 0))
+		if (tmp++ && ((*tmp == *delimiter && delimiter_length == 1) \
+					|| ft_strncmp(tmp, delimiter, delimiter_length) == 0))
 			return (*tmp = 0, true);
 	if ((*input == *delimiter && delimiter_length == 1) \
 		|| ft_strncmp(input, delimiter, delimiter_length) == 0)
@@ -69,9 +70,7 @@ static char	*handle_input(	t_prompt *prompt, \
 {
 	char		buffer[100];
 	int64_t		bytes_read;
-	uint32_t	cursor_position_base;
 
-	cursor_position_base = prompt->prompt_length;
 	while (1)
 	{
 		ft_bzero(buffer, 100);
@@ -80,7 +79,7 @@ static char	*handle_input(	t_prompt *prompt, \
 			return (ft_putstr_fd("^C\n", 1), NULL);
 		if (bytes_read > 3)
 			handle_rapid_input(buffer, cursor_position, input, \
-								cursor_position_base);
+								prompt->prompt_length);
 		else if (bytes_read >= 1)
 		{
 			bytes_read = ft_strlen(buffer);
@@ -95,14 +94,16 @@ static char	*handle_input(	t_prompt *prompt, \
 	return (input);
 }
 
-void	prompt_handle_history(t_prompt *prompt, char *input)
+static void	prompt_handle_history(t_prompt *prompt, char *input)
 {
 	if (!input)
 		return ;
 	prompt->command = input;
 	if (prompt->history_count == PROMPT_COMMAND_STACK_SIZE)
 	{
-		ft_memmove(prompt->history_entries[0], prompt->history_entries[1], PROMPT_COMMAND_STACK_SIZE);
+		ft_memmove(prompt->history_entries[0], \
+					prompt->history_entries[1], \
+					PROMPT_COMMAND_STACK_SIZE);
 		prompt->history_entries[prompt->history_count] = prompt->command;
 	}
 	else

@@ -6,27 +6,34 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/04 11:11:05 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:33:36 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <stdint.h>
+#include <sys/types.h>
 
-static void	print_environment_a_la_export(char *variable)
+static void	print_environment_a_la_export(char **env)
 {
-	char	*variable_name;
-	char	*variable_value;
+	char		*variable_name;
+	char		*variable_value;
+	uint32_t	i;
 
-	variable_name = variable;
-	variable_value = ft_strchr(variable, '=');
-	if (variable_value)
+	i = 0;
+	while (env[i])
 	{
-		*variable_value++ = 0;
-		ft_printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
+		variable_name = env[i];
+		variable_value = ft_strchr(variable_name, '=');
+		if (variable_value)
+		{
+			*variable_value++ = 0;
+			ft_printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
+		}
+		else
+			ft_printf("declare -x %s=\"\"\n", variable_name);
+		i++;
 	}
-	else
-		ft_printf("declare -x %s=\"\"\n", variable_name);
 }
 
 static void	environment_print_sorted(const char **environment)
@@ -34,7 +41,7 @@ static void	environment_print_sorted(const char **environment)
 	char		**tmp_env;
 	uint32_t	i;
 	uint32_t	split_size;
-	char	*tmp;
+	char		*tmp;
 
 	tmp_env = environment_create(environment);
 	split_size = get_split_size(environment);
@@ -54,9 +61,7 @@ static void	environment_print_sorted(const char **environment)
 		}
 		split_size--;
 	}
-	i = 0;
-	while (tmp_env[i])
-		print_environment_a_la_export(tmp_env[i++]);
+	print_environment_a_la_export(tmp_env);
 }
 
 void	variable_exists(const char **environment, const char *variable_name)
@@ -101,4 +106,5 @@ void	ft_export(char ***environment, const char **args, int32_t *exit_status)
 		environment_variable_add(*environment, variable_name, variable_value);
 		i++;
 	}
+	*exit_status = 0;
 }

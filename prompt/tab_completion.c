@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 17:03:44 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 21:48:04 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,10 @@ void	handle_tab(char **input, t_prompt *prompt)
 	bool			is_directory;
 
 	if (!(*input)[(prompt->cursor_position)[1] \
-				- ((prompt->cursor_position)[1] > 0)])
+			- ((prompt->cursor_position)[1] > 0)])
 		return (handle_tab_no_match(".", prompt->env_ptr, \
-									prompt->cursor_position, \
-									prompt));
+					prompt->cursor_position, \
+					prompt));
 	input_path = NULL;
 	is_directory = false;
 	get_next_word_match(input, prompt, input_path, &is_directory);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/06 19:12:39 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:54:23 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,16 @@
 int32_t	volatile g_signal_flag;
 
 int32_t	minishell_single_command(	char *command, \
-									char **environment, \
-									char *path_variable)
+									char **environment)
 {
-	char		*tmp;
 	int32_t		exit_status;
 	uint32_t	input_length;
 
 	exit_status = 0;
 	input_length = ft_strlen(command);
-	// if (command[input_length - 1] == '\n')
-	// 	command[input_length - 1] = 0;
-	m_tokenizer(command, (const char **)environment, path_variable, &exit_status);
+	if (command[input_length - 1] == '\n')
+		command[input_length - 1] = 0;
+	m_tokenizer(command, (const char **)environment, &exit_status);
 	lst_memory(NULL, NULL, END);
 	exit(exit_status);
 }
@@ -54,8 +52,6 @@ char	*check_redir_input()
 	uint32_t	capacity;
 	int64_t		bytes_read;
 
-	if (isatty(0))
-		return (NULL);
 	bytes_read = 1;
 	capacity = 512;
 	input = ft_calloc(capacity, sizeof(*input));
@@ -70,74 +66,58 @@ char	*check_redir_input()
 				input = ft_realloc_string(&input, &capacity);
 			ft_strlcpy(input, buffer, ft_strlen(input) + ft_strlen(buffer) + 1);
 		}
-		else if (bytes_read == 0)
-			break ;
 		else if (bytes_read < 0)
-		{
-			perror("read");
-			lst_memory(NULL, NULL, CLEAN);
-		}
+			return (perror("read"), lst_memory(NULL, NULL, CLEAN), NULL);
 	}
 	return (input);
 }
 
-int	setup(	char **path_variable, \
-			uint32_t argc, \
+int	setup(	uint32_t argc, \
 			const char **argv, \
 			char **environment)
 {
 	char	*input;
 
 	g_signal_flag = 0;
-	*path_variable = getenv("PATH");
-	if (!path_variable)
-		return (p_stderr(2, \
-		"No Valid Path Variable was Found in Environment.\nExiting\n", \
-		NULL), exit (1), 1);
 	setup_signal_handlers();
-	input = check_redir_input();
-	if (input)
-		minishell_single_command(input, environment, *path_variable);
+	if (!isatty(0))
+	{
+		input = check_redir_input();
+		if (input)
+			minishell_single_command(input, environment);
+	}
 	else if (argc > 1)
 	{
 		if (argc > 2)
 			return (-1);
 		else
 			return (minishell_single_command((char *)argv[1], \
-					environment, *path_variable));
+					environment));
 	}
 	return (1);
 }
 
 int	main(int argc, const char **argv, const char **env)
 {
-	char		*path_variable;
 	char		*command_input;
 	char		**environment;
 	int32_t		exit_status;
 
 	environment = environment_create(env);
-	setup(&path_variable, argc, argv, environment);
+	setup(argc, argv, environment);
 	exit_status = 0;
 	while (1)
 	{
 		command_input = prompt_get((const char **)environment);
-		if (!command_input)
-		{
-			if (g_signal_flag == 1)
-				g_signal_flag = 0;
-			else if (g_signal_flag == 2)
-			{
-				ft_putstr_fd("exit\n", 1);
-				lst_memory(NULL, NULL, CLEAN);
-			}
-			continue ;
-		}
 		if (command_input)
 		{
 			lst_memory(command_input, free, ADD);
-			m_tokenizer(command_input, (const char **)environment, \
-						path_variable, &exit_status);
+			m_tokenizer(command_input, (const char **)environment, &exit_status);
+			continue ;
 		}
+		if (g_signal_flag == 1)
+			g_signal_flag = 0;
+		else if (g_signal_flag == 2)
+			ft_exit(0);
 	}
 }

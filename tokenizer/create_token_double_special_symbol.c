@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 17:43:40 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:30:20 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ bool	is_mutliple_lines(char *c)
 	return (false);
 }
 
-void heredoc_while_tokenizing(t_token *token, char *input, uint32_t input_length)
+void heredoc_while_tokenizing(char *input)
 {
 	char		*delimiter;
 	char		*temp_move;
@@ -111,7 +111,7 @@ void heredoc_while_tokenizing(t_token *token, char *input, uint32_t input_length
 	}
 }
 
-t_token	create_token_double_special_symbol(char **input, const char **environment)
+t_token	create_token_double_special_symbol(char **input)
 {
 	t_token			temp_token;
 	t_token_type	token_type;
@@ -121,7 +121,7 @@ t_token	create_token_double_special_symbol(char **input, const char **environmen
 	else if (ft_strncmp(*input, "<<", 2) == 0)
 	{
 		token_type = TOKEN_HEREDOC;
-		heredoc_while_tokenizing(&temp_token, *input, ft_strlen(*input));
+		heredoc_while_tokenizing(*input);
 	}
 	else if (ft_strncmp(*input, "&&", 2) == 0)
 		token_type = TOKEN_AND;

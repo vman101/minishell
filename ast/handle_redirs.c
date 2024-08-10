@@ -6,18 +6,18 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/09 18:32:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:28:51 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <fcntl.h>
-#include <stdint.h>
-#include <unistd.h>
 
-void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next, const char **environment)
+void	handle_redir_in(t_ast *branch, \
+						t_token *token, \
+						t_token *token_next, \
+						const char **environment)
 {
-	int32_t i;
+	int32_t	i;
 	char	**temp;
 
 	i = 0;
@@ -37,7 +37,10 @@ void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next, const c
 	}
 }
 
-void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next, const char **environment)
+void	handle_redir_out(	t_ast *branch, \
+							t_token *token, \
+							t_token *token_next, \
+							const char **environment)
 {
 	int32_t	i;
 	char	**temp;
@@ -50,7 +53,8 @@ void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next, const 
 		token_next->token_value = temp[0];
 		if (branch->has_redir_out == true)
 			ft_close(branch->fd_out, "fd_in in collect_redirection");
-		ft_open(&branch->fd_out, token_next->token_value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		ft_open(&branch->fd_out, token_next->token_value, \
+				O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (branch->fd_out == -1)
 			branch->connection_type = TREE_INVALID;
 		branch->has_redir_out = true;
@@ -59,9 +63,12 @@ void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next, const 
 	}
 }
 
-void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next, const char **environment)
+void	handle_redir_append(t_ast *branch, \
+							t_token *token, \
+							t_token *token_next, \
+							const char **environment)
 {
-	int32_t i;
+	int32_t	i;
 	char	**temp;
 
 	i = 0;
@@ -72,7 +79,8 @@ void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next, con
 		token_next->token_value = temp[0];
 		if (branch->has_redir_out == true)
 			ft_close(branch->fd_out, "fd_append in collect_redirection");
-		ft_open(&branch->fd_out, token_next->token_value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		ft_open(&branch->fd_out, token_next->token_value, \
+				O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (branch->fd_out == -1)
 			branch->connection_type = TREE_INVALID;
 		branch->has_redir_out = true;
@@ -125,11 +133,11 @@ bool	heredoc_has_been_done(t_token *token)
 	return (false);
 }
 
-void	handle_redir_heredoc(t_ast *branch, t_token *token, t_token *token_next, const char **environment)
+void	handle_redir_heredoc(	t_ast *branch, \
+								t_token *token, \
+								t_token *token_next, \
+								const char **environment)
 {
-	int32_t i;
-
-	i = 0;
 	if (token->token_type == TOKEN_HEREDOC)
 	{
 		ft_pipe(branch->pipefd, "here_doc");

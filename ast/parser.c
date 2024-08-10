@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/09 12:15:16 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:20:35 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,38 +42,3 @@ void	fill_args(char ***args, int count, char *token_value, int *capacity)
 	}
 	(*args)[count] = token_value;
 }
-
-/**/
-/*void	parse_logical_operator(t_ast **head, int *i, t_token *tokens)*/
-/*{*/
-/*	t_ast	*current_node;*/
-/**/
-/*	current_node = NULL;*/
-/*	current_node = create_logical_node(tokens[(*i)++].token_type);*/
-/*	append_node(head, current_node);*/
-/*}*/
-/**/
-/*void	parse_redirection(t_ast **head, int *i, t_token *tokens)*/
-/*{*/
-/*	t_ast	*current_node;*/
-/*	char	*token_value;*/
-/**/
-/*	current_node = NULL;*/
-/*	token_value = NULL;*/
-/*	if (tokens[*i + 1].token_type != TOKEN_EOL)*/
-/*	{*/
-/*		token_value = tokens[*i + 1].token_value;*/
-/*		current_node = create_redireciton_node(tokens[(*i)++].token_type, token_value);*/
-/*	}*/
-/*	(*i)++;*/
-/*	append_node(head, current_node);*/
-/*}*/
-/**/
-/*void	parse_pipe(t_ast **head, int *i, t_token *tokens)*/
-/*{*/
-/*	t_ast	*current_node;*/
-/**/
-/*	current_node = NULL;*/
-/*	current_node = create_pipe_node(tokens[(*i)++].token_type);*/
-/*	append_node(head, current_node);*/
-/*}*/

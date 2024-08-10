@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/04 10:29:27 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 23:04:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,10 @@ static t_token	*initialise_tokens(uint32_t word_count)
 	return (tokens);
 }
 
-static t_token	check_symbol_and_create_token(const char **input,
-					const char **env)
+static t_token	check_symbol_and_create_token(const char **input)
 {
 	if (is_double_special(*input))
-		return (create_token_double_special_symbol((char **)input, env));
+		return (create_token_double_special_symbol((char **)input));
 	else if (is_single_special(**input))
 		return (create_token_single_special_symbol(input));
 	else
@@ -38,9 +37,10 @@ static t_token	check_symbol_and_create_token(const char **input,
 
 bool	unrecognized_input(char c)
 {
-	if (c >= 0 && c <= 127 && (ft_isalnum(c) || ft_isspace(c) || is_special_char(c)))
+	if (c >= 0 && c < 127 && (ft_isalnum(c) || ft_isspace(c) || is_special_char(c)) || c == '?')
 		return (false);
-	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", (char []){c, 0});
+	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", \
+			(char []){c, 0});
 	return (true);
 }
 
@@ -73,7 +73,7 @@ static uint32_t	get_word_count(char *input)
 	return (word_count);
 }
 
-t_token	*lexical_analysis(char *input, const char **env)
+t_token	*lexical_analysis(char *input)
 {
 	t_token		*tokens;
 	uint32_t	i;
@@ -97,7 +97,7 @@ t_token	*lexical_analysis(char *input, const char **env)
 		}
 		if (*input == '\0')
 			break ;
-		tokens[i++] = check_symbol_and_create_token((const char **)&input, env);
+		tokens[i++] = check_symbol_and_create_token((const char **)&input);
 	}
 	return (tokens);
 }

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:29:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/04 10:35:20 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:25:27 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void	ft_unset(char **envivonment, const char **args, int32_t *exit_status)
 	if (args_size < 2)
 		return ;
 	else if (args[1] && *args[1] == '-')
-		return (ft_putendl_fd("unset: usage: unset [name ...]", *exit_status = 2));
+		return (ft_putendl_fd("unset: usage: unset [name ...]", \
+				*exit_status = 2));
 	i = 1;
 	while (args[i])
 	{

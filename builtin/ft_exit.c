@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 16:52:07 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/04 10:14:57 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/10 22:56:28 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,15 @@ bool	check_exit_status(const char *status)
 	i = 0;
 	while (ft_isspace(status[i]))
 		i++;
+	if (!ft_isdigit(status[i]))
+		return (false);
+	while (status[i] && ft_isdigit(status[i]))
+		i++;
+	while (status[i] && ft_isspace(status[i]))
+		i++;
+	if (status[i] != 0)
+		return (false);
+	return (true);
 }
 
 void	ft_exit(const char **args)
@@ -33,4 +42,6 @@ void	ft_exit(const char **args)
 		lst_memory(NULL, NULL, END);
 		exit_status = ft_atoi(args[1]);
 	}
+	ft_putendl_fd("exit", 1);
+	exit(exit_status);
 }
