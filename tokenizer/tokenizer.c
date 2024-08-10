@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 23:04:21 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/10 23:33:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static t_token	check_symbol_and_create_token(const char **input)
 
 bool	unrecognized_input(char c)
 {
-	if (c >= 0 && c < 127 && (ft_isalnum(c) || ft_isspace(c) || is_special_char(c)) || c == '?')
+	if (c >= 0 && c < 127 && (ft_isalnum(c) || ft_isspace(c) || is_special_char(c)))
 		return (false);
 	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", \
 			(char []){c, 0});
