@@ -13,6 +13,7 @@
 #include "../minishell.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -40,12 +41,14 @@ char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 	return (heredoc_input);
 }
 
-void	token_heredoc_get(t_token *token, const char *delimiter, const char **environment)
+void	token_heredoc_get(	t_token *token, \
+							const char *delimiter, \
+							const char **environment)
 {
 	static t_prompt	heredoc = {0};
 
 	if (heredoc.exists == false)
-    	heredoc = prompt_create(environment, CUSTOM);
+		heredoc = prompt_create(environment, CUSTOM);
 	heredoc.prompt_length = prompt_display_string_set(&heredoc, \
 													NULL, \
 													"heredoc> ");
@@ -64,12 +67,57 @@ bool	is_mutliple_lines(char *c)
 	return (false);
 }
 
-void heredoc_while_tokenizing(char *input)
+void	heredoc_loop(	char *input, \
+						char *temp_move, \
+						const char *delimiter, \
+						uint32_t delimiter_length)
+{
+	char		*temp_cut;
+	uint32_t	length;
+
+	while (temp_move && *temp_move)
+	{
+		*temp_move = ' ';
+		temp_cut = temp_move;
+		while (*temp_cut && *temp_cut != '\n')
+			temp_cut++;
+		length = temp_cut - temp_move;
+		while (length--)
+		{
+			ft_memmove(input + 1, input, ft_strlen(input));
+			*input++ = *++temp_move;
+			ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
+		}
+		if (length >= delimiter_length)
+			if (ft_strncmp(input - delimiter_length, \
+				delimiter, delimiter_length) == 0)
+				break ;
+		temp_move = ft_strchr(temp_move, '\n');
+	}
+}
+
+void	remove_qoutes_delimiter(char *delimiter)
+{
+	uint32_t	length;
+	char		quote;
+	uint32_t	i;
+
+	i = 0;
+	length = ft_strlen(delimiter);
+	if (*delimiter == '\"' || *delimiter == '\'')
+		quote = *delimiter;
+	else
+		return ;
+	ft_memmove(delimiter, delimiter + 1, length);
+	delimiter = ft_strchr(delimiter, quote);
+	if (delimiter)
+		ft_memmove(delimiter, delimiter + 1, ft_strlen(delimiter));
+}
+
+void	heredoc_while_tokenizing(char *input)
 {
 	char		*delimiter;
 	char		*temp_move;
-	char		*temp_cut;
-	uint32_t	length;
 	char		character_store;
 	uint32_t	delimiter_length;
 
@@ -79,9 +127,16 @@ void heredoc_while_tokenizing(char *input)
 	delimiter = input;
 	while (ft_isspace(*delimiter))
 		delimiter++;
+	remove_qoutes_delimiter(delimiter);
 	temp_move = delimiter;
-	while (*temp_move && !ft_isspace(*temp_move) && !is_single_special(*temp_move))
-		temp_move++;
+	while (*temp_move && !ft_isspace(*temp_move) \
+		&& !is_single_special(*temp_move))
+	{
+		if (*temp_move == '\'' || *temp_move == '\"')
+			ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
+		else
+			temp_move++;
+	}
 	character_store = *temp_move;
 	*temp_move = 0;
 	delimiter_length = ft_strlen(delimiter);
@@ -89,26 +144,7 @@ void heredoc_while_tokenizing(char *input)
 	input = temp_move;
 	temp_move = ft_strchr(input, '\n');
 	if (temp_move)
-	{
-		while (temp_move && *temp_move)
-		{
-			*temp_move = ' ';
-			temp_cut = temp_move;
-			while (*temp_cut && *temp_cut != '\n')
-				temp_cut++;
-			length = temp_cut - temp_move;
-			while (length--)
-			{
-				ft_memmove(input + 1, input, ft_strlen(input));
-				*input++ = *++temp_move;
-				ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
-			}
-			if (length >= delimiter_length)
-				if (ft_strncmp(input - delimiter_length, delimiter, delimiter_length) == 0)
-					break ;
-			temp_move = ft_strchr(temp_move, '\n');
-		}
-	}
+		heredoc_loop(input, temp_move, delimiter, delimiter_length);
 }
 
 t_token	create_token_double_special_symbol(char **input)

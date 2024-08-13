@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 
 void	environment_print(const char **environment)
 {
@@ -22,6 +23,15 @@ void	environment_print(const char **environment)
 		ft_putendl_fd((char *)environment[i], 1);
 		i++;
 	}
+}
+
+char	**env_static(char **environment)
+{
+	static char	**env;
+
+	if (environment)
+		env = environment;
+	return (env);
 }
 
 void	environment_variable_print(	const char *variable, \

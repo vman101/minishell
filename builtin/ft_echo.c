@@ -16,7 +16,7 @@ int32_t	echo_no_newline(char **args)
 {
 	uint32_t	i;
 
-	i = 1;
+	i = 2;
 	while (args[i])
 	{
 		ft_putstr_fd(args[i], 1);
@@ -51,9 +51,7 @@ int32_t	ft_echo(char **args, int32_t *exit_status)
 	i = 1;
 	if (!args[i])
 		return (ft_putchar_fd('\n', 1), 0);
-	else if (ft_strncmp(args[i], "$?", 3) == 0)
-		ft_strlcpy(args[i], (char *)exit_status, 1);
-	if (ft_strncmp(args[i], "-n", 3) == 0)
+	if (ft_strncmp(args[i], "-n", 2) == 0 && (!args[i][2] || args[i][2] == ' '))
 		return (echo_no_newline(args), *exit_status = 0);
 	else
 		return (echo_newline(args), *exit_status = 0);

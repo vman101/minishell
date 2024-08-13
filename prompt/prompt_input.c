@@ -124,8 +124,8 @@ char	*prompt_get_input(	t_prompt *prompt, \
 	if (!input)
 		return (perror("malloc"), NULL);
 	lst_memory(input, free, ADD);
-	prompt->prompt_display_func(prompt->prompt);
 	terminal_raw_mode_enable(ECHOCTL | ICANON);
+	prompt->prompt_display_func(prompt->prompt);
 	cursor_position_get(prompt->cursor_position);
 	prompt->cursor_position[1] = 0;
 	if (!delimiter)

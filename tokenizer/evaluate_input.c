@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 23:01:02 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:42:15 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,13 @@ void	insert_exit_status(	char *input_new, \
 
 bool	is_delimiter(char c)
 {
-	return (c == ' ' || c == '\'' || c == '\"' || c == '$');
+	return (c == ' ' || c == '\'' || c == '\"' || c == '$' || c == 0);
 }
 
 char	skip_to_delimiter(char *input_new)
 {
 	char	*temp_move;
-	char 	character_store;
+	char	character_store;
 
 	temp_move = input_new;
 	while (temp_move[0] && !is_delimiter(temp_move[0]))
@@ -89,7 +89,7 @@ bool	skip_single_quotes(char *input, uint32_t *i, bool *in_double_quotes)
 	{
 		temp_move = ft_strchr(&input[*i + 1], '\'');
 		if (!temp_move)
-			return ( \
+			return (\
 			ft_putendl_fd("minishell: missing closing single quote", 2), true);
 		else
 			*i = temp_move - input + 1;
@@ -97,14 +97,30 @@ bool	skip_single_quotes(char *input, uint32_t *i, bool *in_double_quotes)
 	return (false);
 }
 
+void	evaluate_helper(char *input_new, uint32_t i, \
+						uint32_t *input_length, int32_t *exit_status)
+{
+	char	character_store;
+	char	**environment;
+
+	environment = env_static(NULL);
+	ft_memmove(&input_new[i], &input_new[i + 1], *input_length - i);
+	character_store = skip_to_delimiter(&input_new[i]);
+	if (input_new[i] == '?' && is_delimiter(input_new[i + 1]))
+		insert_exit_status(input_new, exit_status, \
+				input_length, character_store);
+	else
+		insert_string(input_new, environment_variable_value_get(\
+					&input_new[i], \
+					(const char **)environment), &i, character_store);
+}
+
 uint32_t	evaluate_variable(	char **input, \
 								uint32_t *input_length, \
-								const char **environment, \
 								int32_t *exit_status)
 {
 	char		*input_new;
 	uint32_t	i;
-	char		character_store;
 	bool		in_double_quotes;
 
 	in_double_quotes = false;
@@ -117,17 +133,7 @@ uint32_t	evaluate_variable(	char **input, \
 		if (skip_single_quotes(input_new, &i, &in_double_quotes))
 			return (true);
 		if (input_new[i] == '$')
-		{
-			ft_memmove(&input_new[i], &input_new[i + 1], *input_length - i);
-			character_store = skip_to_delimiter(&input_new[i]);
-			if (input_new[i] == '?' && is_delimiter(input_new[i + 1]))
-				insert_exit_status(input_new, exit_status, \
-						input_length, character_store);
-			else
-				insert_string(input_new, environment_variable_value_get(\
-							&input_new[i], environment), &i, character_store);
-			continue ;
-		}
+			evaluate_helper(input_new, i, input_length, exit_status);
 		i++;
 	}
 	*input = input_new;
@@ -172,30 +178,32 @@ bool	evaluate_single_quotes(	char **input, \
 }
 
 void	evaluate_input(	char **input[], \
-						const char **environment, \
 						int32_t *exit_status, \
-						bool error_caught)
+						bool *error_caught)
 {
 	uint32_t	input_length;
 	uint32_t	i;
 	uint32_t	j;
+	bool		dummy;
 
 	i = 0;
-	error_caught = false;
-	while ((*input)[i] && !error_caught)
+	dummy = false;
+	if (!error_caught)
+		error_caught = &dummy;
+	while ((*input)[i] && !*error_caught)
 	{
 		input_length = ft_strlen((*input)[i]);
 		j = 0;
 		if (ft_strchr((*input)[i], '$'))
-			error_caught = evaluate_variable(&(*input)[i], &input_length, \
-											environment, exit_status);
-		while ((*input)[i][j] && !error_caught)
+			*error_caught = evaluate_variable(&(*input)[i], &input_length, \
+												exit_status);
+		while ((*input)[i][j] && !*error_caught)
 		{
 			if ((*input)[i][j] == '\"')
-				error_caught = evaluate_double_quotes(&(*input)[i], \
+				*error_caught = evaluate_double_quotes(&(*input)[i], \
 								&j, &input_length);
 			else if ((*input)[i][j] == '\'')
-				error_caught = evaluate_single_quotes(&(*input)[i], \
+				*error_caught = evaluate_single_quotes(&(*input)[i], \
 								&j, &input_length);
 			j++;
 		}

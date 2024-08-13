@@ -6,14 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/10 22:54:23 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:39:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <readline/readline.h>
-#include <stdint.h>
-#include <sys/ioctl.h>
 
 int32_t	volatile g_signal_flag;
 
@@ -79,6 +76,7 @@ int	setup(	uint32_t argc, \
 	char	*input;
 
 	g_signal_flag = 0;
+	env_static(environment);
 	setup_signal_handlers();
 	if (!isatty(0))
 	{
@@ -119,5 +117,7 @@ int	main(int argc, const char **argv, const char **env)
 			g_signal_flag = 0;
 		else if (g_signal_flag == 2)
 			ft_exit(0);
+		env_static(environment);
 	}
+	return (exit_status);
 }

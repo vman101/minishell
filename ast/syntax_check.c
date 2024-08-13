@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:14:19 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:36:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,33 +15,33 @@
 void	print_error_logical_operator(t_token_type token_type)
 {
 	if (token_type == TOKEN_AND)
-		printf("minishell: syntax error near unexpected token `&&'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `&&'", 2);
 	if (token_type == TOKEN_OR)
-		printf("minishell: syntax error near unexpected token `||'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `||'", 2);
 }
 
 void	print_error_pipe(void)
 {
-	printf("minishell: syntax error near unexpected token `|'\n");
+	ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
 }
 
 void	print_error_redir(t_token_type token_type)
 {
 	if (token_type == TOKEN_REDIRECT_APPEND)
-		printf("minishell: syntax error near unexpected token `>>'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `>>'", 2);
 	else if (token_type == TOKEN_REDIRECT_IN)
-		printf("minishell: syntax error near unexpected token `<'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `<'", 2);
 	else if (token_type == TOKEN_REDIRECT_OUT)
-		printf("minishell: syntax error near unexpected token `>'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `>'", 2);
 	else if (token_type == TOKEN_HEREDOC)
-		printf("minishell: syntax error near unexpected token `<<'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `<<'", 2);
 }
 
 void	check_valid_redir(t_token *token, int index, int *error_catched)
 {
 	if (token[index + 1].token_type == TOKEN_EOL)
 	{
-		printf("minishell: syntax error near unexpected token 'newline'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token 'newline'", 2);
 		*error_catched = 1;
 	}
 	if (token[index + 1].token_type == TOKEN_AND

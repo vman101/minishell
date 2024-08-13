@@ -14,7 +14,6 @@
 
 void	prompt_print_pwd(char *prompt)
 {
-	ft_putchar_fd('\r', 1);
 	ft_putstr_fd(GREEN, 1);
 	ft_printf("[%s]$ ", prompt);
 	ft_putstr_fd(RESET, 1);

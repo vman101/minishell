@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
 
 void	handle_redir_in(t_ast *branch, \
 						t_token *token, \
-						t_token *token_next, \
-						const char **environment)
+						t_token *token_next)
 {
 	int32_t	i;
 	char	**temp;
@@ -24,7 +24,7 @@ void	handle_redir_in(t_ast *branch, \
 	if (token->token_type == TOKEN_REDIRECT_IN)
 	{
 		temp = (char **)(char *[]){token_next->token_value, NULL};
-		evaluate_input(&temp, environment, &i, 0);
+		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
 		if (branch->has_redir_in == true)
 			ft_close(branch->fd_in, "fd_in in collect_redirection");
@@ -39,8 +39,7 @@ void	handle_redir_in(t_ast *branch, \
 
 void	handle_redir_out(	t_ast *branch, \
 							t_token *token, \
-							t_token *token_next, \
-							const char **environment)
+							t_token *token_next)
 {
 	int32_t	i;
 	char	**temp;
@@ -49,7 +48,7 @@ void	handle_redir_out(	t_ast *branch, \
 	if (token->token_type == TOKEN_REDIRECT_OUT)
 	{
 		temp = (char **)(char *[]){token_next->token_value, NULL};
-		evaluate_input(&temp, environment, &i, 0);
+		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
 		if (branch->has_redir_out == true)
 			ft_close(branch->fd_out, "fd_in in collect_redirection");
@@ -65,8 +64,7 @@ void	handle_redir_out(	t_ast *branch, \
 
 void	handle_redir_append(t_ast *branch, \
 							t_token *token, \
-							t_token *token_next, \
-							const char **environment)
+							t_token *token_next)
 {
 	int32_t	i;
 	char	**temp;
@@ -75,7 +73,7 @@ void	handle_redir_append(t_ast *branch, \
 	if (token->token_type == TOKEN_REDIRECT_APPEND)
 	{
 		temp = (char **)(char *[]){token_next->token_value, NULL};
-		evaluate_input(&temp, environment, &i, 0);
+		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
 		if (branch->has_redir_out == true)
 			ft_close(branch->fd_out, "fd_append in collect_redirection");

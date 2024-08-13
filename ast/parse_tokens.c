@@ -128,9 +128,9 @@ static t_ast	collect_redirection(t_token *token, \
 			{
 				if (!has_syntax_error)
 				{
-					handle_redir_in(&branch, &token[i], &token[i + 1], env);
-					handle_redir_out(&branch, &token[i], &token[i + 1], env);
-					handle_redir_append(&branch, &token[i], &token[i + 1], env);
+					handle_redir_in(&branch, &token[i], &token[i + 1]);
+					handle_redir_out(&branch, &token[i], &token[i + 1]);
+					handle_redir_append(&branch, &token[i], &token[i + 1]);
 				}
 				handle_redir_heredoc(&branch, &token[i], &token[i + 1], env);
 			}
@@ -185,7 +185,7 @@ t_ast	*parse_tokens(	t_token *tokens, \
 	has_syntax_error = false;
 	while (tree[i].type != NODE_END && !has_syntax_error)
 	{
-		if (!check_syntax_errors(&tokens[i]))
+		if (!check_syntax_errors(tokens))
 			has_syntax_error = true;
 		tree[i] = collect_redirection(tokens, environment, has_syntax_error);
 		parse_branch(tokens, &tree[i]);

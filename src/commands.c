@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
 #include <stdint.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
@@ -40,17 +41,22 @@ void	command_execute(const char *command_path,
 	}
 }
 
-void	execution_loop(t_ast *tree, const char **env, int *exit_status, int32_t std[2])
+void	execution_loop(	t_ast *tree, \
+						const char **env, \
+						int *exit_status, \
+						int32_t std[2])
 {
 	uint32_t	i;
+	bool		error_found;
 
 	i = 0;
+	error_found = false;
 	while (tree[i].type != NODE_END)
 	{
 		if (tree[i].connection_type != TREE_INVALID)
 		{
-			evaluate_input(&tree->args, env, exit_status, 0);
-			if (*exit_status == -1)
+			evaluate_input(&tree[i].args, exit_status, &error_found);
+			if (*exit_status == -1 || error_found == true)
 			{
 				*exit_status = 2;
 				break ;
@@ -58,9 +64,11 @@ void	execution_loop(t_ast *tree, const char **env, int *exit_status, int32_t std
 			handle_command(&tree[i], env, exit_status);
 			if (tree[i].connection_type != TREE_PIPE)
 				restore_fd(std[0], std[1]);
-			if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
+			if ((tree[i].connection_type == TREE_LOGICAL_OR \
+				&& *exit_status == 0))
 				i++;
-			else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
+			else if ((tree[i].connection_type == TREE_LOGICAL_AND \
+				&& *exit_status != 0))
 				i++;
 		}
 		i++;
@@ -79,7 +87,7 @@ void	execute_commands(t_ast *tree, const char **env, int *exit_status)
 		perror("dup");
 		lst_memory(NULL, NULL, CLEAN);
 	}
-	execution_loop(tree, env, exit_status, (int[2]){stdin_org, stdout_org});
+	execution_loop(tree, env, exit_status, (int [2]){stdin_org, stdout_org});
 	ft_close(stdin_org, "stdin in restore_fd");
 	ft_close(stdout_org, "stdout in restore_fd");
 }

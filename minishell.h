@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/10 22:46:56 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 13:07:23 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ void	prompt_print_custom_string(char *string);
 void	prompt_print_pwd(char *prompt);
 
 /* Lexer */
-void	evaluate_input(char **input[], const char **environment, int32_t *exit_status, bool error_caught);
+void	evaluate_input(char **input[], int32_t *exit_status, bool *error_caught);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -311,6 +311,7 @@ char		**environment_variable_add(char **environment, const char *variable_new_na
 char		**environment_variable_get(const char *variable, const char **environment);
 char		*environment_variable_value_get(const char *variable, const char **environment);
 void		environment_variable_value_change(const char **environment, const char *variable_name, const char *variable_new_value);
+char		**env_static(char **environment);
 
 /* TOKENIZER MOTHERFUCKER!!! */
 /*check_special_symbol.c*/
@@ -410,9 +411,9 @@ void		handle_logical_operator(t_ast **logical_node, int exit_status);
 void		handle_pipe(t_ast *pipe_node, int *error_catched);
 
 /*handle_redirs.c*/
-void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
-void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
-void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
+void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next);
+void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next);
+void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next);
 void	handle_redir_heredoc(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
 
 /*parse_tokens.c*/
