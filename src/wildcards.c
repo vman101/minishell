@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/08 17:56:03 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/13 15:03:34 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,27 +205,25 @@ int	check_wildcard(char *str)
 }
 
 void	copy_wildcards(int *k, int *j, char **matches,
-				t_token *new_tokens)
+				char **new_tokens)
 {
 	while (matches[*j] != NULL)
 	{
-		new_tokens[*k].token_value = matches[*j];
-		new_tokens[*k].token_type = TOKEN_WORD;
+		new_tokens[*k] = matches[*j];
 		(*k)++;
 		(*j)++;
 	}
 }
 
-void	copy_old_tokens(int *k, int i, t_token *new_tokens,
-					t_token *old_tokens)
+void	copy_old_tokens(int *k, int i, char **new_tokens,
+					char **old_tokens)
 {
-	new_tokens[*k].token_value = old_tokens[i].token_value;
-	new_tokens[*k].token_type = old_tokens[i].token_type;
+	new_tokens[*k] = old_tokens[i];
 	(*k)++;
 }
 
-void	copy_tokens_with_wildcards(t_token *new_tokens,
-					t_token *old_tokens, char **matches)
+void	copy_tokens_with_wildcards(char **new_args,
+					char **old_args, char **matches)
 {
 	int	flag;
 	int	i;
@@ -236,73 +234,72 @@ void	copy_tokens_with_wildcards(t_token *new_tokens,
 	i = 0;
 	j = 0;
 	k = 0;
-	while (old_tokens[i].token_type != TOKEN_EOL)
+	while (old_args[i] != NULL)
 	{
-		if (flag == 1 && check_wildcard(old_tokens[i].token_value))
+		if (flag == 1 && check_wildcard(old_args[i]))
 		{
-			copy_wildcards(&k, &j, matches, new_tokens);
+			copy_wildcards(&k, &j, matches, new_args);
 			flag = 0;
 		}
 		else
 		{
-			copy_old_tokens(&k, i, new_tokens, old_tokens);
+			copy_old_tokens(&k, i, new_args, old_args);
 		}
 		i++;
 	}
-	new_tokens[k].token_value = NULL;
-	new_tokens[k].token_type = TOKEN_EOL;
+	new_args[k] = NULL;
 }
 
-int	handle_wildcard(t_token **tokens, t_token **new_tokens,
+int	handle_wildcard(char ***args, char ***new_args,
 				int i, int *size)
 {
 	char	**matches;
 	int		match_count;
 	int		match_found;
 
-	matches = expand_wildcard((*tokens)[i].token_value);
+	matches = expand_wildcard((*args)[i]);
 	match_found = 0;
 	if (matches)
 	{
 		match_found = 1;
 		match_count = get_tokens_count(matches);
-		if (*new_tokens != NULL)
-			lst_memory(*new_tokens, free, ADD);
-		*new_tokens = ft_realloc(*new_tokens, *size * sizeof(t_token),
-				(*size + match_count) * sizeof(t_token));
+		if (*new_args != NULL)
+			lst_memory(*new_args, free, ADD);
+		*new_args = ft_realloc(*new_args, *size * sizeof(char *),
+				(*size + match_count) * sizeof(char *));
 		*size = *size + match_count - 1;
-		copy_tokens_with_wildcards(*new_tokens, *tokens, matches);
-		*tokens = *new_tokens;
+		copy_tokens_with_wildcards(*new_args, *args, matches);
+		*args = *new_args;
 	}
 	return (match_found);
 }
 
-void	check_and_expand_wildcards(t_token	**tokens_ptr)
+void	check_and_expand_wildcards(char ***input)
 {
-	t_token	*tokens;
-	t_token	*new_tokens;
+	char	**args;
+	char 	**new_args;
 	int		match_found;
 	int		size;
 	int		i;
 
 	match_found = 0;
-	tokens = *tokens_ptr;
-	size = get_amount_tokens(tokens);
-	new_tokens = NULL;
+	args = *input;
+	size = get_split_size((const char **)*input);
+	new_args = NULL;
 	i = 0;
-	while (tokens[i].token_type != TOKEN_EOL)
+	while (args[i] != NULL)
 	{
-		if (check_wildcard(tokens[i].token_value))
+		if (check_wildcard(args[i]))
 		{
-			match_found += handle_wildcard(&tokens, &new_tokens, i, &size);
+			match_found += handle_wildcard(&args, &new_args, i, &size);
 		}
 		i++;
 	}
 	if (match_found)
 	{
-		lst_memory(*tokens_ptr, NULL, FREE);
-		*tokens_ptr = tokens;
-		lst_memory(*tokens_ptr, free_tokens, ADD);
+		free(*input);
+		*input = args;
+		//lst_memory(*input, free_split, ADD);
 	}
 }
 

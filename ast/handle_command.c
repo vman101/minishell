@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/09 13:18:13 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/13 15:03:07 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ void	handle_command(t_ast *current, const char *path_variable,
 		return (perror("dup"));
 	if (current->connection_type == TREE_PIPE)
 		ft_pipe(current->pipefd, "in handle_command");
+	check_and_expand_wildcards(&current->args);
 	if (!buildin_execute(current, env, exit_status))
 	{
 		current->path = find_absolute_path(path_variable, current->args[0]);
