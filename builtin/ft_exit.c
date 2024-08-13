@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 16:52:07 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 22:56:28 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 11:31:58 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,6 @@ void	ft_exit(const char **args)
 		lst_memory(NULL, NULL, END);
 		exit_status = ft_atoi(args[1]);
 	}
-	ft_putendl_fd("exit", 1);
+	ft_putendl_fd("exit", 2);
 	exit(exit_status);
 }

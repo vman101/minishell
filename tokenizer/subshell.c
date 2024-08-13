@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 18:20:59 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 22:33:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/13 11:31:00 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,13 @@ static void	subshell_child_execute(	char *input, \
 									const char **environement, \
 									int32_t pipefd[2])
 {
-	char	*path_variable;
 	int32_t exit_status;
 
 	exit_status = 0;
-	path_variable = environment_variable_value_get("PATH", environement);
-	if (!path_variable)
-		return ;
 	ft_close(pipefd[0], "pipefd[0] in child parent");
 	ft_dup2(pipefd[1], STDOUT_FILENO, "execute_subshell stdout");
 	ft_close(pipefd[1], "close in execute_subshell");
-	m_tokenizer(input, environement, path_variable, &exit_status);
+	m_tokenizer(input, environement, &exit_status);
 	lst_memory(NULL, NULL, END);
 	exit(exit_status);
 }
