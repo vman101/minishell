@@ -1,0 +1,4 @@
+cat << EOF && echo success
+hello
+world
+EOF

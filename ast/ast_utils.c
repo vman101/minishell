@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:26:32 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/16 11:36:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,10 @@ int	get_tokens_len(t_token *tokens)
 
 char	**copy_args(t_ast *node, char **src)
 {
-	int		i;
 	char	**temp;
 
-	i = get_split_size((const char **)src);
-	node->args = ft_calloc(i + 1, sizeof(char *));
+	node->args = ft_calloc(get_split_size((const char **)src) \
+			+ 1, sizeof(char *));
 	if (!node->args)
 	{
 		free(node);

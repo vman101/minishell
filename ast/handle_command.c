@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:44:27 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/16 11:36:54 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 void	handle_command(t_ast *current, const char **env, int *exit_status)
 {
 	int32_t		stdout_org;
-	char	*path_variable;
+	char		*path_variable;
 
 	stdout_org = dup(STDOUT_FILENO);
 	if (stdout_org == -1)

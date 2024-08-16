@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/13 10:36:42 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 11:35:25 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ void	check_valid_redir(t_token *token, int index, int *error_catched)
 {
 	if (token[index + 1].token_type == TOKEN_EOL)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token 'newline'", 2);
+		ft_putendl_fd(\
+				"minishell: syntax error near unexpected token 'newline'", 2);
 		*error_catched = 1;
 	}
 	if (token[index + 1].token_type == TOKEN_AND
