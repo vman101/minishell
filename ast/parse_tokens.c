@@ -6,12 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:13:20 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/16 16:23:20 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <unistd.h>
 
 static uint32_t	determine_trees(t_token *tokens)
 {
@@ -30,27 +29,6 @@ static uint32_t	determine_trees(t_token *tokens)
 		i++;
 	}
 	return (tree_count);
-}
-
-void	print_branch(t_ast *g_tree)
-{
-	uint32_t	i;
-
-	i = 0;
-	while (g_tree[i].type != NODE_END)
-	{
-		printf("Branch %d\n", i);
-		printf("Type: %d\n", g_tree[i].type);
-		printf("Connection type: %d\n", g_tree[i].connection_type);
-		printf("Has redir in: %d\n", g_tree[i].has_redir_in);
-		printf("Has redir out: %d\n", g_tree[i].has_redir_out);
-		printf("FD in: %d\n", g_tree[i].fd_in);
-		printf("FD out: %d\n", g_tree[i].fd_out);
-		printf("Args:\n");
-		for (int j = 0; g_tree[i].args[j]; j++)
-			printf("%s\n", g_tree[i].args[j]);
-		i++;
-	}
 }
 
 void	tree_destroy(void *tree_ptr)
@@ -121,19 +99,17 @@ static t_ast	collect_redirection(t_token *token, \
 	branch = (t_ast){0};
 	branch.fd_in = STDIN_FILENO;
 	branch.fd_out = STDOUT_FILENO;
-	while (!is_delimiter_token(&token[i]))
+	while (!is_delimiter_token(&token[i]) && branch.connection_type != TREE_INVALID)
 	{
+		if (token[i + 1].token_type == TOKEN_WORD)
 		{
-			if (token[i + 1].token_type == TOKEN_WORD)
+			if (!has_syntax_error)
 			{
-				if (!has_syntax_error)
-				{
-					handle_redir_in(&branch, &token[i], &token[i + 1]);
-					handle_redir_out(&branch, &token[i], &token[i + 1]);
-					handle_redir_append(&branch, &token[i], &token[i + 1]);
-				}
-				handle_redir_heredoc(&branch, &token[i], &token[i + 1], env);
+				handle_redir_in(&branch, &token[i], &token[i + 1]);
+				handle_redir_out(&branch, &token[i], &token[i + 1]);
+				handle_redir_append(&branch, &token[i], &token[i + 1]);
 			}
+			handle_redir_heredoc(&branch, &token[i], &token[i + 1], env);
 		}
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/13 11:12:55 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 14:44:46 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_token	create_token_word(const char **input)
 	if (**input == '$')
 		temp_move++;
 	while (*temp_move && !ft_isspace(*temp_move) \
-		&& !is_special_char(*temp_move))
+		&& (!is_special_char(*temp_move) || *temp_move == '$'))
 	{
 		if (*temp_move == '\'' || *temp_move == '\"')
 			skip_to_end_quotes(&temp_move, *temp_move);

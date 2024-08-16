@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:32:16 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/04 09:31:59 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 16:08:02 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ int	ft_close(int fd, const char *specifier)
 	{
 		p_stderr(2, "minishell: %s: ", specifier);
 		perror("close");
-		lst_memory(NULL, NULL, CLEAN);
 	}
 	return (1);
 }
@@ -32,7 +31,6 @@ void	ft_pipe(int pipefd[2], const char *specifier)
 	{
 		p_stderr(2, "pipex: %s: ", specifier);
 		perror("pipe");
-		lst_memory(NULL, NULL, CLEAN);
 	}
 }
 
@@ -64,7 +62,7 @@ void	ft_open(int *fd, const char *path, int flag, int mode)
 		*fd = open(path, flag);
 	if (*fd == -1)
 	{
-		p_stderr(2, "%s: ", path);
-		perror("open");
+		p_stderr(2, "open: ", path);
+		perror(path);
 	}
 }

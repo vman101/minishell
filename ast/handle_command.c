@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 11:36:54 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 18:40:35 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,21 +82,21 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 {
 	if (node->args[0] && !*node->args[0])
 		return (false);
-	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
+	if (ft_memcmp(node->args[0], "echo", ft_strlen(node->args[0]) + 1) == 0)
 		return (buildin_apply_pipe(node), ft_echo(node->args, exit_status), 1);
-	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
+	else if (ft_memcmp(node->args[0], "env", ft_strlen(node->args[0]) + 1) == 0)
 		return (buildin_apply_pipe(node), ft_env(environment, exit_status), 1);
-	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)
+	else if (ft_memcmp(node->args[0], "cd", ft_strlen(node->args[0]) + 1) == 0)
 		return (buildin_apply_pipe(node), ft_cd(environment, \
 					(const char **)node->args, exit_status), 1);
-	else if (ft_strncmp(node->args[0], "unset", ft_strlen(node->args[0])) == 0)
+	else if (ft_memcmp(node->args[0], "unset", ft_strlen(node->args[0]) + 1) == 0)
 		return (buildin_apply_pipe(node), ft_unset((char **)environment, \
 					(const char **)node->args, exit_status), 1);
-	else if (ft_strncmp(node->args[0], "export", ft_strlen(node->args[0])) == 0)
+	else if (ft_memcmp(node->args[0], "export", ft_strlen(node->args[0]) + 1) == 0)
 		return (buildin_apply_pipe(node), ft_export((char ***)&environment, \
 					(const char **)node->args, exit_status), 1);
-	else if (ft_strncmp(node->args[0], "exit", ft_strlen(node->args[0])) == 0)
-		return (ft_exit((const char **)node->args), 1);
+	else if (ft_memcmp(node->args[0], "exit", ft_strlen(node->args[0]) + 1) == 0)
+		return (ft_exit((const char **)node->args), *exit_status = 1);
 	return (0);
 }
 
@@ -111,6 +111,7 @@ void	handle_command(t_ast *current, const char **env, int *exit_status)
 	if (current->connection_type == TREE_PIPE)
 		ft_pipe(current->pipefd, "in handle_command");
 	path_variable = environment_variable_value_get("PATH", env);
+	check_and_expand_wildcards(&current->args);
 	if (!buildin_execute(current, env, exit_status))
 	{
 		current->path = find_absolute_path(path_variable, current->args[0]);

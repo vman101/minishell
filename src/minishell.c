@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/13 10:39:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 17:23:05 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,14 @@ int32_t	minishell_single_command(	char *command, \
 
 	exit_status = 0;
 	input_length = ft_strlen(command);
-	if (command[input_length - 1] == '\n')
-		command[input_length - 1] = 0;
-	m_tokenizer(command, (const char **)environment, &exit_status);
+	if (input_length)
+	{
+		if (command[input_length - 1] == '\n')
+			command[input_length - 1] = 0;
+		m_tokenizer(command, (const char **)environment, &exit_status);
+	}
 	lst_memory(NULL, NULL, END);
-	exit(exit_status);
+	exit (exit_status);
 }
 
 void	*ft_realloc_string(char **string, uint32_t *new_size)
@@ -45,7 +48,7 @@ void	*ft_realloc_string(char **string, uint32_t *new_size)
 char	*check_redir_input()
 {
 	char		*input;
-	char		buffer[511];
+	char		buffer[512];
 	uint32_t	capacity;
 	int64_t		bytes_read;
 
@@ -116,7 +119,7 @@ int	main(int argc, const char **argv, const char **env)
 		if (g_signal_flag == 1)
 			g_signal_flag = 0;
 		else if (g_signal_flag == 2)
-			ft_exit(0);
+			ft_exit((const char *[]){"0", 0});
 		env_static(environment);
 	}
 	return (exit_status);

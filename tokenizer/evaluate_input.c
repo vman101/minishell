@@ -3,38 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   evaluate_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/13 10:42:15 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 18:13:06 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 void	insert_string(	char *input_new, \
 						char *string_to_insert, \
-						uint32_t *i, char character_store)
+						char character_store)
 {
 	char		*temp_move;
 	uint32_t	string_to_insert_length;
 	uint32_t	input_length;
 
-	temp_move = ft_strchr(&input_new[*i], 0);
-	if (!string_to_insert)
-		return (ft_memmove(input_new, temp_move, \
-				ft_strlen(input_new)), *input_new = character_store, (void)0);
-	if (character_store)
-		*temp_move = character_store;
-	string_to_insert_length = ft_strlen(string_to_insert);
 	input_length = ft_strlen(input_new);
-	ft_memmove(&input_new[*i + string_to_insert_length], \
-			&input_new[temp_move - input_new], \
-			input_length - (temp_move - input_new) + 1);
-	ft_memcpy(&input_new[*i], string_to_insert, string_to_insert_length);
-	*i += string_to_insert_length;
+	temp_move = ft_strchr(input_new, 0);
+	*temp_move = character_store;
+	if (!string_to_insert)
+	{
+		ft_bzero(input_new, input_length);
+		ft_memmove(input_new, temp_move, ft_strlen(temp_move) + 1);
+		return ;
+	}
+	string_to_insert_length = ft_strlen(string_to_insert);
+	ft_memmove(input_new + string_to_insert_length, temp_move, ft_strlen(temp_move) + 1);
+	ft_memcpy(input_new, string_to_insert, string_to_insert_length);
 }
 
 void	insert_exit_status(	char *input_new, \
@@ -60,7 +57,7 @@ void	insert_exit_status(	char *input_new, \
 
 bool	is_delimiter(char c)
 {
-	return (c == ' ' || c == '\'' || c == '\"' || c == '$' || c == 0);
+	return (ft_isspace(c) || c == '\'' || c == '\"' || c == '$' || c == 0);
 }
 
 char	skip_to_delimiter(char *input_new)
@@ -92,27 +89,27 @@ bool	skip_single_quotes(char *input, uint32_t *i, bool *in_double_quotes)
 			return (\
 			ft_putendl_fd("minishell: missing closing single quote", 2), true);
 		else
-			*i = temp_move - input + 1;
+			*i = temp_move - input;
 	}
 	return (false);
 }
 
-void	evaluate_helper(char *input_new, uint32_t i, \
-						uint32_t *input_length, int32_t *exit_status)
+void	evaluate_helper(char *input_new, uint32_t *input_length, \
+						int32_t *exit_status)
 {
 	char	character_store;
 	char	**environment;
 
 	environment = env_static(NULL);
-	ft_memmove(&input_new[i], &input_new[i + 1], *input_length - i);
-	character_store = skip_to_delimiter(&input_new[i]);
-	if (input_new[i] == '?' && is_delimiter(input_new[i + 1]))
+	ft_memmove(input_new, input_new + 1, ft_strlen(input_new));
+	character_store = skip_to_delimiter(input_new);
+	if (*input_new == '?' && is_delimiter(*(input_new + 1)))
 		insert_exit_status(input_new, exit_status, \
 				input_length, character_store);
 	else
 		insert_string(input_new, environment_variable_value_get(\
-					&input_new[i], \
-					(const char **)environment), &i, character_store);
+					input_new, \
+					(const char **)environment), character_store);
 }
 
 uint32_t	evaluate_variable(	char **input, \
@@ -124,7 +121,7 @@ uint32_t	evaluate_variable(	char **input, \
 	bool		in_double_quotes;
 
 	in_double_quotes = false;
-	input_new = ft_calloc(*input_length * 2, sizeof(*input_new));
+	input_new = ft_calloc(VARIABLE_TOKEN_SIZE + 1, sizeof(*input_new));
 	lst_memory(input_new, free, ADD);
 	ft_strlcpy(input_new, *input, *input_length + 1);
 	i = 0;
@@ -132,28 +129,29 @@ uint32_t	evaluate_variable(	char **input, \
 	{
 		if (skip_single_quotes(input_new, &i, &in_double_quotes))
 			return (true);
-		if (input_new[i] == '$')
-			evaluate_helper(input_new, i, input_length, exit_status);
-		i++;
+		else if (input_new[i] == '$' && (ft_isalnum(input_new[i + 1]) || input_new[i + 1] == '?'))
+			evaluate_helper(input_new + i, input_length, exit_status);
+		else
+			i++;
 	}
 	*input = input_new;
+	*input_length = ft_strlen(*input);
 	return (false);
 }
 
-bool	evaluate_double_quotes(	char **input, \
-								uint32_t *i, \
-								uint32_t *input_length)
+bool	evaluate_double_quotes(char *input, uint32_t *i)
 {
-	ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i + 1);
-	(*input_length)--;
-	while ((*input)[*i])
+	uint32_t	input_length;
+
+	input_length = ft_strlen(&input[*i]);
+	ft_memmove(&input[*i], &input[*i + 1], input_length);
+	while (input[*i])
 	{
-		if ((*input)[*i] == '\"')
+		if (input[*i] == '\"')
 		{
-			ft_memmove(&(*input)[*i], &(*input)[*i + 1], \
-					*input_length - *i + 1);
+			ft_memmove(&input[*i], &input[*i + 1], \
+						ft_strlen(&input[*i]));
 			(*i)--;
-			(*input_length)--;
 			return (false);
 		}
 		(*i)++;
@@ -161,20 +159,24 @@ bool	evaluate_double_quotes(	char **input, \
 	return (ft_putendl_fd("minishell: missing closing double quote", 2), true);
 }
 
-bool	evaluate_single_quotes(	char **input, \
-								uint32_t *i, \
-								uint32_t *input_length)
+bool	evaluate_single_quotes(char *input, uint32_t *i)
 {
-	ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i);
-	(*input_length)--;
-	while ((*input)[*i] && (*input)[*i] != '\'')
+	uint32_t	input_length;
+
+	input_length = ft_strlen(&input[*i]);
+	ft_memmove(&input[*i], &input[*i + 1], input_length);
+	while (input[*i])
+	{
+		if (input[*i] == '\'')
+		{
+			ft_memmove(&input[*i], &input[*i + 1], \
+						ft_strlen(&input[*i]));
+			(*i)--;
+			return (false);
+		}
 		(*i)++;
-	if (!(*input)[*i] || (*input)[*i] != '\'')
-		return (ft_putendl_fd(\
-					"minishell: missing closing single quote", 2), true);
-	ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i);
-	(*input_length)--;
-	return (false);
+	}
+	return (ft_putendl_fd("minishell: missing closing single quote", 2), true);
 }
 
 void	evaluate_input(	char **input[], \
@@ -200,11 +202,9 @@ void	evaluate_input(	char **input[], \
 		while ((*input)[i][j] && !*error_caught)
 		{
 			if ((*input)[i][j] == '\"')
-				*error_caught = evaluate_double_quotes(&(*input)[i], \
-								&j, &input_length);
+				*error_caught = evaluate_double_quotes((*input)[i], &j);
 			else if ((*input)[i][j] == '\'')
-				*error_caught = evaluate_single_quotes(&(*input)[i], \
-								&j, &input_length);
+				*error_caught = evaluate_single_quotes((*input)[i], &j);
 			j++;
 		}
 		i++;

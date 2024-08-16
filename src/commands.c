@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/10 22:46:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/16 18:15:04 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,27 @@ void	command_execute(const char *command_path,
 	else
 	{
 		waitpid(child_proccess, NULL, 0);
+	}
+}
+
+void	print_branch(t_ast *g_tree)
+{
+	uint32_t	i;
+
+	i = 0;
+	while (g_tree[i].type != NODE_END)
+	{
+		printf("Branch %d\n", i);
+		printf("Type: %d\n", g_tree[i].type);
+		printf("Connection type: %d\n", g_tree[i].connection_type);
+		printf("Has redir in: %d\n", g_tree[i].has_redir_in);
+		printf("Has redir out: %d\n", g_tree[i].has_redir_out);
+		printf("FD in: %d\n", g_tree[i].fd_in);
+		printf("FD out: %d\n", g_tree[i].fd_out);
+		printf("Args:\n");
+		for (int j = 0; g_tree[i].args[j]; j++)
+			printf("%s\n", g_tree[i].args[j]);
+		i++;
 	}
 }
 
@@ -115,7 +136,7 @@ void	*m_tokenizer(const char *input, const char **env, int *exit_status)
 	tokens = lexical_analysis((char *)input);
 	if (tokens)
 	{
-		check_and_expand_wildcards(&tokens);
+//		print_tokens(tokens);
 		tree = parse_tokens(tokens, env, exit_status);
 		if (tree)
 			execute_commands(tree, env, exit_status);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 11:35:25 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 13:09:20 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ void	print_error_redir(t_token_type token_type)
 
 void	check_valid_redir(t_token *token, int index, int *error_catched)
 {
-	if (token[index + 1].token_type == TOKEN_EOL)
+	if (token[index + 1].token_type == TOKEN_EOL
+		|| (token[index + 1].token_type == TOKEN_WORD && token[index + 1].token_value == NULL))
 	{
 		ft_putendl_fd(\
 				"minishell: syntax error near unexpected token 'newline'", 2);
@@ -68,7 +69,8 @@ void	check_valid_redir(t_token *token, int index, int *error_catched)
 
 void	check_valid_pipe(t_token *token, int index, int *error_catched)
 {
-	if (index == 0 || token[index + 1].token_type == TOKEN_EOL)
+	if (index == 0 || token[index + 1].token_type == TOKEN_EOL
+	|| (token[index + 1].token_type == TOKEN_WORD && token[index + 1].token_value == NULL))
 	{
 		print_error_pipe();
 		*error_catched = 1;
