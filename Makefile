@@ -12,8 +12,7 @@
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3 
-#-fsanitize=leak,undefined,address
+CFLAGS		:= -Wall -Wextra -g3 -fsanitize=leak,undefined,address
 
 # DIRECTORIES
 SRCDIR		:= src

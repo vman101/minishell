@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 22:33:36 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 00:04:44 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static void	print_environment_a_la_export(char **env)
 		{
 			*variable_value++ = 0;
 			ft_printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
+			*--variable_value = '=';
 		}
 		else
 			ft_printf("declare -x %s=\"\"\n", variable_name);
@@ -38,63 +39,93 @@ static void	print_environment_a_la_export(char **env)
 
 static void	environment_print_sorted(const char **environment)
 {
-	char		**tmp_env;
 	uint32_t	i;
-	uint32_t	split_size;
+	uint32_t	length1;
 	char		*tmp;
 
-	tmp_env = environment_create(environment);
-	split_size = get_split_size(environment);
-	while (split_size)
-	{
-		i = 0;
-		while (i < split_size - 1)
-		{
-			if (ft_strncmp(tmp_env[i], tmp_env[i + 1], \
-							ft_strlen(tmp_env[i])) > 0)
-			{
-				tmp = tmp_env[i];
-				tmp_env[i] = tmp_env[i + 1];
-				tmp_env[i + 1] = tmp;
-			}
-			i++;
-		}
-		split_size--;
-	}
-	print_environment_a_la_export(tmp_env);
-}
-
-void	variable_exists(const char **environment, const char *variable_name)
-{
-	uint32_t	i;
-	char		*variable_name_terminator;
-	uint32_t	variable_name_length;
-
-	variable_name_terminator = ft_strchr(variable_name, '=');
-	if (variable_name_terminator)
-		*variable_name_terminator = 0;
-	variable_name_length = ft_strlen(variable_name);
 	i = 0;
-	while (environment[i])
+	while (environment[i] && environment[i + 1])
 	{
-		if (!ft_strncmp(environment[i], variable_name, variable_name_length))
-			environment_variable_remove((char **)environment, variable_name);
+		tmp = ft_strchr(environment[i], '=');
+		if (!tmp)
+			tmp = ft_strchr(environment[i], 0);
+		length1 =  tmp - environment[i];
+		if (ft_strncmp(environment[i], environment[i + 1], length1) > 0)
+		{
+			tmp = (char *)environment[i];
+			environment[i] = environment[i + 1];
+			environment[i + 1] = tmp;
+			environment_print_sorted(environment);
+			break ;
+		}
 		i++;
 	}
-	if (variable_name_terminator)
-		*variable_name_terminator = '=';
+	if (environment[i + 1] == NULL)
+		print_environment_a_la_export((char **)environment);
 }
 
-void	ft_export(char ***environment, const char **args, int32_t *exit_status)
+static void	print_sorted(const char **environment)
+{
+	char		**env;
+	uint32_t	i;
+
+	env = ft_calloc(get_split_size(environment) + 1, sizeof(*env));
+	if (!env)
+		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN));
+	i = -1;
+	while (environment[++i])
+		env[i] = (char *)environment[i];
+	environment_print_sorted((const char **)env);
+	ft_free(&env);
+}
+
+/*static void	environment_print_sorted(const char **environment)*/
+/*{*/
+/*	char		**tmp_env;*/
+/*	uint{
+ *
+ *	}32_t	i;*/
+/*	uint32_t	split_size;*/
+/*	char		*tmp;*/
+/**/
+/*	split_size = get_split_size(environment);*/
+/*	tmp_env = ft_calloc(split_size + 1, sizeof(*tmp_env));*/
+/*	if (!tmp_env)*/
+/*		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN));*/
+/*	i = -1;*/
+/*	while (environment[++i])*/
+/*		tmp_env[i] = (char *)environment[i];*/
+/*	while (split_size)*/
+/*	{*/
+/*		i = -1;*/
+/*		while (++i < split_size - 1)*/
+/*		{*/
+/*			if (ft_strncmp(tmp_env[i], tmp_env[i + 1], \*/
+/*							ft_strlen(tmp_env[i])) > 0)*/
+/*			{*/
+/*				tmp = tmp_env[i];*/
+/*				tmp_env[i] = tmp_env[i + 1];*/
+/*				tmp_env[i + 1] = tmp;*/
+/*			}*/
+/*		}*/
+/*		split_size--;*/
+/*	}*/
+/*	print_environment_a_la_export(tmp_env);*/
+/*}*/
+/**/
+
+void	ft_export(const char **args, int32_t *exit_status)
 {
 	uint32_t	args_size;
 	uint32_t	i;
 	char		*variable_name;
 	char		*variable_value;
+	char		**environment;
 
+	environment = env_static(NULL);
 	args_size = get_split_size(args);
 	if (args_size == 1)
-		return (environment_print_sorted((const char **)*environment));
+		return (print_sorted((const char **)environment));
 	i = 1;
 	while (args[i])
 	{
@@ -102,8 +133,10 @@ void	ft_export(char ***environment, const char **args, int32_t *exit_status)
 		variable_value = ft_strchr(args[i], '=');
 		if (variable_value)
 			*variable_value++ = 0;
-		variable_exists((const char **)*environment, variable_name);
-		environment_variable_add(*environment, variable_name, variable_value);
+		if (!environment_variable_value_get(variable_name, (const char **)environment))
+			environment_variable_add(&environment, variable_name, variable_value);
+		else
+			environment_variable_value_change((const char **)environment, variable_name, variable_value);
 		i++;
 	}
 	*exit_status = 0;

@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 22:49:03 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 10:32:02 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 23:50:58 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ void	ft_pwd(const char **environment, int32_t *exit_status)
 	else
 	{
 		*exit_status = 0;
-		pwd = environment_variable_value_get("PWD", environment);
+		pwd = getcwd(NULL, 0);
 		ft_putendl_fd(pwd, 1);
+		ft_free(&pwd);
 	}
 }

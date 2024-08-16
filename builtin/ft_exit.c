@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 16:52:07 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 19:05:40 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 22:06:17 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	ft_exit(const char **args)
 	exit_status = 0;
 	args_length = get_split_size(args);
 	invalid_message_print = false;
-	if (args_length > 0)
+	if (args_length > 1)
 	{
 		invalid_message_print = check_exit_status(args[1]);
 		if (!invalid_message_print)

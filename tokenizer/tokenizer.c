@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 16:03:47 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 22:43:59 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static uint32_t	get_word_count(char *input)
 			while (input[i] && !ft_isspace(input[i]) \
 				&& !is_double_special(&input[i]) && !is_special_char(input[i]))
 				i++;
-		else
+		else if (input[i])
 			i++;
 		if (input[i] == '\n' || input[i] == ';')
 			word_count++;

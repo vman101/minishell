@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 21:55:05 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 00:21:22 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ char	*prompt_get_input(	t_prompt *prompt, \
 		delimiter = "\n";
 	input = handle_input(prompt, input, prompt->cursor_position, delimiter);
 	terminal_raw_mode_disable(ECHO | ECHOCTL | ICANON);
-	if (!input || !*input)
+	if (!input)
 		return (NULL);
 	prompt_handle_history(prompt, input);
 	return (input);

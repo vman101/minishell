@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:30:20 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/16 22:28:34 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,7 @@ void	remove_qoutes_delimiter(char *delimiter)
 {
 	uint32_t	length;
 	char		quote;
-	uint32_t	i;
 
-	i = 0;
 	length = ft_strlen(delimiter);
 	if (*delimiter == '\"' || *delimiter == '\'')
 		quote = *delimiter;

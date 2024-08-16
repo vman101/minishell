@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:33:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/02 17:34:40 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 22:26:27 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	**environment_create(const char **env)
 	return (environment_new);
 }
 
-char	**environment_variable_add(	char **environment,
+void	environment_variable_add(	char ***environment,
 									const char *variable_new_name,
 									const char *variable_new_value)
 {
@@ -65,10 +65,10 @@ char	**environment_variable_add(	char **environment,
 	uint32_t	variable_new_value_length;
 	uint64_t	environment_length_current;
 
-	environment_length_current = get_split_size((const char **)environment);
+	environment_length_current = get_split_size((const char **)*environment);
 	if (!environment_length_current)
-		return (environment);
-	environment_buffer_extend(&environment, environment_length_current);
+		return ;
+	environment_buffer_extend(environment, environment_length_current);
 	variable_new_name_length = ft_strlen(variable_new_name);
 	variable_new_value_length = ft_strlen(variable_new_value);
 	variable_to_add = ft_calloc(variable_new_name_length \
@@ -81,8 +81,7 @@ char	**environment_variable_add(	char **environment,
 	if (variable_new_value)
 		ft_strlcpy(variable_to_add + variable_new_name_length + 1, \
 					variable_new_value, variable_new_value_length + 1);
-	environment[environment_length_current] = variable_to_add;
-	return (environment);
+	(*environment)[environment_length_current] = variable_to_add;
 }
 
 void	environment_variable_remove(char **environment, const char *variable)

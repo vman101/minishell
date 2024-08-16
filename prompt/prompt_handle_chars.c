@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:11:28 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/10 21:49:44 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 00:35:54 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool	handle_new_character_to_input(		char **input,
 	do_refresh = false;
 	*input = prompt_buffer_size_manage(input, \
 								prompt_length_current, \
-								ft_strlen(*input) * 2);
+								prompt_length_current + 1);
 	if (cursor_position_current[1] < prompt_length_current)
 	{
 		ft_memmove(&(*input)[cursor_position_current[1] + 1], \

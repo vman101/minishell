@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/16 13:05:17 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/16 22:25:45 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ void		ft_cd(const char **environment, const char **args, int32_t *exit_status);
 void		ft_pwd(const char **env, int32_t *exit_status);
 void		ft_env(const char **env, int32_t *exit_status);
 void		ft_unset(char **environment, const char **args, int32_t *exit_status);
-void		ft_export(char ***environment, const char **args, int32_t *exit_status);
+void		ft_export(const char **args, int32_t *exit_status);
 void		ft_exit(const char **args);
 
 /* Commands */
@@ -308,7 +308,7 @@ void		environment_variable_print(const char *variable, const char **environment)
 void		environment_print(const char **environment);
 char		**environment_create(const char **env);
 void		environment_variable_remove(char **environment, const char *variable);
-char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
+void		environment_variable_add(char ***environment, const char *variable_new_name, const char *variable_new_value);
 char		**environment_variable_get(const char *variable, const char **environment);
 char		*environment_variable_value_get(const char *variable, const char **environment);
 void		environment_variable_value_change(const char **environment, const char *variable_name, const char *variable_new_value);

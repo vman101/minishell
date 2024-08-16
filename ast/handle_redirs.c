@@ -6,12 +6,11 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/10 22:28:51 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 01:20:03 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdbool.h>
 
 void	handle_redir_in(t_ast *branch, \
 						t_token *token, \
@@ -110,27 +109,6 @@ void	handle_heredoc(t_token *tokens, int32_t pipefd)
 	tokens[i].token_type = TOKEN_DONE;
 }
 
-bool	heredoc_has_been_done(t_token *token)
-{
-	uint32_t	i;
-	char		*value;
-	uint32_t	value_length;
-	uint32_t	token_length;
-
-	i = 1;
-	value = token->token_value;
-	value_length = ft_strlen(value);
-	while (!is_delimiter_token(&token[i]))
-	{
-		token_length = ft_strlen(token[i].token_value);
-		if (token_length >= value_length)
-			if (ft_strncmp(value, token[i].token_value, token_length) == 0)
-				return (true);
-		i++;
-	}
-	return (false);
-}
-
 void	handle_redir_heredoc(	t_ast *branch, \
 								t_token *token, \
 								t_token *token_next, \
@@ -139,7 +117,7 @@ void	handle_redir_heredoc(	t_ast *branch, \
 	if (token->token_type == TOKEN_HEREDOC)
 	{
 		ft_pipe(branch->pipefd, "here_doc");
-		if (!heredoc_has_been_done(token_next))
+		if (isatty(0))
 		{
 			token_heredoc_get(token, token_next->token_value, environment);
 			ft_putstr_fd(token->token_value, branch->pipefd[1]);

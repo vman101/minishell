@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 14:47:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 00:38:19 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,15 @@ char	*prompt_buffer_size_manage(	char **input, \
 	char		*input_free_ptr;
 	uint32_t	size_multiplier;
 
-	if ((old_size + size_to_add) % PROMPT_INPUT_BUFFER_SIZE \
-			> (PROMPT_INPUT_BUFFER_SIZE - size_to_add))
+	if ((old_size + size_to_add) > \
+			(PROMPT_INPUT_BUFFER_SIZE * \
+			 ((old_size / PROMPT_INPUT_BUFFER_SIZE) + 1)))
 	{
 		size_multiplier = (old_size / PROMPT_INPUT_BUFFER_SIZE) + 2;
 		input_free_ptr = *input;
 		*input = ft_calloc(1, size_multiplier * PROMPT_INPUT_BUFFER_SIZE + 1);
 		if (!*input)
-			lst_memory(NULL, NULL, CLEAN);
+			return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
 		ft_memcpy(*input, input_free_ptr, old_size);
 		ft_free(&input_free_ptr);
 	}
