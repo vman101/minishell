@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 15:19:42 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 18:05:02 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,11 @@ void	clear_empty_args(char **args)
 	uint32_t	i;
 
 	i = 0;
-	while (args[i][0] == 0)
+	while (args[i] && args[i][0] == 0)
 	{
 		if (args[i + 1])
 		{
-			while (args[i + 1])
+			while (args[i])
 			{
 				args[i] = args[i + 1];
 				i++;
@@ -133,7 +133,7 @@ void	handle_command(t_ast *current, const char **env, int *exit_status)
 	path_variable = environment_variable_value_get("PATH", env);
 	check_and_expand_wildcards(&current->args);
 	clear_empty_args(current->args);
-	if (!buildin_execute(current, env, exit_status) && current->args[0] && current->args[0][0])
+	if (!buildin_execute(current, env, exit_status))
 	{
 		current->path = find_absolute_path(path_variable, current->args[0]);
 		if (!current->path)

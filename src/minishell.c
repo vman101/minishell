@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/16 23:52:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 18:11:57 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,6 @@ int	setup(	uint32_t argc, \
 	g_signal_flag = 0;
 	env_static(environment);
 	setup_signal_handlers();
-	environment_variable_value_change((const char **)environment, "OLDPWD", \
-			environment_variable_value_get("PWD", (const char **)environment));
 	if (!isatty(0))
 	{
 		input = check_redir_input();

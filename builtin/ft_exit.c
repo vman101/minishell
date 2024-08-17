@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 16:52:07 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 22:06:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 18:40:41 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,19 +49,20 @@ void	ft_exit(const char **args)
 	{
 		invalid_message_print = check_exit_status(args[1]);
 		if (!invalid_message_print)
-			exit_status = ft_atoi(args[1]);
-		else if (!invalid_message_print && args_length > 2)
 		{
-			ft_putendl_fd("minishell: exit: too many arguments", 2);
-			return ;
+			if (args_length < 3)
+				exit_status = ft_atoi(args[1]);
+			else
+				return (ft_putendl_fd("exit\nminishell: exit: too many arguments", 2));
 		}
 	}
-	ft_putendl_fd("exit", 2);
-	lst_memory(NULL, NULL, END);
 	if (invalid_message_print)
 	{
-		ft_putendl_fd("minshell: exit: numeric arugment required", 2);
-		exit(2);
+		p_stderr(2, ": exit: %s: numeric argument required\n", args[1]);
+		exit_status = 2;
 	}
+	else
+		ft_putendl_fd("exit", 2);
+	lst_memory(NULL, NULL, END);
 	exit(exit_status);
 }
