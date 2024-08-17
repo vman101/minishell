@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 00:04:44 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 22:11:47 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,21 @@ static void	print_sorted(const char **environment)
 /*}*/
 /**/
 
+bool	is_allowed_char(const char *s)
+{
+	uint32_t	i;
+
+	i = 0;
+	if (!ft_isalpha(s[i]) && s[i] != '_')
+		return (false);
+	i++;
+	while (s[i] && (ft_isalnum(s[i]) || s[i] == '_'))
+		i++;
+	if (s[i] == '=' || s[i] == 0)
+		return (true);
+	return (false);
+}
+
 void	ft_export(const char **args, int32_t *exit_status)
 {
 	uint32_t	args_size;
@@ -129,6 +144,9 @@ void	ft_export(const char **args, int32_t *exit_status)
 	i = 1;
 	while (args[i])
 	{
+		if (!is_allowed_char(args[i]))
+			return (p_stderr(2, "minishell: export: `%s': not a valid identifier\n", \
+					args[i]), *exit_status = 1, (void)0);
 		variable_name = (char *)args[i];
 		variable_value = ft_strchr(args[i], '=');
 		if (variable_value)

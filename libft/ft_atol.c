@@ -1,27 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   ft_atol.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:49:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 21:39:08 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 21:40:27 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	is_space(char const c)
+long	ft_atol(char const *s, uint8_t	*too_big)
 {
-	if ((c >= 9 && c <= 13) || c == ' ')
-		return (1);
-	return (0);
-}
-
-int	ft_atoi(char const *s)
-{
-	int			nb;
+	long long			nb;
 	char const	*tmp;
 
 	nb = 0;
@@ -35,6 +28,8 @@ int	ft_atoi(char const *s)
 		nb *= 10;
 		nb += (*tmp - '0');
 		tmp++;
+		if (nb > LONG_MAX || nb < LONG_MIN)
+			return (*too_big == 1);
 	}
 	if (*s == '-')
 		nb = -nb;
