@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 23:40:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 22:38:04 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static char	*print_error(char *input)
 		}
 		else
 			p_stderr(STDERR_FILENO, \
-					"minishell: %s: no such file or directory\n", \
+					"minishell: %s: No such file or directory\n", \
 					input);
 	}
 	else
@@ -79,11 +79,12 @@ char	*find_absolute_path(const char *path_variable, char *input)
 {
 	char	*path_abs;
 
-	if (!path_variable)
-		return (ft_putendl_fd("Hmm, there seems to be no path... weird...", 2), NULL);
-	if (ft_strchr(input, '/'))
+	if (ft_strchr(input, '/') || (input && *input == 0))
 		return (print_error(input));
-	path_variable = ft_strchr(path_variable, '/');
+	if (path_variable)
+		path_variable = ft_strchr(path_variable, '/');
+	else
+		path_variable = "./";
 	path_abs = malloc(find_longest_path(path_variable) + ft_strlen(input) + 2);
 	lst_memory(path_abs, &free, ADD);
 	return (check_paths(path_variable, path_abs, input));

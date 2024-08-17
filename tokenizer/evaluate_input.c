@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 14:59:51 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 22:19:06 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	skip_to_delimiter(char *input_new)
 	char	character_store;
 
 	temp_move = input_new;
-	while (ft_isalnum(*temp_move) || *temp_move == '?')
+	while (ft_isalnum(*temp_move) || *temp_move == '?' || *temp_move == '_')
 	{
 		temp_move++;
 	}

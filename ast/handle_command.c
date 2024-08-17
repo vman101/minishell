@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 18:05:02 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 22:29:09 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,13 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 		return (buildin_apply_pipe(node), false);
 	if (ft_memcmp(node->args[0], "echo", ft_strlen("echo") + 1) == 0)
 		return (buildin_apply_pipe(node), ft_echo(node->args, exit_status), 1);
-	else if (ft_memcmp(node->args[0], "env\0", ft_strlen("env") + 1) == 0)
+	else if (ft_memcmp(node->args[0], "env", ft_strlen("env") + 1) == 0)
 		return (buildin_apply_pipe(node), ft_env(environment, exit_status), 1);
 	else if (ft_memcmp(node->args[0], "cd", ft_strlen("cd") + 1) == 0)
 		return (buildin_apply_pipe(node), ft_cd(environment, \
 					(const char **)node->args, exit_status), 1);
+	else if (ft_memcmp(node->args[0], "pwd", ft_strlen("pwd") + 1) == 0)
+		return (ft_pwd(environment, exit_status), 1);
 	else if (ft_memcmp(node->args[0], "unset", ft_strlen("unset") + 1) == 0)
 		return (buildin_apply_pipe(node), ft_unset((char **)environment, \
 					(const char **)node->args, exit_status), 1);

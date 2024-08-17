@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 22:43:59 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 22:41:30 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ bool	unrecognized_input(char c)
 		|| c == '?' || c == '/' || c == '-' || c == '\n' \
 		|| c == ';' || c == '\'' || c == '\"' || c == '.'\
 		|| c == '(' || c == ')' || c == '*' || c == '[' \
-		|| c == ']' || c == '{' || c == '}'))
+		|| c == ']' || c == '{' || c == '}' || c == '#'))
 		return (false);
 	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", \
 			(char []){c, 0});
