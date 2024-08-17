@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 01:14:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 15:19:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,26 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 	return (0);
 }
 
+void	clear_empty_args(char **args)
+{
+	uint32_t	i;
+
+	i = 0;
+	while (args[i][0] == 0)
+	{
+		if (args[i + 1])
+		{
+			while (args[i + 1])
+			{
+				args[i] = args[i + 1];
+				i++;
+			}
+		}
+		else
+			i++;
+	}
+}
+
 void	handle_command(t_ast *current, const char **env, int *exit_status)
 {
 	int32_t		stdout_org;
@@ -112,7 +132,8 @@ void	handle_command(t_ast *current, const char **env, int *exit_status)
 		ft_pipe(current->pipefd, "in handle_command");
 	path_variable = environment_variable_value_get("PATH", env);
 	check_and_expand_wildcards(&current->args);
-	if (!buildin_execute(current, env, exit_status) && current->args[0])
+	clear_empty_args(current->args);
+	if (!buildin_execute(current, env, exit_status) && current->args[0] && current->args[0][0])
 	{
 		current->path = find_absolute_path(path_variable, current->args[0]);
 		if (!current->path)

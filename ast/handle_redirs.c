@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 01:20:03 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 13:24:43 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,15 +111,18 @@ void	handle_heredoc(t_token *tokens, int32_t pipefd)
 
 void	handle_redir_heredoc(	t_ast *branch, \
 								t_token *token, \
-								t_token *token_next, \
-								const char **environment)
+								t_token *token_next)
 {
+	char	**environment;
+
+	environment = env_static(NULL);
 	if (token->token_type == TOKEN_HEREDOC)
 	{
 		ft_pipe(branch->pipefd, "here_doc");
 		if (isatty(0))
 		{
-			token_heredoc_get(token, token_next->token_value, environment);
+			token_heredoc_get(token, token_next->token_value, \
+					(const char **)environment);
 			ft_putstr_fd(token->token_value, branch->pipefd[1]);
 			token->token_type = TOKEN_DONE;
 			token_next->token_type = TOKEN_DONE;

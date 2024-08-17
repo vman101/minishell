@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/16 22:25:45 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 13:25:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,7 +415,7 @@ void		handle_pipe(t_ast *pipe_node, int *error_catched);
 void	handle_redir_in(t_ast *branch, t_token *token, t_token *token_next);
 void	handle_redir_out(t_ast *branch, t_token *token, t_token *token_next);
 void	handle_redir_append(t_ast *branch, t_token *token, t_token *token_next);
-void	handle_redir_heredoc(t_ast *branch, t_token *token, t_token *token_next, const char **environment);
+void	handle_redir_heredoc(t_ast *branch, t_token *token, t_token *token_next);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status);

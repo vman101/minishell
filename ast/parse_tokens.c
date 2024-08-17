@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 16:23:20 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 13:27:25 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ static t_ast	collect_redirection(t_token *token, \
 				handle_redir_out(&branch, &token[i], &token[i + 1]);
 				handle_redir_append(&branch, &token[i], &token[i + 1]);
 			}
-			handle_redir_heredoc(&branch, &token[i], &token[i + 1], env);
+			handle_redir_heredoc(&branch, &token[i], &token[i + 1]);
 		}
 		i++;
 	}
@@ -164,6 +164,8 @@ t_ast	*parse_tokens(	t_token *tokens, \
 		if (!check_syntax_errors(tokens))
 			has_syntax_error = true;
 		tree[i] = collect_redirection(tokens, environment, has_syntax_error);
+		if (tree[i].connection_type == TREE_INVALID)
+			return (lst_memory(tree, NULL, FREE), *exit_status = 1, NULL);
 		parse_branch(tokens, &tree[i]);
 		i++;
 	}

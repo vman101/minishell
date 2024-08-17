@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 22:55:10 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/17 14:51:24 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	ft_cd(const char **environment, const char **args, int32_t *exit_status)
 
 	args_size = get_split_size((const char **)args);
 	if (args_size > 2)
-		return (ft_putendl_fd("minishell: cd: too many arguments", 1));
+		return (*exit_status = 1, ft_putendl_fd("minishell: cd: too many arguments", 2));
 	else if (args_size == 1)
 	{
 		path = environment_variable_value_get("HOME", environment);
@@ -50,7 +50,12 @@ void	ft_cd(const char **environment, const char **args, int32_t *exit_status)
 		else
 			path = (char *)args[1];
 		if (chdir(path) != 0)
-			perror("cd");
+		{
+			ft_putstr_fd("minishell: cd: ", 2);
+			perror(path);
+			*exit_status = 1;
+			return ;
+		}
 		*exit_status = 0;
 	}
 	pwd_update((const char **)environment);

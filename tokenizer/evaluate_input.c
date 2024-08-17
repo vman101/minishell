@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 18:13:06 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 14:59:51 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,10 @@ char	skip_to_delimiter(char *input_new)
 	char	character_store;
 
 	temp_move = input_new;
-	while (temp_move[0] && !is_delimiter(temp_move[0]))
+	while (ft_isalnum(*temp_move) || *temp_move == '?')
+	{
 		temp_move++;
+	}
 	character_store = *temp_move;
 	*temp_move = 0;
 	return (character_store);
@@ -99,6 +101,7 @@ void	evaluate_helper(char *input_new, uint32_t *input_length, \
 {
 	char	character_store;
 	char	**environment;
+	char	*variable;
 
 	environment = env_static(NULL);
 	ft_memmove(input_new, input_new + 1, ft_strlen(input_new));
@@ -107,9 +110,10 @@ void	evaluate_helper(char *input_new, uint32_t *input_length, \
 		insert_exit_status(input_new, exit_status, \
 				input_length, character_store);
 	else
-		insert_string(input_new, environment_variable_value_get(\
-					input_new, \
-					(const char **)environment), character_store);
+	{
+		variable = environment_variable_value_get(input_new, (const char **)environment);
+		insert_string(input_new, variable, character_store);
+	}
 }
 
 uint32_t	evaluate_variable(	char **input, \

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:32:16 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 16:08:02 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/17 11:47:54 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	ft_open(int *fd, const char *path, int flag, int mode)
 		*fd = open(path, flag);
 	if (*fd == -1)
 	{
-		p_stderr(2, "open: ", path);
+		ft_putstr_fd("open: ", 2);
 		perror(path);
 	}
 }
