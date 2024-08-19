@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/19 13:00:43 by victor           ###   ########.fr        #
+#    Updated: 2024/08/19 23:17:50 by victor           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,9 @@ SRC			:=	src/commands.c src/environment_variables.c \
 				src/path_utils.c src/termios.c \
 				src/utils.c src/utils2.c src/utils3.c \
 				src/environment_variables_manip.c \
-				src/wildcards.c
+				src/wildcards.c src/execution.c \
+				src/non_interactive.c src/wildcards_hanlde_match.c \
+				src/wildcards_helper.c
 
 PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 				prompt/prompt_utils.c prompt/tab_completion.c \

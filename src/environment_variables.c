@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 22:43:05 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:06:52 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,6 @@ void	environment_print(const char **environment)
 		ft_putendl_fd((char *)environment[i], 1);
 		i++;
 	}
-}
-
-char	**env_static(char **environment)
-{
-	static char	**env;
-
-	if (environment)
-		env = environment;
-	return (env);
 }
 
 void	environment_variable_print(	const char *variable, \

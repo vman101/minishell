@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 22:11:47 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:26:58 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	environment_print_sorted(const char **environment)
 		tmp = ft_strchr(environment[i], '=');
 		if (!tmp)
 			tmp = ft_strchr(environment[i], 0);
-		length1 =  tmp - environment[i];
+		length1 = tmp - environment[i];
 		if (ft_strncmp(environment[i], environment[i + 1], length1) > 0)
 		{
 			tmp = (char *)environment[i];
@@ -79,41 +79,6 @@ static void	print_sorted(const char **environment)
 	ft_free(&env);
 }
 
-/*static void	environment_print_sorted(const char **environment)*/
-/*{*/
-/*	char		**tmp_env;*/
-/*	uint{
- *
- *	}32_t	i;*/
-/*	uint32_t	split_size;*/
-/*	char		*tmp;*/
-/**/
-/*	split_size = get_split_size(environment);*/
-/*	tmp_env = ft_calloc(split_size + 1, sizeof(*tmp_env));*/
-/*	if (!tmp_env)*/
-/*		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN));*/
-/*	i = -1;*/
-/*	while (environment[++i])*/
-/*		tmp_env[i] = (char *)environment[i];*/
-/*	while (split_size)*/
-/*	{*/
-/*		i = -1;*/
-/*		while (++i < split_size - 1)*/
-/*		{*/
-/*			if (ft_strncmp(tmp_env[i], tmp_env[i + 1], \*/
-/*							ft_strlen(tmp_env[i])) > 0)*/
-/*			{*/
-/*				tmp = tmp_env[i];*/
-/*				tmp_env[i] = tmp_env[i + 1];*/
-/*				tmp_env[i + 1] = tmp;*/
-/*			}*/
-/*		}*/
-/*		split_size--;*/
-/*	}*/
-/*	print_environment_a_la_export(tmp_env);*/
-/*}*/
-/**/
-
 bool	is_allowed_char(const char *s)
 {
 	uint32_t	i;
@@ -131,30 +96,26 @@ bool	is_allowed_char(const char *s)
 
 void	ft_export(const char **args, int32_t *exit_status)
 {
-	uint32_t	args_size;
 	uint32_t	i;
 	char		*variable_name;
 	char		*variable_value;
 	char		**environment;
 
 	environment = env_static(NULL);
-	args_size = get_split_size(args);
-	if (args_size == 1)
+	if (get_split_size(args) < 2)
 		return (print_sorted((const char **)environment));
 	i = 1;
 	while (args[i])
 	{
 		if (!is_allowed_char(args[i]))
-			return (p_stderr(2, "minishell: export: `%s': not a valid identifier\n", \
+			return (p_stderr(2, \
+					"minishell: export: `%s': not a valid identifier\n", \
 					args[i]), *exit_status = 1, (void)0);
 		variable_name = (char *)args[i];
 		variable_value = ft_strchr(args[i], '=');
 		if (variable_value)
 			*variable_value++ = 0;
-		if (!environment_variable_value_get(variable_name, (const char **)environment))
-			environment_variable_add(&environment, variable_name, variable_value);
-		else
-			environment_variable_value_change((const char **)environment, variable_name, variable_value);
+		environment_variable_add(&environment, variable_name, variable_value);
 		i++;
 	}
 	*exit_status = 0;

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 11:39:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/19 12:08:02 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:29:36 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	trim_spaces(char *args)
 		j = i;
 		while (ft_isspace(args[j]))
 			j++;
-		ft_memmove(&args[i], &args[j - (j > i && i > 0)], ft_strlen(&args[i]) + 1);
+		ft_memmove(&args[i], &args[j - (j > i && i > 0)], \
+				ft_strlen(&args[i]) + 1);
 		i++;
 	}
 }
@@ -100,7 +101,8 @@ int32_t	ft_echo(char **args, int32_t *exit_status)
 			if (args[1][i] == 0)
 				return (echo_no_newline(&args[2]), *exit_status = 0);
 		}
-		echo_newline(&args[1], 0), *exit_status = 0;
+		echo_newline(&args[1], 0);
+		*exit_status = 0;
 	}
 	else
 		ft_putchar_fd('\n', 1);

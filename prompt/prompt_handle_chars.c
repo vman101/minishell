@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:11:28 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 00:35:54 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:18:57 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ uint8_t	handle_single_char_input(	char **input, char buffer[], \
 	}
 	else
 	{
-		*do_refresh = handle_multiple_character_to_input(input, buffer, \
+		*do_refresh = handle_multiple_character(input, buffer, \
 							cursor_position_current, input_length_current);
 		return (1);
 	}
@@ -66,10 +66,10 @@ bool	handle_new_character_to_input(		char **input,
 	return (do_refresh);
 }
 
-bool	handle_multiple_character_to_input(	char **input,
-											char buffer[],
-											uint32_t cursor_position_current[2],
-											uint32_t prompt_length_current)
+bool	handle_multiple_character(	char **input,
+									char buffer[],
+									uint32_t cursor_position_current[2],
+									uint32_t prompt_length_current)
 {
 	bool		do_refresh;
 	uint32_t	buffer_length;
@@ -119,7 +119,7 @@ void	handle_rapid_input(	char buffer[], \
 	do_refresh = true;
 	while (bytes_read > 0)
 	{
-		handle_multiple_character_to_input(&input, buffer, \
+		handle_multiple_character(&input, buffer, \
 											cursor_position, \
 											ft_strlen(input));
 		ft_bzero(buffer, 100);

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:33:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/16 22:26:27 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:26:32 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,11 @@ void	environment_variable_add(	char ***environment,
 	uint32_t	variable_new_value_length;
 	uint64_t	environment_length_current;
 
+	if (environment_variable_get(variable_new_name, \
+				(const char **)*environment))
+		return (environment_variable_value_change(\
+		(const char **)*environment, variable_new_name, variable_new_value));
 	environment_length_current = get_split_size((const char **)*environment);
-	if (!environment_length_current)
-		return ;
 	environment_buffer_extend(environment, environment_length_current);
 	variable_new_name_length = ft_strlen(variable_new_name);
 	variable_new_value_length = ft_strlen(variable_new_value);

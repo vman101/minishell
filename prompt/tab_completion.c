@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/08/10 21:48:04 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:18:16 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	handle_tab_yes_match(	t_prompt *prompt, \
 	struct winsize	win;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
-	handle_multiple_character_to_input(input, \
+	handle_multiple_character(input, \
 							(char *)(next_word_match + current_word_length), \
 							prompt->cursor_position, ft_strlen(*input));
 	cursor_position_save();

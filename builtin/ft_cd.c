@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 14:51:24 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:32:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,17 @@ static void	pwd_update(const char **environment)
 	ft_free(&pwd);
 }
 
-void	ft_cd(const char **environment, const char **args, int32_t *exit_status)
+void	ft_cd(	const char **environment, \
+				const char **args, \
+				int32_t *exit_status)
 {
 	uint32_t	args_size;
 	char		*path;
 
 	args_size = get_split_size((const char **)args);
 	if (args_size > 2)
-		return (*exit_status = 1, ft_putendl_fd("minishell: cd: too many arguments", 2));
+		return (*exit_status = 1, \
+				ft_putendl_fd("minishell: cd: too many arguments", 2));
 	else if (args_size == 1)
 	{
 		path = environment_variable_value_get("HOME", environment);
@@ -50,12 +53,8 @@ void	ft_cd(const char **environment, const char **args, int32_t *exit_status)
 		else
 			path = (char *)args[1];
 		if (chdir(path) != 0)
-		{
-			ft_putstr_fd("minishell: cd: ", 2);
-			perror(path);
-			*exit_status = 1;
-			return ;
-		}
+			return (perror(path), \
+					*exit_status = 1, ft_putstr_fd("minishell: cd: ", 2));
 		*exit_status = 0;
 	}
 	pwd_update((const char **)environment);

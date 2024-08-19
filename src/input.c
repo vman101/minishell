@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 16:18:42 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 11:08:27 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 22:58:56 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,17 @@ uint32_t	get_split_size(const char **split)
 		return (0);
 	while (split[i])
 		i++;
+	return (i);
+}
+
+int	get_amount_tokens(t_token *tokens)
+{
+	int	i;
+
+	i = 0;
+	while (tokens[i].token_type != TOKEN_EOL)
+	{
+		i++;
+	}
 	return (i);
 }

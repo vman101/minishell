@@ -6,11 +6,20 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/08/07 19:03:17 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/19 23:06:42 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+char	**env_static(char **environment)
+{
+	static char	**env;
+
+	if (environment)
+		env = environment;
+	return (env);
+}
 
 void	ft_opendir(DIR **directory, const char *directory_path)
 {
