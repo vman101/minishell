@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 22:38:04 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 10:53:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,9 @@ char	*find_absolute_path(const char *path_variable, char *input)
 {
 	char	*path_abs;
 
-	if (ft_strchr(input, '/') || (input && *input == 0))
+	if (!input)
+		return (NULL);
+	if ((input && *input == 0) || ft_strchr(input, '/'))
 		return (print_error(input));
 	if (path_variable)
 		path_variable = ft_strchr(path_variable, '/');

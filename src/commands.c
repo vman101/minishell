@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/17 16:17:50 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:46:13 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
-	ft_close(STDIN_FILENO, "STDIN in restore_fd");
-	ft_close(STDOUT_FILENO, "STDOUT in restore_fd");
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
 }
@@ -76,6 +74,12 @@ void	execution_loop(	t_ast *tree, \
 	{
 		if (tree[i].connection_type != TREE_INVALID)
 		{
+			if (tree[i].has_redir_in && tree[i].path_file_in == 0 && tree[i].fd_in == -1)
+			{
+				*exit_status = 1;
+				i++;
+				continue ;
+			}
 			evaluate_input(&tree[i].args, exit_status, &error_found);
 			if (*exit_status == -1 || error_found == true)
 			{
@@ -83,6 +87,8 @@ void	execution_loop(	t_ast *tree, \
 				break ;
 			}
 			handle_command(&tree[i], env, exit_status);
+			if (tree[i].args)
+				environment_variable_value_change(env, "_", tree[i].args[0]);
 			if (tree[i].connection_type != TREE_PIPE)
 				restore_fd(std[0], std[1]);
 			if ((tree[i].connection_type == TREE_LOGICAL_OR \
@@ -136,6 +142,8 @@ void	*m_tokenizer(const char *input, const char **env, int *exit_status)
 	tokens = lexical_analysis((char *)input);
 	if (tokens)
 	{
+		/*print_tokens(tokens);*/
+		/*return (0);*/
 		tree = parse_tokens(tokens, env, exit_status);
 		if (tree)
 			execute_commands(tree, env, exit_status);

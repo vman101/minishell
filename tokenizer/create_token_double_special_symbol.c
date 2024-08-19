@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 22:28:34 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:45:35 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,14 @@ void	token_heredoc_get(	t_token *token, \
 	static t_prompt	heredoc = {0};
 
 	if (heredoc.exists == false)
+	{
 		heredoc = prompt_create(environment, CUSTOM);
-	heredoc.prompt_length = prompt_display_string_set(&heredoc, \
-													NULL, \
-													"heredoc> ");
+		heredoc.prompt_length = prompt_display_string_set(&heredoc, \
+				NULL, \
+				"heredoc> ");
+	}
 	token->token_value = token_heredoc_input_get(&heredoc, delimiter);
-	token->token_type = TOKEN_WORD;
+	token->token_type = TOKEN_DONE;
 }
 
 bool	is_mutliple_lines(char *c)
@@ -67,33 +69,36 @@ bool	is_mutliple_lines(char *c)
 	return (false);
 }
 
-void	heredoc_loop(	char *input, \
+char	*heredoc_loop(	char *input, \
 						char *temp_move, \
 						const char *delimiter, \
 						uint32_t delimiter_length)
 {
 	char		*temp_cut;
 	uint32_t	length;
+	uint32_t	i;
 
 	while (temp_move && *temp_move)
 	{
-		*temp_move = ' ';
-		temp_cut = temp_move;
+		temp_cut = temp_move + 1;
 		while (*temp_cut && *temp_cut != '\n')
 			temp_cut++;
 		length = temp_cut - temp_move;
-		while (length--)
+		i = 0;
+		while (i < length)
 		{
 			ft_memmove(input + 1, input, ft_strlen(input));
 			*input++ = *++temp_move;
 			ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
+			i++;
 		}
 		if (length >= delimiter_length)
-			if (ft_strncmp(input - delimiter_length, \
-				delimiter, delimiter_length) == 0)
+			if (ft_memcmp(input - length + 1, \
+				delimiter, length - 1) == 0)
 				break ;
 		temp_move = ft_strchr(temp_move, '\n');
 	}
+	return (input);
 }
 
 void	remove_qoutes_delimiter(char *delimiter)
@@ -112,7 +117,7 @@ void	remove_qoutes_delimiter(char *delimiter)
 		ft_memmove(delimiter, delimiter + 1, ft_strlen(delimiter));
 }
 
-void	heredoc_while_tokenizing(char *input)
+char	*heredoc_while_tokenizing(char *input)
 {
 	char		*delimiter;
 	char		*temp_move;
@@ -121,7 +126,7 @@ void	heredoc_while_tokenizing(char *input)
 
 	input += 2;
 	if (!is_mutliple_lines(input))
-		return ;
+		return (input);
 	delimiter = input;
 	while (ft_isspace(*delimiter))
 		delimiter++;
@@ -139,10 +144,11 @@ void	heredoc_while_tokenizing(char *input)
 	*temp_move = 0;
 	delimiter_length = ft_strlen(delimiter);
 	*temp_move = character_store;
-	input = temp_move;
-	temp_move = ft_strchr(input, '\n');
+	input = temp_move + (*temp_move != 0);
+	temp_move = input;
 	if (temp_move)
-		heredoc_loop(input, temp_move, delimiter, delimiter_length);
+		return (heredoc_loop(input, temp_move, delimiter, delimiter_length));
+	return (input);
 }
 
 t_token	create_token_double_special_symbol(char **input)
@@ -155,7 +161,23 @@ t_token	create_token_double_special_symbol(char **input)
 	else if (ft_strncmp(*input, "<<", 2) == 0)
 	{
 		token_type = TOKEN_HEREDOC;
-		heredoc_while_tokenizing(*input);
+		*input += 2;
+		while (**input && **input == ' ')
+			(*input)++;
+		temp_token = create_token(token_type, *input);
+		if (!isatty(0))
+		{
+			*input = heredoc_while_tokenizing(*input);
+			**input = 0;
+			(*input)++;
+		}
+		else
+		{
+			while (**input && !ft_isspace(**input) && !is_special_char(**input))
+				(*input)++;
+			*(*input++) = 0;
+		}
+		return (temp_token);
 	}
 	else if (ft_strncmp(*input, "&&", 2) == 0)
 		token_type = TOKEN_AND;

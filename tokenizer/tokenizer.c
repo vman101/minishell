@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 22:41:30 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 15:57:07 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,5 +109,6 @@ t_token	*lexical_analysis(char *input)
 			break ;
 		tokens[i++] = check_symbol_and_create_token((const char **)&input);
 	}
+	tokens[i].token_type = TOKEN_EOL;
 	return (tokens);
 }

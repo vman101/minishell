@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 22:29:09 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 18:18:14 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,25 +28,28 @@ void	handle_pipe_in_parent(t_ast *command)
 
 void	execute_parent(t_ast *command, int32_t *exit_status, pid_t pid)
 {
-	int		stdout_fd;
+	int	org_stdout;
 
-	stdout_fd = dup(STDOUT_FILENO);
-	if (stdout_fd == -1)
+	org_stdout = dup(STDOUT_FILENO);
+	if (org_stdout == -1)
+	{
+		perror("dup");
 		lst_memory(NULL, NULL, CLEAN);
+	}
 	if (command->connection_type == TREE_PIPE)
 		handle_pipe_in_parent(command);
 	if (command->has_redir_in || command->has_redir_out)
-		handle_fds_parent_proccess(command);
+		handle_fds_parent_proccess(command, exit_status);
 	waitpid(pid, exit_status, 0);
 	if (WIFEXITED(*exit_status))
 	{
-		dup2(stdout_fd, STDOUT_FILENO);
-		ft_close(stdout_fd, "in execute command parent");
+		dup2(org_stdout, STDOUT_FILENO);
+		ft_close(org_stdout, "in execute_parent");
 		*exit_status = WEXITSTATUS(*exit_status);
 	}
 }
 
-void	execute_command(t_ast *command, const char **env, int32_t *exit_status)
+void	execute_command(t_ast *command, const char **env, int32_t *exit_status, char *path)
 {
 	pid_t	pid;
 
@@ -57,7 +60,7 @@ void	execute_command(t_ast *command, const char **env, int32_t *exit_status)
 			handle_pipe_in_child(command);
 		if (command->has_redir_in || command->has_redir_out)
 			handle_fds_child_proccess(command);
-		execve(command->path, command->args, (char **)env);
+		execve(path, command->args, (char **)env);
 		perror("execve");
 		lst_memory(NULL, NULL, CLEAN);
 	}
@@ -95,8 +98,12 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 		return (buildin_apply_pipe(node), ft_unset((char **)environment, \
 					(const char **)node->args, exit_status), 1);
 	else if (ft_memcmp(node->args[0], "export", ft_strlen("export") + 1) == 0)
-		return (buildin_apply_pipe(node), \
-				ft_export((const char **)node->args, exit_status), 1);
+	{
+		buildin_apply_pipe(node);
+		if (node->connection_type != TREE_PIPE)
+			ft_export((const char **)node->args, exit_status);
+		return (1);
+	}
 	else if (ft_memcmp(node->args[0], "exit", ft_strlen("exit") + 1) == 0)
 		return (ft_exit((const char **)node->args), *exit_status = 1);
 	return (0);
@@ -126,6 +133,7 @@ void	handle_command(t_ast *current, const char **env, int *exit_status)
 {
 	int32_t		stdout_org;
 	char		*path_variable;
+	char		*path;
 
 	stdout_org = dup(STDOUT_FILENO);
 	if (stdout_org == -1)
@@ -137,11 +145,11 @@ void	handle_command(t_ast *current, const char **env, int *exit_status)
 	clear_empty_args(current->args);
 	if (!buildin_execute(current, env, exit_status))
 	{
-		current->path = find_absolute_path(path_variable, current->args[0]);
-		if (!current->path)
+		path = find_absolute_path(path_variable, current->args[0]);
+		if (!path)
 			*exit_status = 127;
 		else
-			execute_command(current, env, exit_status);
+			execute_command(current, env, exit_status, path);
 	}
 	else
 	{

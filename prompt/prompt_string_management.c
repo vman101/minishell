@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/08/17 00:38:19 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:50:36 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ void	prompt_refresh_line(char *input, \
 	uint32_t	cursor_position_store;
 
 	cursor_position_store = cursor_position_current[1];
-	tmp = ft_strrchr(input, '\n');
-	if (tmp)
-	{
-		input = tmp + 1;
-		cursor_position_current[1] = 0;
-	}
+	/*tmp = ft_strrchr(input, '\n');*/
+	/*if (tmp)*/
+	/*{*/
+	/*	input = tmp + 1;*/
+	/*	cursor_position_current[1] = 0;*/
+	/*}*/
 	cursor_position_set(cursor_position_current[0], cursor_position_base);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOL, 1);
 	ft_putstr_fd(input, 1);

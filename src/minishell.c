@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/17 18:11:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:17:54 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,12 @@ void	*ft_realloc_string(char **string, uint32_t *new_size)
 {
 	char	*tmp;
 
+	*new_size += *new_size;
 	tmp = ft_calloc(*new_size, sizeof(*tmp));
 	lst_memory(tmp, free, ADD);
 	ft_memcpy(tmp, *string, ft_strlen(*string));
 	lst_memory(*string, NULL, FREE);
 	*string = NULL;
-	*new_size += *new_size;
 	return (tmp);
 }
 
@@ -64,7 +64,7 @@ char	*check_redir_input()
 		{
 			if ((ft_strlen(input) + ft_strlen(buffer)) >  capacity)
 				input = ft_realloc_string(&input, &capacity);
-			ft_strlcpy(input, buffer, ft_strlen(input) + ft_strlen(buffer) + 1);
+			ft_strlcpy(input + ft_strlen(input), buffer, ft_strlen(input) + ft_strlen(buffer) + 1);
 		}
 		else if (bytes_read < 0)
 			return (perror("read"), lst_memory(NULL, NULL, CLEAN), NULL);
@@ -77,10 +77,19 @@ int	setup(	uint32_t argc, \
 			char **environment)
 {
 	char	*input;
+	char	*shlvl;
 
 	g_signal_flag = 0;
 	env_static(environment);
 	setup_signal_handlers();
+	shlvl = ft_itoa(ft_atoi(environment_variable_value_get("SHLVL", (const char **)environment)) + 1);
+	if (!shlvl)
+	{
+		perror("malloc");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	environment_variable_value_change((const char **)environment, "SHLVL", shlvl); 
+	ft_free(&shlvl);
 	if (!isatty(0))
 	{
 		input = check_redir_input();
@@ -122,5 +131,6 @@ int	main(int argc, const char **argv, const char **env)
 			break ;	
 		env_static(environment);
 	}
+	lst_memory(NULL, NULL, END);
 	return (exit_status);
 }

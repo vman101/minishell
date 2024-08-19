@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/17 18:08:02 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:47:05 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ void	tree_destroy(void *tree_ptr)
 	tree = (t_ast *)tree_ptr;
 	while (tree[i].type != NODE_END)
 	{
-		if (tree[i].has_redir_in == true)
-			ft_close(tree[i].fd_in, "fd_in in tree_destroy");
 		if (tree[i].has_redir_out == true)
 			ft_close(tree[i].fd_out, "fd_out in tree_destroy");
 		ft_free(&tree[i].args);
@@ -109,8 +107,8 @@ static t_ast	collect_redirection(t_token *token, \
 				handle_redir_out(&branch, &token[i], &token[i + 1]);
 				handle_redir_append(&branch, &token[i], &token[i + 1]);
 			}
-			handle_redir_heredoc(&branch, &token[i], &token[i + 1]);
 		}
+		handle_redir_heredoc(&branch, &token[i]);
 		i++;
 	}
 	return (branch);
@@ -127,8 +125,7 @@ int	check_syntax_errors(t_token *token)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
-			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
-			|| token[i].token_type == TOKEN_HEREDOC)
+			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
 			check_valid_redir(token, i, &error_catched);
 		else if (token[i].token_type == TOKEN_PIPE)
 			check_valid_pipe(token, i, &error_catched);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/16 13:09:20 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/19 17:29:19 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,7 @@ void	check_valid_redir(t_token *token, int index, int *error_catched)
 	}
 	else if (token[index + 1].token_type == TOKEN_REDIRECT_IN \
 			|| token[index + 1].token_type == TOKEN_REDIRECT_OUT \
-			|| token[index + 1].token_type == TOKEN_REDIRECT_APPEND \
-			|| token[index + 1].token_type == TOKEN_HEREDOC)
+			|| token[index + 1].token_type == TOKEN_REDIRECT_APPEND)
 	{
 		print_error_redir(token[index + 1].token_type);
 		*error_catched = 1;

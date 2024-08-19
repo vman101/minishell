@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 14:40:58 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 22:19:06 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/19 19:12:47 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ uint32_t	evaluate_variable(	char **input, \
 	{
 		if (skip_single_quotes(input_new, &i, &in_double_quotes))
 			return (true);
-		else if (input_new[i] == '$' && (ft_isalnum(input_new[i + 1]) || input_new[i + 1] == '?'))
+		else if (input_new[i] == '$' && (ft_isalnum(input_new[i + 1]) || input_new[i + 1] == '?' || input_new[i + 1] == '_'))
 			evaluate_helper(input_new + i, input_length, exit_status);
 		else
 			i++;
