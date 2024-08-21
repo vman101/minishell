@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 17:29:19 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 16:59:25 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,13 @@ void	print_error_redir(t_token_type token_type)
 
 void	check_valid_redir(t_token *token, int index, int *error_catched)
 {
-	if (token[index + 1].token_type == TOKEN_EOL
-		|| (token[index + 1].token_type == TOKEN_WORD && token[index + 1].token_value == NULL))
+	if (token[index + 1].token_type == TOKEN_EOL \
+		|| token[index + 1].token_type == TOKEN_NEWLINE \
+		|| (token[index + 1].token_type == TOKEN_WORD \
+		&& token[index + 1].token_value == NULL))
 	{
 		ft_putendl_fd(\
-				"minishell: syntax error near unexpected token 'newline'", 2);
+				"minishell: syntax error near unexpected token `newline'", 2);
 		*error_catched = 1;
 	}
 	if (token[index + 1].token_type == TOKEN_AND
@@ -59,7 +61,8 @@ void	check_valid_redir(t_token *token, int index, int *error_catched)
 	}
 	else if (token[index + 1].token_type == TOKEN_REDIRECT_IN \
 			|| token[index + 1].token_type == TOKEN_REDIRECT_OUT \
-			|| token[index + 1].token_type == TOKEN_REDIRECT_APPEND)
+			|| token[index + 1].token_type == TOKEN_REDIRECT_APPEND
+			|| token[index + 1].token_type == TOKEN_HEREDOC)
 	{
 		print_error_redir(token[index + 1].token_type);
 		*error_catched = 1;
@@ -91,7 +94,7 @@ void	check_valid_logical_operator(	t_token *token, \
 										int index, \
 										int *error_catched)
 {
-	if (index == 0 || token[index + 1].token_type == TOKEN_EOL)
+	if (index == 0 || token[index + 1].token_type == TOKEN_EOL || token[index + 1].token_type == TOKEN_NEWLINE)
 	{
 		print_error_logical_operator(token[index].token_type);
 		*error_catched = 1;
@@ -106,5 +109,26 @@ void	check_valid_logical_operator(	t_token *token, \
 	{
 		print_error_pipe();
 		*error_catched = 1;
+	}
+}
+
+void	check_valid_heredoc(t_token *token, int index, int *error_catched)
+{
+	if (token[index].token_value == 0 || *token[index].token_value == 0)
+	{
+		*error_catched = 2;
+		if (token[index + 1].token_type == TOKEN_AND
+				|| token[index + 1].token_type == TOKEN_OR)
+			print_error_logical_operator(token[index].token_type);
+		else if (token[index + 1].token_type == TOKEN_PIPE)
+			print_error_pipe();
+		else if (token[index + 1].token_type == TOKEN_REDIRECT_IN \
+				|| token[index + 1].token_type == TOKEN_REDIRECT_OUT \
+				|| token[index + 1].token_type == TOKEN_REDIRECT_APPEND \
+				|| token[index + 1].token_type == TOKEN_HEREDOC)
+			print_error_redir(token[index + 1].token_type);
+		else
+			ft_putendl_fd(\
+				"minishell: syntax error near unexpected token `newline'", 2);
 	}
 }

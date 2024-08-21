@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:49:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 21:40:27 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 10:18:43 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 long	ft_atol(char const *s, uint8_t	*too_big)
 {
-	long long			nb;
+	long long	nb;
 	char const	*tmp;
 
 	nb = 0;

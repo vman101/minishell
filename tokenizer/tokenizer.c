@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 23:39:40 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 10:53:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,20 +35,6 @@ static t_token	check_symbol_and_create_token(const char **input)
 		return (create_token_word(input));
 }
 
-bool	unrecognized_input(char c)
-{
-	if (c >= 0 && c < 127 && (ft_isalnum(c) \
-		|| ft_isspace(c) || is_special_char(c) \
-		|| c == '?' || c == '/' || c == '-' || c == '\n' \
-		|| c == ';' || c == '\'' || c == '\"' || c == '.'\
-		|| c == '(' || c == ')' || c == '*' || c == '[' \
-		|| c == ']' || c == '{' || c == '}' || c == '#'))
-		return (false);
-	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", \
-			(char []){c, 0});
-	return (true);
-}
-
 static uint32_t	get_word_count(char *input)
 {
 	uint32_t	i;
@@ -58,17 +44,11 @@ static uint32_t	get_word_count(char *input)
 	word_count = 0;
 	while (input[i])
 	{
-		/*if (unrecognized_input(input[i]))*/
-		/*	return (0);*/
 		while (ft_isspace(input[i]))
 			i++;
 		if (is_double_special(&input[i]))
 			i += 2;
-		else if (is_special_char(input[i]) \
-			|| input[i] == '/' || input[i] == '?' \
-			|| input[i] == '-' || input[i] == '\n' \
-			|| input[i] == ';' || input[i] == '\'' \
-			|| input[i] == '\"' || input[i] == '*' || input[i] == '.')
+		else if (is_in_alphabet(input[i]))
 			i++;
 		else if (ft_isalnum(input[i]))
 			while (input[i] && !ft_isspace(input[i]) \
@@ -102,8 +82,7 @@ t_token	*lexical_analysis(char *input)
 		{
 			if (*input == '\n' || *input == ';')
 				tokens[i++].token_type = TOKEN_NEWLINE;
-			*(char *)input = '\0';
-			input++;
+			*(char *)input++ = '\0';
 		}
 		if (*input == '\0')
 			break ;

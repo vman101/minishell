@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/19 23:32:21 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 13:25:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ void	ft_cd(	const char **environment, \
 		else
 			path = (char *)args[1];
 		if (chdir(path) != 0)
-			return (perror(path), \
-					*exit_status = 1, ft_putstr_fd("minishell: cd: ", 2));
+			return (*exit_status = 1, ft_putstr_fd("minishell: cd: ", 2), \
+					perror(path));
 		*exit_status = 0;
 	}
 	pwd_update((const char **)environment);

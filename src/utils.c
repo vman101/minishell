@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:06:42 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 11:46:11 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,24 +48,4 @@ int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	return (bytes_read);
-}
-
-void	print_debug_string(char *string)
-{
-	uint32_t	cur_pos[2];
-
-	cursor_position_get(cur_pos);
-	ft_printf(CURSOR_POSITION_SET, 80, 80);
-	ft_printf("%s", string);
-	ft_printf(CURSOR_POSITION_SET, cur_pos[0], cur_pos[1]);
-}
-
-void	print_debug_uint(uint32_t info)
-{
-	uint32_t	cur_pos[2];
-
-	cursor_position_get(cur_pos);
-	ft_printf(CURSOR_POSITION_SET, 100, 100);
-	ft_printf("%u", info);
-	ft_printf(CURSOR_POSITION_SET, cur_pos[0], cur_pos[1]);
 }

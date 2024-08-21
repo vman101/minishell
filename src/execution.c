@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 22:54:19 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:43:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 14:23:32 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,29 +31,57 @@ void	command_execute(	const char *command_path,
 	}
 }
 
+void	wait_pids(t_ast *tree, uint pid_count, \
+					pid_t pid_final, int32_t *exit_status)
+{
+	uint	i;
+	int		ret_test;
+	pid_t	wait_pid_ret;
+
+	i = 0;
+	while (i <= pid_count)
+	{
+		if (tree[i].cpid != 0)
+		{
+			wait_pid_ret = wait(&ret_test);
+			if (wait_pid_ret == -1 && g_signal_flag != 1)
+				return (perror("wait"), lst_memory(NULL, NULL, CLEAN));
+			if (wait_pid_ret == pid_final)
+				*exit_status = WEXITSTATUS(ret_test);
+			tree[i].cpid = 0;
+		}
+		i++;
+	}
+}
+
 static void	execution_loop_helper(	t_ast *tree, \
 									uint32_t *i, \
 									int32_t std[2], \
 									int32_t *exit_status)
 {
-	if (tree[*i].connection_type != TREE_PIPE)
+	if (tree[*i].type != NODE_PIPE)
+	{
 		restore_fd(std[0], std[1]);
-	if ((tree[*i].connection_type == TREE_LOGICAL_OR \
+		if (tree[*i].cpid != 0)
+			wait_pids(tree, *i, tree[*i].cpid, exit_status);
+	}
+	if ((tree[*i].type == NODE_LOGICAL_OR \
 		&& *exit_status == 0))
 		i++;
-	else if ((tree[*i].connection_type == TREE_LOGICAL_AND \
+	else if ((tree[*i].type == NODE_LOGICAL_AND \
 		&& *exit_status != 0))
 		i++;
 }
 
 void	execution_loop(	t_ast *tree, \
 						const char **env, \
-						int *exit_status)
+						int *exit_status, \
+						int stdout_org)
 {
 	bool		error_found;
 
 	error_found = false;
-	if (tree->connection_type != TREE_INVALID)
+	if (tree->type != NODE_INVALID)
 	{
 		if (tree->has_redir_in \
 			&& tree->path_file_in == 0 \
@@ -66,7 +94,7 @@ void	execution_loop(	t_ast *tree, \
 			environment_variable_value_change(env, "_", tree->args[0]);
 		if (*exit_status == -1 || error_found == true)
 			return (*exit_status = 2, (void)0);
-		handle_command(tree, env, exit_status);
+		handle_command(tree, env, exit_status, stdout_org);
 	}
 }
 
@@ -86,7 +114,7 @@ void	execute_commands(t_ast *tree, const char **env, int *exit_status)
 	}
 	while (tree[i].type != NODE_END)
 	{
-		execution_loop(&tree[i], env, exit_status);
+		execution_loop(&tree[i], env, exit_status, stdout_org);
 		execution_loop_helper(tree, &i, \
 								(int [2]){stdin_org, stdout_org}, \
 								exit_status);

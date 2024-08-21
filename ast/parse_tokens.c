@@ -6,13 +6,13 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 19:47:05 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 17:08:01 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static uint32_t	determine_trees(t_token *tokens)
+uint32_t	determine_trees(t_token *tokens)
 {
 	uint32_t	tree_count;
 	uint32_t	i;
@@ -82,13 +82,12 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 	}
 	if (tokens[i].token_type == TOKEN_EOL)
 		return ;
-	branch->connection_type = (t_tree_connection_type)tokens[i].token_type;
+	branch->type = (t_node_type)tokens[i].token_type;
 	tokens[i].token_type = TOKEN_DONE;
 }
 
 static t_ast	collect_redirection(t_token *token, \
-									const char **env, \
-									bool has_syntax_error)
+									int has_syntax_error)
 {
 	uint32_t	i;
 	t_ast		branch;
@@ -97,7 +96,7 @@ static t_ast	collect_redirection(t_token *token, \
 	branch = (t_ast){0};
 	branch.fd_in = STDIN_FILENO;
 	branch.fd_out = STDOUT_FILENO;
-	while (!is_delimiter_token(&token[i]) && branch.connection_type != TREE_INVALID)
+	while (!is_delimiter_token(&token[i]) && branch.type != NODE_INVALID)
 	{
 		if (token[i + 1].token_type == TOKEN_WORD)
 		{
@@ -108,45 +107,43 @@ static t_ast	collect_redirection(t_token *token, \
 				handle_redir_append(&branch, &token[i], &token[i + 1]);
 			}
 		}
-		handle_redir_heredoc(&branch, &token[i]);
+		if (has_syntax_error == 0)
+			handle_redir_heredoc(&branch, &token[i]);
 		i++;
 	}
 	return (branch);
 }
 
-int	check_syntax_errors(t_token *token)
+void	check_syntax_errors(t_token *token, int *error_catched)
 {
-	int	error_catched;
 	int	i;
 
-	error_catched = 0;
 	i = 0;
-	while (!is_delimiter_token(&token[i]) || token[i].token_type == TOKEN_PIPE)
+	while ((!is_delimiter_token(&token[i]) || token[i].token_type == TOKEN_PIPE)
+			&& *error_catched == 0)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
 			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
-			check_valid_redir(token, i, &error_catched);
+			check_valid_redir(token, i, error_catched);
+		else if (token[i].token_type == TOKEN_HEREDOC)
+			check_valid_heredoc(token, i, error_catched);
 		else if (token[i].token_type == TOKEN_PIPE)
-			check_valid_pipe(token, i, &error_catched);
+			check_valid_pipe(token, i, error_catched);
 		else if (token[i].token_type == TOKEN_AND \
 				|| token[i].token_type == TOKEN_OR)
-			check_valid_logical_operator(token, i, &error_catched);
-		if (error_catched)
-			return (0);
+			check_valid_logical_operator(token, i, error_catched);
 		i++;
 	}
-	return (1);
 }
 
 t_ast	*parse_tokens(	t_token *tokens, \
-						const char **environment, \
 						int32_t *exit_status)
 {
 	t_ast		*tree;
 	int			i;
 	uint32_t	tree_count;
-	bool		has_syntax_error;
+	int			has_syntax_error;
 
 	if (!tokens)
 		return (NULL);
@@ -158,15 +155,14 @@ t_ast	*parse_tokens(	t_token *tokens, \
 	has_syntax_error = false;
 	while (tree[i].type != NODE_END && !has_syntax_error)
 	{
-		if (!check_syntax_errors(tokens))
-			has_syntax_error = true;
-		tree[i] = collect_redirection(tokens, environment, has_syntax_error);
-		if (tree[i].connection_type == TREE_INVALID)
+		check_syntax_errors(tokens, &has_syntax_error);
+		tree[i] = collect_redirection(tokens, has_syntax_error);
+		if (tree[i].type == NODE_INVALID)
 			*exit_status = 1;
 		parse_branch(tokens, &tree[i]);
 		i++;
 	}
-	if (has_syntax_error == true)
+	if (has_syntax_error != false)
 		return (*exit_status = 2, lst_memory(tree, NULL, FREE), NULL);
 	return (tree);
 }

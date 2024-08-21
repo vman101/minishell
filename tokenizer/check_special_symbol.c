@@ -6,9 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:44:00 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 17:50:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 10:51:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../minishell.h"
 
 int	is_special_char(char c)
 {
@@ -22,20 +24,25 @@ int	ft_isspace(char c)
 		|| c == '\f' || c == '\r' || c == '\n');
 }
 
-int	ft_is_single_quote(char c, int *second_quote_found)
+bool	unrecognized_input(char c)
 {
-	if (c == '\'')
-	{
-		*second_quote_found = 1;
-	}
-	return (c == '\'');
+	if (c >= 0 && c < 127 && (ft_isalnum(c) \
+		|| ft_isspace(c) || is_special_char(c) \
+		|| c == '?' || c == '/' || c == '-' || c == '\n' \
+		|| c == ';' || c == '\'' || c == '\"' || c == '.'\
+		|| c == '(' || c == ')' || c == '*' || c == '[' \
+		|| c == ']' || c == '{' || c == '}' || c == '#'))
+		return (false);
+	p_stderr(2, "minishell: syntax error near unexpected token `%s'\n", \
+			(char []){c, 0});
+	return (true);
 }
 
-int	ft_is_double_quote(char c, int *second_double_found)
+bool	is_in_alphabet(char c)
 {
-	if (c == '\"' && second_double_found)
-	{
-		*second_double_found = 1;
-	}
-	return (c == '\"');
+	return (is_special_char(c) \
+		|| c == '/' || c == '?' \
+		|| c == '-' || c == '\n' \
+		|| c == ';' || c == '\'' \
+		|| c == '\"' || c == '*' || c == '.');
 }

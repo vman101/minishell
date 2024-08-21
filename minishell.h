@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:16:32 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 16:58:50 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <signal.h>
 # include <sys/ioctl.h>
 # include <stddef.h>
+# include <sys/stat.h>
 
 # define PWD 0
 # define CUSTOM 1
@@ -81,7 +82,7 @@ typedef struct s_prompt
 
 typedef enum e_token_type
 {
-	TOKEN_WORD,
+	TOKEN_WORD = 1,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_APPEND,
@@ -89,20 +90,21 @@ typedef enum e_token_type
 	TOKEN_PIPE,
 	TOKEN_AND,
 	TOKEN_OR,
-	TOKEN_NEWLINE,
 	TOKEN_EOL,
 	TOKEN_DONE,
+	TOKEN_NEWLINE,
 }	t_token_type;
 
-typedef enum e_tree_connection_type
-{
-	TREE_NONE = 0,
-	TREE_PIPE = 5,
-	TREE_LOGICAL_AND,
-	TREE_LOGICAL_OR,
-	TREE_NEWLINE,
-	TREE_INVALID
-}	t_tree_connection_type;
+/**/
+/*typedef enum e_tree_connection_type*/
+/*{*/
+/*	TREE_NONE = 0,*/
+/*	TREE_PIPE = 5,*/
+/*	TREE_LOGICAL_AND,*/
+/*	TREE_LOGICAL_OR,*/
+/*	TREE_NEWLINE,*/
+/*	TREE_INVALID*/
+/*}	t_tree_connection_type;*/
 
 typedef struct s_token
 {
@@ -112,26 +114,19 @@ typedef struct s_token
 
 typedef enum t_node_type
 {
-	NODE_INVALID = 1,
+	NODE_NONE,
 	NODE_END,
-	NODE_COMMAND,
-	NODE_REDIRECTION,
-	NODE_PIPE,
-	NODE_LOGICAL_OPERATOR,
+	NODE_PIPE = 6,
+	NODE_LOGICAL_AND,
+	NODE_LOGICAL_OR,
+	NODE_INVALID,
+	NODE_NEWLINE,
 }	t_node_type;
-
-typedef enum e_file_type
-{
-	REDIRECT_IN,
-	REDIRECT_OUT,
-	REDIRECT_APPEND
-}	t_file_type;
 
 typedef struct s_ast
 {
 	t_node_type				type;
 	t_token_type			token_type;
-	t_tree_connection_type	connection_type;
 	char					**args;
 	char					*path_file_in;
 	bool					has_redir_in;
@@ -139,7 +134,7 @@ typedef struct s_ast
 	int32_t					pipefd[2];
 	int						fd_in;
 	int						fd_out;
-	int						is_done;
+	pid_t					cpid;
 }	t_ast;
 
 enum e_alloc
@@ -170,7 +165,7 @@ void		ft_unset(	char **environment, \
 						const char **args, \
 						int32_t *exit_status);
 void		ft_export(const char **args, int32_t *exit_status);
-void		ft_exit(const char **args);
+void		ft_exit(t_ast *tree, int *exit_status);
 void		*ft_realloc(void *ptr, int old_size, int new_size);
 
 /* Commands */
@@ -187,7 +182,7 @@ void		*m_tokenizer(		const char *input, \
 								int *exit_status);
 
 /* non_interactive */
-int32_t	minishell_single_command(	char *command, \
+int32_t		minishell_single_command(	char *command, \
 									char **environment);
 
 void		*ft_realloc_string(		char **string, uint32_t *new_size);
@@ -220,7 +215,7 @@ void		lst_list_clean(t_clean **head);
 int			lst_add_back(t_clean **node, t_clean *node_new);
 
 /* Path Utils */
-char		*find_absolute_path(const char *path_variable, char *input);
+char		*find_absolute_path(const char *path_variable, char *input, int *exit_status);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
@@ -243,6 +238,13 @@ void		prompt_print_pwd(char *prompt);
 void		evaluate_input(	char **input[], \
 							int32_t *exit_status, \
 							bool *error_caught);
+
+/* input skip pattern */
+bool		is_delimiter_variable(char c);
+char		skip_to_delimiter(char *input_new);
+bool		skip_single_quotes(char *input, uint32_t *i, bool *in_double_quotes);
+bool		evaluate_double_quotes(char *input, uint32_t *i);
+bool		evaluate_single_quotes(char *input, uint32_t *i);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -357,7 +359,7 @@ int			handle_prefix(	const char *pattern, \
 
 int			handle_middle(	const char *pattern, const char *str);
 
-char	**expand_wildcard(	const char *pattern);
+char		**expand_wildcard(	const char *pattern);
 
 /* Environment_variable */
 
@@ -389,15 +391,32 @@ char		**env_static(char **environment);
 /*check_special_symbol.c*/
 int			is_special_char(char c);
 int			ft_isspace(char c);
-int			ft_is_single_quote(char c, int *second_quote_found);
-int			ft_is_double_quote(char c, int *second_double_found);
+bool		is_in_alphabet(char c);
+bool		unrecognized_input(char c);
 
 /*create_token_double_special_symbol.c*/
 int			is_double_special(const char *input);
 t_token		create_token_double_special_symbol(char **input);
+bool		is_mutliple_lines(char *c);
+void		remove_qoutes_delimiter(char *delimiter);
 void		token_heredoc_get(	t_token *token, \
 								const char *delimiter, \
 								const char **environment);
+
+/* token_heredoc.c */
+char		*heredoc_while_tokenizing(char *input);
+char		*handle_delimiter(char *input, char **temp_move);
+char		*heredoc_loop(	char *input, \
+							char *temp_move, \
+							const char *delimiter, \
+							uint32_t delimiter_length);
+void		token_heredoc_get(	t_token *token, \
+								const char *delimiter, \
+								const char **environment);
+
+/* handle_heredoc.c */
+void		handle_heredoc(t_token *tokens, int32_t pipefd);
+bool		heredoc_has_been_done(char *value);
 
 /*create_token_single_special_symbol.c*/
 int			is_single_special(const char input);
@@ -423,12 +442,17 @@ void		print_ast(t_ast *head);
 
 /*handle_command.c*/
 
-void		handle_command(t_ast *current, const char **env, int *exit_status);
+void		handle_command(	t_ast *current, const char **env, \
+							int *exit_status, int original_stdout);
 void		execute_commands(t_ast *tree, const char **env, int *exit_status);
+void		wait_pids(t_ast *tree, uint pid_count, pid_t pid_final, int32_t *exit_status);;
 
 /*handle_fds.c*/
 void		handle_fds_child_proccess(t_ast *command);
 void		handle_fds_parent_proccess(t_ast *command, int32_t *exit_status);
+void		handle_pipe_in_child(t_ast *command);
+void		handle_pipe_in_parent(t_ast *command);
+void		buildin_apply_pipe(t_ast *node);
 
 /*handle_logical_operator.c*/
 void		handle_logical_operator(t_ast **logical_node, int exit_status);
@@ -454,8 +478,8 @@ void		handle_redir_heredoc(	t_ast *branch, \
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(	t_token *tokens, \
-							const char **environment, \
 							int32_t *exit_status);
+uint32_t	determine_trees(t_token *tokens);
 
 /* Syntac_check.c */
 void		check_valid_logical_operator(	t_token *token, \
@@ -481,11 +505,6 @@ void		fill_args(	char ***args, \
 						int count, \
 						char *token_value, \
 						int *capacity);
-
-t_ast		parse_word(int *i, t_token *tokens);
-void		parse_logical_operator(t_ast **head, int *i, t_token *tokens);
-void		parse_redirection(t_ast **head, int *i, t_token *tokens);
-void		parse_pipe(t_ast **head, int *i, t_token *tokens);
 bool		is_delimiter_token(t_token *token);
 
 /*syntax_check.c*/
@@ -500,6 +519,8 @@ void		check_valid_pipe(				t_token *token, \
 void		check_valid_logical_operator(	t_token *token, \
 											int index, \
 											int *error_catched);
+
+void		check_valid_heredoc(t_token *token, int index, int *error_catched);
 
 void		free_tokens(void *token_ptr);
 #endif

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:33:50 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 11:14:17 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	prompt_refresh_line(char *input, \
 							uint32_t cursor_position_base, \
 							uint32_t cursor_position_current[2])
 {
-	char		*tmp;
 	uint32_t	cursor_position_store;
 
 	cursor_position_store = cursor_position_current[1];

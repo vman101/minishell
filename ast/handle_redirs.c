@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 19:46:27 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/21 12:49:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	handle_redir_in(t_ast *branch, \
 			branch->path_file_in = token_next->token_value;
 		else
 		{
-			branch->connection_type = TREE_INVALID;
+			branch->type = NODE_INVALID;
 			branch->fd_in = -1;
 			p_stderr(2, "minishell: %s: No such file or directory\n", token_next->token_value);
 		}
@@ -57,7 +57,7 @@ void	handle_redir_out(	t_ast *branch, \
 		ft_open(&branch->fd_out, token_next->token_value, \
 				O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (branch->fd_out == -1)
-			branch->connection_type = TREE_INVALID;
+			branch->type = NODE_INVALID;
 		branch->has_redir_out = true;
 		token->token_type = TOKEN_DONE;
 		token_next->token_type = TOKEN_DONE;
@@ -82,92 +82,16 @@ void	handle_redir_append(t_ast *branch, \
 		ft_open(&branch->fd_out, token_next->token_value, \
 				O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (branch->fd_out == -1)
-			branch->connection_type = TREE_INVALID;
+			branch->type = NODE_INVALID;
 		branch->has_redir_out = true;
 		token->token_type = TOKEN_DONE;
 		token_next->token_type = TOKEN_DONE;
 	}
 }
-
-void	handle_heredoc(t_token *tokens, int32_t pipefd)
-{
-	char		*value;
-	char		*tmp;
-	char		*tmp2;
-	char		character_store;
-	uint32_t	value_length;
-	uint32_t	token_length;
-
-	value = tokens[0].token_value;
-	tmp = value;
-	while (*tmp && ft_isalnum(*tmp))
-		tmp++;
-	character_store = *tmp;
-	*tmp = 0;
-	value_length = ft_strlen(value);
-	*tmp = character_store;
-	tmp = ft_strchr(value, '\n');
-	if (tmp)
-	{
-		*tmp++ = 0;
-		while (tmp)
-		{
-			tmp2 = tmp;
-			tmp = ft_strchr(tmp2, '\n');
-			if (tmp)
-				*tmp++ = 0;
-			token_length = ft_strlen(tmp2);
-			if (token_length >= value_length)
-				if (ft_memcmp(value, tmp2, token_length) == 0)
-					break ;
-			ft_putendl_fd(tmp2, pipefd);
-		}
-	}
-	tokens->token_type = TOKEN_DONE;
-}
-
-bool	heredoc_has_been_done(char *value)
-{
-	char	*tmp;
-	char	*tmp2;
-	char	character_store;
-
-	tmp = value;
-	while (*tmp && !ft_isspace(*tmp))
-		tmp++;
-	character_store = *tmp;
-	if (ft_isspace(*tmp) && *tmp != '\n')
-	{
-		*tmp = 0;
-		tmp = ft_strchr(tmp, '\n');
-		tmp += (tmp != 0);
-	}
-	else
-		*tmp = 0;
-	while (tmp && *tmp)
-	{
-		tmp2 = tmp + 1;
-		tmp = ft_strchr(tmp + 1, '\n');
-		if (tmp)
-			*tmp = 0;
-		if (ft_memcmp(value, tmp2, ft_strlen(value)) == 0)
-		{
-			if (tmp)
-				*tmp = '\n';
-			*ft_strchr(value, 0) = character_store;
-			return (true);
-		}
-		if (tmp)
-			*tmp = '\n';
-	}
-	return (false);
-}
-
 void	handle_redir_heredoc(	t_ast *branch, \
 								t_token *token)
 {
 	char	**environment;
-	char	*previous_input;
 
 	environment = env_static(NULL);
 	if (token->token_type == TOKEN_HEREDOC)
