@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 17:03:30 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 19:12:32 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ static int	find_longest_path(const char *path)
 
 	i = 0;
 	ret = 0;
+	if (!path)
+		return (0);
 	while (*path++)
 	{
 		if (*path == ':')
@@ -31,7 +33,9 @@ static int	find_longest_path(const char *path)
 		}
 		i++;
 	}
-	return (ret);
+	if (ret)
+		return (ret);
+	return (i);
 }
 
 bool	isdir(char	*input)
@@ -57,7 +61,7 @@ static char	*print_error(char *input, int *exit_status)
 				return (input);
 			else
 			{
-				p_stderr(STDERR_FILENO, "minishell: %s: permission denied\n", \
+				p_stderr(STDERR_FILENO, "minishell: %s: Permission denied\n", \
 						input);
 				*exit_status = 126;
 			}
@@ -68,8 +72,8 @@ static char	*print_error(char *input, int *exit_status)
 					input);
 	}
 	else
-		p_stderr(STDERR_FILENO, "minishell: %s: command not found\n", input);
-	return (*exit_status = 127, NULL);
+		return (*exit_status = 127, p_stderr(STDERR_FILENO, "minishell: %s: command not found\n", input), NULL);
+	return (NULL);
 }
 
 static char	*check_paths(const char *path, char *path_abs, char *input, int *exit_status)
@@ -96,7 +100,8 @@ static char	*check_paths(const char *path, char *path_abs, char *input, int *exi
 
 char	*find_absolute_path(const char *path_variable, char *input, int *exit_status)
 {
-	char	*path_abs;
+	char		*path_abs;
+	uint32_t	path_length;
 
 	if (!input)
 		return (*exit_status = 127, NULL);
@@ -106,7 +111,10 @@ char	*find_absolute_path(const char *path_variable, char *input, int *exit_statu
 		path_variable = ft_strchr(path_variable, '/');
 	else
 		path_variable = "./";
-	path_abs = malloc(find_longest_path(path_variable) + ft_strlen(input) + 2);
+	path_length = find_longest_path(path_variable);
+	if (!path_length)
+		return (NULL);
+	path_abs = malloc(path_length + ft_strlen(input) + 2);
 	lst_memory(path_abs, &free, ADD);
 	return (check_paths(path_variable, path_abs, input, exit_status));
 }

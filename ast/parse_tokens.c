@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 17:08:01 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 19:23:23 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,20 @@ uint32_t	determine_trees(t_token *tokens)
 {
 	uint32_t	tree_count;
 	uint32_t	i;
+	bool		has_heredoc;
 
 	i = 0;
 	tree_count = 1;
+	has_heredoc = false;
 	while (tokens[i].token_type != TOKEN_EOL)
 	{
-		if (tokens[i].token_type == TOKEN_AND \
-			|| tokens[i].token_type == TOKEN_OR \
-			|| tokens[i].token_type == TOKEN_PIPE \
-			|| tokens[i].token_type == TOKEN_NEWLINE)
+		if (tokens[i].token_type == TOKEN_HEREDOC)
+			has_heredoc = true;
+		if (is_delimiter_token(&tokens[i]) || (tokens[i].token_type == TOKEN_NEWLINE && has_heredoc == true))
+		{
+			has_heredoc = false;
 			tree_count++;
+		}
 		i++;
 	}
 	return (tree_count);
@@ -54,7 +58,8 @@ bool	is_delimiter_token(t_token *token)
 			|| token->token_type == TOKEN_AND \
 			|| token->token_type == TOKEN_OR \
 			|| token->token_type == TOKEN_NEWLINE \
-			|| token->token_type == TOKEN_PIPE);
+			|| token->token_type == TOKEN_PIPE
+			|| token->token_type == TOKEN_SEMICOLON);
 }
 
 static void	parse_branch(t_token *tokens, t_ast *branch)
@@ -108,7 +113,7 @@ static t_ast	collect_redirection(t_token *token, \
 			}
 		}
 		if (has_syntax_error == 0)
-			handle_redir_heredoc(&branch, &token[i]);
+			handle_redir_heredoc(&branch, &token[i], i);
 		i++;
 	}
 	return (branch);
@@ -119,15 +124,16 @@ void	check_syntax_errors(t_token *token, int *error_catched)
 	int	i;
 
 	i = 0;
-	while ((!is_delimiter_token(&token[i]) || token[i].token_type == TOKEN_PIPE)
+	while (token[i].token_type != TOKEN_NEWLINE && token[i].token_type != TOKEN_EOL && token[i].token_type != TOKEN_SEMICOLON \
 			&& *error_catched == 0)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
-			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
+			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
+			|| token[i].token_type == TOKEN_HEREDOC)
 			check_valid_redir(token, i, error_catched);
-		else if (token[i].token_type == TOKEN_HEREDOC)
-			check_valid_heredoc(token, i, error_catched);
+		/*else if (token[i].token_type == TOKEN_HEREDOC)*/
+		/*	check_valid_heredoc(token, i, error_catched);*/
 		else if (token[i].token_type == TOKEN_PIPE)
 			check_valid_pipe(token, i, error_catched);
 		else if (token[i].token_type == TOKEN_AND \

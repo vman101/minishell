@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 10:44:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/21 15:33:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 15:58:18 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ char	*handle_delimiter(char *input, char **temp_move)
 	delimiter = input;
 	while (ft_isspace(*delimiter))
 		delimiter++;
-	remove_qoutes_delimiter(delimiter);
+	remove_qoutes_delimiter(delimiter, ft_strlen(delimiter));
 	*temp_move = delimiter;
 	while (*temp_move && !ft_isspace(**temp_move) \
 		&& !is_single_special(**temp_move))

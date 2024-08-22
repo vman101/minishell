@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 16:58:50 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 19:03:12 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,10 @@ typedef enum e_token_type
 	TOKEN_PIPE,
 	TOKEN_AND,
 	TOKEN_OR,
+	TOKEN_NEWLINE,
+	TOKEN_SEMICOLON,
 	TOKEN_EOL,
 	TOKEN_DONE,
-	TOKEN_NEWLINE,
 }	t_token_type;
 
 /**/
@@ -115,12 +116,12 @@ typedef struct s_token
 typedef enum t_node_type
 {
 	NODE_NONE,
-	NODE_END,
+	NODE_END = TOKEN_EOL,
 	NODE_PIPE = 6,
 	NODE_LOGICAL_AND,
 	NODE_LOGICAL_OR,
-	NODE_INVALID,
 	NODE_NEWLINE,
+	NODE_INVALID,
 }	t_node_type;
 
 typedef struct s_ast
@@ -128,6 +129,7 @@ typedef struct s_ast
 	t_node_type				type;
 	t_token_type			token_type;
 	char					**args;
+	bool					is_heredoc;
 	char					*path_file_in;
 	bool					has_redir_in;
 	bool					has_redir_out;
@@ -398,7 +400,7 @@ bool		unrecognized_input(char c);
 int			is_double_special(const char *input);
 t_token		create_token_double_special_symbol(char **input);
 bool		is_mutliple_lines(char *c);
-void		remove_qoutes_delimiter(char *delimiter);
+void		remove_qoutes_delimiter(char *delimiter, uint32_t length);
 void		token_heredoc_get(	t_token *token, \
 								const char *delimiter, \
 								const char **environment);
@@ -415,8 +417,8 @@ void		token_heredoc_get(	t_token *token, \
 								const char **environment);
 
 /* handle_heredoc.c */
-void		handle_heredoc(t_token *tokens, int32_t pipefd);
-bool		heredoc_has_been_done(char *value);
+void		handle_heredoc(t_token tokens, int32_t fd);
+bool		heredoc_has_been_done(t_token *token, char *value, int32_t fd);
 
 /*create_token_single_special_symbol.c*/
 int			is_single_special(const char input);
@@ -474,7 +476,8 @@ void		handle_redir_append(	t_ast *branch, \
 									t_token *token_next);
 
 void		handle_redir_heredoc(	t_ast *branch, \
-									t_token *token);
+									t_token *token, \
+									uint8_t token_id);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(	t_token *tokens, \

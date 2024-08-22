@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 12:06:04 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 18:19:01 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	*m_tokenizer(const char *input, const char **env, int *exit_status)
 	tokens = lexical_analysis((char *)input);
 	if (tokens)
 	{
+		/*print_tokens(tokens);*/
 		tree = parse_tokens(tokens, exit_status);
 		if (tree)
 			execute_commands(tree, env, exit_status);

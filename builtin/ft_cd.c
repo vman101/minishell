@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/21 13:25:08 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 18:26:19 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,10 @@ void	ft_cd(	const char **environment, \
 	else
 	{
 		if (ft_memcmp((void *)args[1], "-\0", 2) == 0)
+		{
 			path = environment_variable_value_get("OLDPWD", environment);
+			ft_putendl_fd(path, 1);
+		}
 		else
 			path = (char *)args[1];
 		if (chdir(path) != 0)

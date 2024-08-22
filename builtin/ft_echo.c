@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 11:39:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/19 23:29:36 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/22 10:30:26 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ bool	is_dash_n(char *arg)
 	uint32_t	i;
 
 	i = 0;
-	if (arg[i] == '-')
+	if (arg[i] && arg[i] == '-')
 	{
-		while (arg[++i] == 'n')
+		while (arg[i] && arg[++i] == 'n')
 			;
 		if (arg[i] == 0)
 			return (true);
@@ -51,7 +51,7 @@ int32_t	echo_no_newline(char **args)
 	uint32_t	i;
 
 	i = 0;
-	while (is_dash_n(args[i]))
+	while (args[i] && is_dash_n(args[i]))
 		i++;
 	while (args[i])
 	{

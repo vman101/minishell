@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 12:47:39 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 18:17:01 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,15 @@ void	handle_fds_child_proccess(t_ast *command)
 	if (command->has_redir_in)
 	{
 		if (command->path_file_in != 0)
+		{
 			ft_open(&command->fd_in, command->path_file_in, O_RDONLY, 0644);
+			if (command->is_heredoc == true)
+			{
+				command->is_heredoc = false;
+				ft_free(&command->path_file_in);
+				unlink(command->path_file_in);
+			}
+		}
 		dup2(command->fd_in, STDIN_FILENO);
 		ft_close(command->fd_in, "in child");
 		command->fd_in = -1;

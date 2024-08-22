@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:19:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 16:59:25 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 10:57:34 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,8 @@ void	check_valid_redir(t_token *token, int index, int *error_catched)
 void	check_valid_pipe(t_token *token, int index, int *error_catched)
 {
 	if (index == 0 || token[index + 1].token_type == TOKEN_EOL
-	|| (token[index + 1].token_type == TOKEN_WORD && token[index + 1].token_value == NULL))
+		|| (token[index + 1].token_type == TOKEN_WORD \
+		&& token[index + 1].token_value == NULL))
 	{
 		print_error_pipe();
 		*error_catched = 1;
@@ -94,7 +95,8 @@ void	check_valid_logical_operator(	t_token *token, \
 										int index, \
 										int *error_catched)
 {
-	if (index == 0 || token[index + 1].token_type == TOKEN_EOL || token[index + 1].token_type == TOKEN_NEWLINE)
+	if (index == 0 || token[index + 1].token_type == TOKEN_EOL \
+			|| token[index + 1].token_type == TOKEN_NEWLINE)
 	{
 		print_error_logical_operator(token[index].token_type);
 		*error_catched = 1;
@@ -114,7 +116,7 @@ void	check_valid_logical_operator(	t_token *token, \
 
 void	check_valid_heredoc(t_token *token, int index, int *error_catched)
 {
-	if (token[index].token_value == 0 || *token[index].token_value == 0)
+	if (token[index + 1].token_value == 0 || *token[index].token_value == 0)
 	{
 		*error_catched = 2;
 		if (token[index + 1].token_type == TOKEN_AND

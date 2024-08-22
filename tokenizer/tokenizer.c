@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 10:53:22 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 18:21:28 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,31 +63,81 @@ static uint32_t	get_word_count(char *input)
 	return (word_count);
 }
 
+t_token	*tokens_setup(char *input)
+{
+	if (!input || !*input || *input == '\n' || *input == ';')
+		return (NULL);
+	if (input[ft_strlen(input) - 1] == '\n')
+		input[ft_strlen(input) - 1] = '\0';
+	return (initialise_tokens(get_word_count((char *)input)));
+}
+
+t_token	mark_tokens_till_heredoc(char *value, char **input)
+{
+	uint32_t	value_length;
+	t_token		token;
+
+	*(*input)++ = 0;
+	token.token_value = *input;
+	token.token_type = TOKEN_WORD;
+	if (!value)
+		return (token);
+	value_length = 0;
+	while (value[value_length] && !ft_isspace(value[value_length]) \
+	&& (!is_special_char(value[value_length]) || value[value_length] == '$'))
+		value_length++;
+	remove_qoutes_delimiter(value, value_length);
+	while (**input)
+	{
+		if (**input == '\n')
+		{
+			(*input)++;
+			if (ft_strncmp(value, *input, value_length) == 0 \
+				&& (*(*input + value_length) == '\n' || *(*input + value_length) == '\0'))
+				return (*input += value_length, token);
+		}
+		else
+			(*input)++;
+	}
+	return (token);
+}
+
 t_token	*lexical_analysis(char *input)
 {
 	t_token		*tokens;
+	t_token		*heredoc_token;
 	uint32_t	i;
+	bool		has_heredoc;
 
-	if (!input || !*input || *input == '\n' || *input == ';')
-		return (0);
-	if (input[ft_strlen(input) - 1] == '\n')
-		input[ft_strlen(input) - 1] = '\0';
-	tokens = initialise_tokens(get_word_count((char *)input));
+	tokens = tokens_setup(input);
+	has_heredoc = false;
 	if (!tokens)
 		return (NULL);
-	i = 0;
+	i = -1;
 	while (*input)
 	{
 		while (ft_isspace(*input) || *input == ';')
 		{
-			if (*input == '\n' || *input == ';')
-				tokens[i++].token_type = TOKEN_NEWLINE;
-			*(char *)input++ = '\0';
+			if (*input == '\n')
+			{
+				tokens[++i].token_type = TOKEN_NEWLINE;
+				if (has_heredoc == true)
+				{
+					tokens[++i] = mark_tokens_till_heredoc(heredoc_token[1].token_value, &input);
+					has_heredoc = false;
+				}
+			}
+			else if (*input == ';')
+				tokens[++i].token_type = TOKEN_SEMICOLON;
+			if (*input)
+				*input++ = 0;
 		}
-		if (*input == '\0')
-			break ;
-		tokens[i++] = check_symbol_and_create_token((const char **)&input);
+		tokens[++i] = check_symbol_and_create_token((const char **)&input);
+		if (tokens[i].token_type == TOKEN_HEREDOC)
+		{
+			has_heredoc = true;
+			heredoc_token = &tokens[i];
+		}
 	}
-	tokens[i].token_type = TOKEN_EOL;
-	return (tokens);
+	return (tokens[++i].token_type = TOKEN_EOL, tokens);
 }

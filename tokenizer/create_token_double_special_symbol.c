@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/21 15:31:52 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/22 16:14:04 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,20 +41,24 @@ bool	is_mutliple_lines(char *c)
 	return (false);
 }
 
-void	remove_qoutes_delimiter(char *delimiter)
+void	remove_qoutes_delimiter(char *delimiter, uint32_t length)
 {
-	uint32_t	length;
 	char		quote;
+	uint32_t	i;
+	uint32_t	full_length;
 
-	length = ft_strlen(delimiter);
-	if (*delimiter == '\"' || *delimiter == '\'')
-		quote = *delimiter;
-	else
+	while (ft_isspace(*delimiter))
+		delimiter++;
+	if (!(*delimiter == '\"' || *delimiter == '\''))
 		return ;
-	ft_memmove(delimiter, delimiter + 1, length);
-	delimiter = ft_strchr(delimiter, quote);
-	if (delimiter)
-		ft_memmove(delimiter, delimiter + 1, ft_strlen(delimiter));
+	i = 0;
+	full_length = ft_strlen(delimiter);
+	while (i < length)
+	{
+		if (delimiter[i] == '\"' || delimiter[i] == '\'')
+			ft_memmove(&delimiter[i], &delimiter[i + 1], full_length - i);
+		i++;
+	}
 }
 
 t_token	create_token_heredoc(char **input)
@@ -62,21 +66,18 @@ t_token	create_token_heredoc(char **input)
 	t_token	temp_token;
 
 	*input += 2;
-	while (**input && **input == ' ' && !is_special_char(*((*input)+ 1)))
+	while (**input && **input == ' ' && (!is_special_char(*((*input)+ 1)) \
+			|| (*(*input) + 1 == '$')))
 		(*input)++;
 	temp_token = create_token(TOKEN_HEREDOC, *input);
 	if (!isatty(0))
-	{
 		*input = heredoc_while_tokenizing(*input);
-		**input = 0;
-		(*input)++;
-	}
 	else
-	{
 		while (**input && !ft_isspace(**input) && !is_special_char(*((*input) + 1)))
 			(*input)++;
-		if (**input)
-			**input = 0;
+	if (**input && !is_special_char(**input))
+	{
+		**input = 0;
 		(*input)++;
 	}
 	return (temp_token);
@@ -90,7 +91,7 @@ t_token	create_token_double_special_symbol(char **input)
 	if (ft_strncmp(*input, ">>", 2) == 0)
 		token_type = TOKEN_REDIRECT_APPEND;
 	else if (ft_strncmp(*input, "<<", 2) == 0)
-		return (create_token_heredoc(input));
+		token_type = TOKEN_HEREDOC;
 	else if (ft_strncmp(*input, "&&", 2) == 0)
 		token_type = TOKEN_AND;
 	else
