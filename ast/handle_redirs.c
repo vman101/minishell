@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/22 18:16:39 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 16:01:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,7 @@ void	handle_redir_in(t_ast *branch, \
 		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
 		branch->has_redir_in = true;
-		if (access(token_next->token_value, F_OK) == 0)
-			branch->path_file_in = token_next->token_value;
-		else
-		{
-			branch->type = NODE_INVALID;
-			branch->fd_in = -1;
-			p_stderr(2, "minishell: %s: No such file or directory\n", \
-					token_next->token_value);
-		}
+		branch->path_file_in = token_next->token_value;
 		token->token_type = TOKEN_DONE;
 		token_next->token_type = TOKEN_DONE;
 	}
@@ -90,6 +82,7 @@ void	handle_redir_append(t_ast *branch, \
 		token_next->token_type = TOKEN_DONE;
 	}
 }
+
 void	handle_redir_heredoc(	t_ast *branch, \
 								t_token *token, \
 								uint8_t token_id)
@@ -100,14 +93,15 @@ void	handle_redir_heredoc(	t_ast *branch, \
 	if (token->token_type == TOKEN_HEREDOC)
 	{
 		branch->path_file_in = ft_strdup((char []){'.', '/', '.', 't', \
-										'm', 'p', token_id % 26 + 33, 0});
+										'm', 'p', token_id + 33, 0});
 		branch->is_heredoc = true;
 		ft_open(&branch->fd_in, branch->path_file_in, O_CREAT | O_WRONLY, 0644);
-		if (!heredoc_has_been_done(token, token[1].token_value, branch->fd_in) && isatty(0))
+		if (!heredoc_has_been_done(token, \
+			token[1].token_value, branch->fd_in) && isatty(0))
 		{
 			token_heredoc_get(token, token[1].token_value, \
 							(const char **)environment);
-			ft_putstr_fd(token->token_value, branch->fd_in);
+			print_value(token->token_value, branch->fd_in);
 		}
 		ft_close(branch->fd_in, "fd_in in heredoc");
 		branch->has_redir_in = true;

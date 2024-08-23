@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/22 19:12:32 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 14:27:11 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ static int	find_longest_path(const char *path)
 
 bool	isdir(char	*input)
 {
-	struct stat dir;
+	struct stat	dir;
 
+	dir = (struct stat){0};
 	stat(input, &dir);
 	if (S_ISDIR(dir.st_mode))
 		return (true);
@@ -67,16 +68,20 @@ static char	*print_error(char *input, int *exit_status)
 			}
 		}
 		else
-			p_stderr(STDERR_FILENO, \
-					"minishell: %s: No such file or directory\n", \
-					input);
+			return (p_stderr(STDERR_FILENO, \
+						"minishell: %s: No such file or directory\n", \
+						input), *exit_status = 127, NULL);
 	}
 	else
-		return (*exit_status = 127, p_stderr(STDERR_FILENO, "minishell: %s: command not found\n", input), NULL);
+		return (*exit_status = 127, p_stderr(STDERR_FILENO, \
+					"minishell: %s: command not found\n", input), NULL);
 	return (NULL);
 }
 
-static char	*check_paths(const char *path, char *path_abs, char *input, int *exit_status)
+static char	*check_paths(	const char *path, \
+							char *path_abs, \
+							char *input, \
+							int *exit_status)
 {
 	if (ft_memcmp(input, ".", 2) != 0 && ft_memcmp(input, "..", 3) != 0)
 	{
@@ -84,7 +89,8 @@ static char	*check_paths(const char *path, char *path_abs, char *input, int *exi
 		{
 			ft_strlcpy(path_abs, path, ft_strchr(path, ':') - path + 1);
 			ft_strlcat(path_abs, "/", ft_strlen(path_abs) + 2);
-			ft_strlcat(path_abs, input, ft_strlen(input) + ft_strlen(path_abs) + 1);
+			ft_strlcat(path_abs, input, \
+					ft_strlen(input) + ft_strlen(path_abs) + 1);
 			if (access(path_abs, F_OK) == 0)
 			{
 				if (access(path_abs, X_OK) == 0)
@@ -98,13 +104,15 @@ static char	*check_paths(const char *path, char *path_abs, char *input, int *exi
 	return (print_error(input, exit_status));
 }
 
-char	*find_absolute_path(const char *path_variable, char *input, int *exit_status)
+char	*find_absolute_path(	const char *path_variable, \
+								char *input, \
+								int *exit_status)
 {
 	char		*path_abs;
 	uint32_t	path_length;
 
 	if (!input)
-		return (*exit_status = 127, NULL);
+		return (NULL);
 	if ((input && *input == 0) || ft_strchr(input, '/'))
 		return (print_error(input, exit_status));
 	if (path_variable)

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/22 18:26:19 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 14:30:38 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,23 @@ static void	pwd_update(const char **environment)
 	ft_free(&pwd);
 }
 
+void	cd_correct(char *args, const char **environment, int *exit_status)
+{
+	char	*path;
+
+	if (ft_memcmp(args, "-\0", 2) == 0)
+	{
+		path = environment_variable_value_get("OLDPWD", environment);
+		ft_putendl_fd(path, 1);
+	}
+	else
+		path = args;
+	if (chdir(path) != 0)
+		return (*exit_status = 1, ft_putstr_fd("minishell: cd: ", 2), \
+				perror(path));
+	*exit_status = 0;
+}
+
 void	ft_cd(	const char **environment, \
 				const char **args, \
 				int32_t *exit_status)
@@ -47,18 +64,7 @@ void	ft_cd(	const char **environment, \
 			return (*exit_status = 1, perror("cd"));
 	}
 	else
-	{
-		if (ft_memcmp((void *)args[1], "-\0", 2) == 0)
-		{
-			path = environment_variable_value_get("OLDPWD", environment);
-			ft_putendl_fd(path, 1);
-		}
-		else
-			path = (char *)args[1];
-		if (chdir(path) != 0)
-			return (*exit_status = 1, ft_putstr_fd("minishell: cd: ", 2), \
-					perror(path));
-		*exit_status = 0;
-	}
-	pwd_update((const char **)environment);
+		cd_correct((char *)args[1], environment, exit_status);
+	if (*exit_status == 0)
+		pwd_update((const char **)environment);
 }

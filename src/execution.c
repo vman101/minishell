@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 22:54:19 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 14:23:32 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/23 17:06:26 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,15 @@ void	wait_pids(t_ast *tree, uint pid_count, \
 		if (tree[i].cpid != 0)
 		{
 			wait_pid_ret = wait(&ret_test);
-			if (wait_pid_ret == -1 && g_signal_flag != 1)
+			if (wait_pid_ret == -1 && g_signal_flag != 1 && g_signal_flag != 3)
 				return (perror("wait"), lst_memory(NULL, NULL, CLEAN));
+			else if (wait_pid_ret == -1 && g_signal_flag == 3)
+			{
+				ft_putstr_fd("Quit (core dumped)\n", 1);
+				continue ;
+			}
+			else if (wait_pid_ret == -1 && g_signal_flag == 1)
+				continue ;
 			if (wait_pid_ret == pid_final)
 				*exit_status = WEXITSTATUS(ret_test);
 			tree[i].cpid = 0;
@@ -76,7 +83,7 @@ static void	execution_loop_helper(	t_ast *tree, \
 void	execution_loop(	t_ast *tree, \
 						const char **env, \
 						int *exit_status, \
-						int stdout_org)
+						int std[2])
 {
 	bool		error_found;
 
@@ -94,7 +101,7 @@ void	execution_loop(	t_ast *tree, \
 			environment_variable_value_change(env, "_", tree->args[0]);
 		if (*exit_status == -1 || error_found == true)
 			return (*exit_status = 2, (void)0);
-		handle_command(tree, env, exit_status, stdout_org);
+		handle_command(tree, env, exit_status, std);
 	}
 }
 
@@ -114,7 +121,8 @@ void	execute_commands(t_ast *tree, const char **env, int *exit_status)
 	}
 	while (tree[i].type != NODE_END)
 	{
-		execution_loop(&tree[i], env, exit_status, stdout_org);
+		execution_loop(&tree[i], env, exit_status, \
+				(int [2]){stdin_org, stdout_org});
 		execution_loop_helper(tree, &i, \
 								(int [2]){stdin_org, stdout_org}, \
 								exit_status);

@@ -6,61 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/22 19:23:23 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 14:36:50 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-uint32_t	determine_trees(t_token *tokens)
-{
-	uint32_t	tree_count;
-	uint32_t	i;
-	bool		has_heredoc;
-
-	i = 0;
-	tree_count = 1;
-	has_heredoc = false;
-	while (tokens[i].token_type != TOKEN_EOL)
-	{
-		if (tokens[i].token_type == TOKEN_HEREDOC)
-			has_heredoc = true;
-		if (is_delimiter_token(&tokens[i]) || (tokens[i].token_type == TOKEN_NEWLINE && has_heredoc == true))
-		{
-			has_heredoc = false;
-			tree_count++;
-		}
-		i++;
-	}
-	return (tree_count);
-}
-
-void	tree_destroy(void *tree_ptr)
-{
-	uint32_t	i;
-	t_ast		*tree;
-
-	i = 0;
-	tree = (t_ast *)tree_ptr;
-	while (tree[i].type != NODE_END)
-	{
-		if (tree[i].has_redir_out == true)
-			ft_close(tree[i].fd_out, "fd_out in tree_destroy");
-		ft_free(&tree[i].args);
-		i++;
-	}
-	ft_free(&tree);
-}
-
-bool	is_delimiter_token(t_token *token)
-{
-	return (token->token_type == TOKEN_EOL \
-			|| token->token_type == TOKEN_AND \
-			|| token->token_type == TOKEN_OR \
-			|| token->token_type == TOKEN_NEWLINE \
-			|| token->token_type == TOKEN_PIPE
-			|| token->token_type == TOKEN_SEMICOLON);
-}
 
 static void	parse_branch(t_token *tokens, t_ast *branch)
 {
@@ -124,7 +74,9 @@ void	check_syntax_errors(t_token *token, int *error_catched)
 	int	i;
 
 	i = 0;
-	while (token[i].token_type != TOKEN_NEWLINE && token[i].token_type != TOKEN_EOL && token[i].token_type != TOKEN_SEMICOLON \
+	while (token[i].token_type != TOKEN_NEWLINE \
+			&& token[i].token_type != TOKEN_EOL \
+			&& token[i].token_type != TOKEN_SEMICOLON \
 			&& *error_catched == 0)
 	{
 		if (token[i].token_type == TOKEN_REDIRECT_IN \
@@ -132,8 +84,6 @@ void	check_syntax_errors(t_token *token, int *error_catched)
 			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
 			|| token[i].token_type == TOKEN_HEREDOC)
 			check_valid_redir(token, i, error_catched);
-		/*else if (token[i].token_type == TOKEN_HEREDOC)*/
-		/*	check_valid_heredoc(token, i, error_catched);*/
 		else if (token[i].token_type == TOKEN_PIPE)
 			check_valid_pipe(token, i, error_catched);
 		else if (token[i].token_type == TOKEN_AND \

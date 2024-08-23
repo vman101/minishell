@@ -6,14 +6,13 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/21 11:31:46 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/23 15:03:13 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -g3 
-#-fsanitize=leak,undefined,address
 
 # DIRECTORIES
 SRCDIR		:= src
@@ -42,7 +41,8 @@ AST_SRC		:=	ast/ast_utils.c \
 				ast/handle_command.c ast/handle_fds.c \
 				ast/parse_tokens.c ast/parser.c \
 				ast/syntax_check.c ast/handle_redirs.c \
-				ast/handle_heredoc.c
+				ast/handle_heredoc.c ast/parse_tokens_helper.c \
+				ast/syntax_check_helper.c
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \
@@ -52,7 +52,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/tokenizer.c \
 				tokenizer/subshell.c tokenizer/evaluate_input.c \
 				tokenizer/input_skip_patterns.c \
-				tokenizer/token_heredoc.c
+				tokenizer/token_heredoc.c \
+				tokenizer/tokenizer_heredoc_helper.c
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \

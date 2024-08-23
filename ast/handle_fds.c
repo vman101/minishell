@@ -6,36 +6,38 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/22 18:17:01 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 14:46:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	handle_fds_child_proccess(t_ast *command)
+bool	handle_fds_child_proccess(t_ast *command, int32_t *exit_status)
 {
-	if (command->has_redir_in)
+	if (command->has_redir_in && command->path_file_in != 0)
 	{
-		if (command->path_file_in != 0)
+		if (access(command->path_file_in, F_OK) == 0)
 		{
 			ft_open(&command->fd_in, command->path_file_in, O_RDONLY, 0644);
 			if (command->is_heredoc == true)
 			{
 				command->is_heredoc = false;
+				if (unlink(command->path_file_in))
+					perror("unlink");
 				ft_free(&command->path_file_in);
-				unlink(command->path_file_in);
 			}
+			ft_dup2(command->fd_in, STDIN_FILENO, "in hanlde_fds_child");
 		}
-		dup2(command->fd_in, STDIN_FILENO);
-		ft_close(command->fd_in, "in child");
-		command->fd_in = -1;
+		else
+		{
+			p_stderr(2, "minishell: %s: No such file or directory\n", \
+					command->path_file_in);
+			return (command->type = NODE_INVALID, *exit_status = 1, false);
+		}
 	}
 	if (command->has_redir_out)
-	{
-		dup2(command->fd_out, STDOUT_FILENO);
-		ft_close(command->fd_out, "in child");
-		command->fd_out = -1;
-	}
+		ft_dup2(command->fd_out, STDOUT_FILENO, "in hanlde_fds_child");
+	return (true);
 }
 
 void	handle_fds_parent_proccess(t_ast *command, int32_t *exit_status)
@@ -66,7 +68,7 @@ void	handle_pipe_in_parent(t_ast *command)
 	ft_close(command->pipefd[0], "close in pipe_parent");
 }
 
-void	buildin_apply_pipe(t_ast *node)
+void	buildin_apply_pipe(t_ast *node, int32_t *exit_status)
 {
 	if (node->type == NODE_PIPE)
 	{
@@ -75,6 +77,6 @@ void	buildin_apply_pipe(t_ast *node)
 	}
 	if (node->has_redir_in || node->has_redir_out)
 	{
-		handle_fds_child_proccess(node);
+		handle_fds_child_proccess(node, exit_status);
 	}
 }

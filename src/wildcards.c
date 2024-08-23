@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/19 23:06:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 11:02:09 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,8 @@ void	check_and_expand_wildcards(char ***input)
 	int		size;
 	int		i;
 
+	if (!*input)
+		return ;
 	match_found = 0;
 	args = *input;
 	size = get_split_size((const char **)*input);
@@ -98,9 +100,7 @@ void	check_and_expand_wildcards(char ***input)
 	while (args[i] != NULL)
 	{
 		if (check_wildcard(args[i]))
-		{
 			match_found += handle_wildcard(&args, &new_args, i, &size);
-		}
 		i++;
 	}
 	if (match_found)

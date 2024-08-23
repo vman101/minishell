@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 23:13:31 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 10:19:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/23 11:08:09 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int32_t	minishell_single_command(	char *command, \
 		m_tokenizer(command, (const char **)environment, &exit_status);
 	}
 	lst_memory(NULL, NULL, END);
-	exit (exit_status);
+	exit(exit_status);
 }
 
 void	*ft_realloc_string(char **string, uint32_t *new_size)

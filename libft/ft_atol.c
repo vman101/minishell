@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:49:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/21 10:18:43 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/23 15:48:39 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ long	ft_atol(char const *s, uint8_t	*too_big)
 		nb *= 10;
 		nb += (*tmp - '0');
 		tmp++;
-		if (nb > LONG_MAX || nb < LONG_MIN)
+		if (nb > LLONG_MAX || nb < LLONG_MIN)
 			return (*too_big == 1);
 	}
 	if (*s == '-')

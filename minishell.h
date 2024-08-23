@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/22 19:03:12 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/23 17:02:21 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,22 +96,21 @@ typedef enum e_token_type
 	TOKEN_DONE,
 }	t_token_type;
 
-/**/
-/*typedef enum e_tree_connection_type*/
-/*{*/
-/*	TREE_NONE = 0,*/
-/*	TREE_PIPE = 5,*/
-/*	TREE_LOGICAL_AND,*/
-/*	TREE_LOGICAL_OR,*/
-/*	TREE_NEWLINE,*/
-/*	TREE_INVALID*/
-/*}	t_tree_connection_type;*/
-
 typedef struct s_token
 {
 	t_token_type	token_type;
 	char			*token_value;
 }	t_token;
+
+# define BUFFER_CAPACITY 64
+
+typedef struct s_ring_buffer
+{
+	uint	write;
+	uint	read;
+	uint	buffer_capacity;
+	t_token	*buffer[BUFFER_CAPACITY];
+}	t_ring_buffer;
 
 typedef enum t_node_type
 {
@@ -131,6 +130,7 @@ typedef struct s_ast
 	char					**args;
 	bool					is_heredoc;
 	char					*path_file_in;
+	char					*path_file_out;
 	bool					has_redir_in;
 	bool					has_redir_out;
 	int32_t					pipefd[2];
@@ -154,7 +154,7 @@ typedef struct s_clean
 	struct s_clean	*next;
 }					t_clean;
 
-extern volatile int32_t	g_signal_flag;
+extern int32_t	g_signal_flag;
 
 /* Builtins */
 int32_t		ft_echo(char **args, int32_t *exit_status);
@@ -217,7 +217,9 @@ void		lst_list_clean(t_clean **head);
 int			lst_add_back(t_clean **node, t_clean *node_new);
 
 /* Path Utils */
-char		*find_absolute_path(const char *path_variable, char *input, int *exit_status);
+char		*find_absolute_path(	const char *path_variable, \
+									char *input, \
+									int *exit_status);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
@@ -244,7 +246,9 @@ void		evaluate_input(	char **input[], \
 /* input skip pattern */
 bool		is_delimiter_variable(char c);
 char		skip_to_delimiter(char *input_new);
-bool		skip_single_quotes(char *input, uint32_t *i, bool *in_double_quotes);
+bool		skip_single_quotes(	char *input, \
+								uint32_t *i, \
+								bool *in_double_quotes);
 bool		evaluate_double_quotes(char *input, uint32_t *i);
 bool		evaluate_single_quotes(char *input, uint32_t *i);
 
@@ -418,7 +422,8 @@ void		token_heredoc_get(	t_token *token, \
 
 /* handle_heredoc.c */
 void		handle_heredoc(t_token tokens, int32_t fd);
-bool		heredoc_has_been_done(t_token *token, char *value, int32_t fd);
+bool		heredoc_has_been_done(t_token *token, char *value, int fd);
+void		print_value(char *value, int fd);
 
 /*create_token_single_special_symbol.c*/
 int			is_single_special(const char input);
@@ -439,22 +444,37 @@ char		*execute_subshell(char *input, const char **environement);
 /*tokenizer.c*/
 t_token		*lexical_analysis(char *input);
 
+/* tokenizer_heredoc_helper.c */
+void		ring_buffer_put(			t_ring_buffer *buffer, t_token *entry);
+
+t_token		*ring_buffer_get(			t_ring_buffer *buffer);
+
+t_token		mark_tokens_till_heredoc(	char *value, char **input);
+
+void		tokenizing_loop(			char **input, \
+										t_token *tokens, \
+										uint32_t *i, \
+										t_ring_buffer *heredoc_buffer);
+
 /*ats_print.c*/
 void		print_ast(t_ast *head);
 
 /*handle_command.c*/
 
 void		handle_command(	t_ast *current, const char **env, \
-							int *exit_status, int original_stdout);
+							int *exit_status, int std[2]);
 void		execute_commands(t_ast *tree, const char **env, int *exit_status);
-void		wait_pids(t_ast *tree, uint pid_count, pid_t pid_final, int32_t *exit_status);;
+void		wait_pids(	t_ast *tree, \
+						uint pid_count, \
+						pid_t pid_final, \
+						int32_t *exit_status);
 
 /*handle_fds.c*/
-void		handle_fds_child_proccess(t_ast *command);
+bool		handle_fds_child_proccess(t_ast *command, int32_t *exit_status);
 void		handle_fds_parent_proccess(t_ast *command, int32_t *exit_status);
 void		handle_pipe_in_child(t_ast *command);
 void		handle_pipe_in_parent(t_ast *command);
-void		buildin_apply_pipe(t_ast *node);
+void		buildin_apply_pipe(t_ast *node, int32_t *exit_status);
 
 /*handle_logical_operator.c*/
 void		handle_logical_operator(t_ast **logical_node, int exit_status);
@@ -483,6 +503,7 @@ void		handle_redir_heredoc(	t_ast *branch, \
 t_ast		*parse_tokens(	t_token *tokens, \
 							int32_t *exit_status);
 uint32_t	determine_trees(t_token *tokens);
+void		tree_destroy(void *tree_ptr);
 
 /* Syntac_check.c */
 void		check_valid_logical_operator(	t_token *token, \
@@ -524,6 +545,11 @@ void		check_valid_logical_operator(	t_token *token, \
 											int *error_catched);
 
 void		check_valid_heredoc(t_token *token, int index, int *error_catched);
+
+/* syntax_check_helper.c */
+void		print_error_logical_operator(t_token_type token_type);
+void		print_error_pipe(void);
+void		print_error_redir(t_token_type token_type);
 
 void		free_tokens(void *token_ptr);
 #endif
