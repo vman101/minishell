@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 11:46:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/24 12:54:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_opendir(DIR **directory, const char *directory_path)
 	}
 }
 
-int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
+int64_t	ft_read(int fd, char *character, uint32_t size_to_read)
 {
 	int64_t	bytes_read;
 
@@ -43,7 +43,6 @@ int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
 			|| errno == EWOULDBLOCK \
 			|| g_signal_flag == 1)
 			return (0);
-		ft_free(input);
 		perror("read");
 		lst_memory(NULL, NULL, CLEAN);
 	}

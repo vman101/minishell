@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:11:28 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/19 23:18:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/24 12:55:44 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ bool	handle_new_character_to_input(		char **input,
 	do_refresh = false;
 	*input = prompt_buffer_size_manage(input, \
 								prompt_length_current, \
-								prompt_length_current + 1);
+								prompt_length_current + 1, \
+								PROMPT_INPUT_BUFFER_SIZE);
 	if (cursor_position_current[1] < prompt_length_current)
 	{
 		ft_memmove(&(*input)[cursor_position_current[1] + 1], \
@@ -76,10 +77,11 @@ bool	handle_multiple_character(	char **input,
 
 	do_refresh = false;
 	buffer_length = ft_strlen(buffer);
-	*input = prompt_buffer_size_manage(input, \
+	prompt_buffer_size_manage(input, \
 								prompt_length_current, \
 								prompt_length_current \
-								+ buffer_length + 1);
+								+ buffer_length + 1, \
+								PROMPT_INPUT_BUFFER_SIZE);
 	if (cursor_position_current[1] < prompt_length_current - 1)
 	{
 		ft_memmove(&(*input)[cursor_position_current[1] + buffer_length], \
@@ -108,7 +110,7 @@ void	handle_backspace(	char *input,
 
 void	handle_rapid_input(	char buffer[], \
 							uint32_t cursor_position[2], \
-							char *input, \
+							char **input, \
 							uint32_t cursor_position_base)
 {
 	int32_t	bytes_read;
@@ -119,13 +121,13 @@ void	handle_rapid_input(	char buffer[], \
 	do_refresh = true;
 	while (bytes_read > 0)
 	{
-		handle_multiple_character(&input, buffer, \
-											cursor_position, \
-											ft_strlen(input));
+		handle_multiple_character(input, buffer, \
+									cursor_position, \
+									ft_strlen(*input));
 		ft_bzero(buffer, 100);
-		bytes_read = ft_read(0, buffer, &input, 99);
+		bytes_read = ft_read(0, buffer, 99);
 	}
 	blocking_mode_toggle(0);
 	if (do_refresh)
-		prompt_refresh_line(input, cursor_position_base, cursor_position);
+		prompt_refresh_line(*input, cursor_position_base, cursor_position);
 }

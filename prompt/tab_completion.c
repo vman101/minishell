@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:18:16 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 17:54:27 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,13 @@ uint32_t	find_last_matching_char(const char *current_word, \
 void	handle_tab(char **input, t_prompt *prompt)
 {
 	char			*input_path;
+	char			**environment;
 	bool			is_directory;
 
+	environment = env_static(NULL);
 	if (!(*input)[(prompt->cursor_position)[1] \
 			- ((prompt->cursor_position)[1] > 0)])
-		return (handle_tab_no_match(".", prompt->env_ptr, \
+		return (handle_tab_no_match(".", environment, \
 					prompt->cursor_position, \
 					prompt));
 	input_path = NULL;

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:00:19 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/07 19:03:58 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 18:22:17 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ void	get_next_word_match(	char **input, \
 	next_word_match = find_next_match(current_word, current_word_length, \
 										directory_current, is_directory);
 	if (!next_word_match)
-		handle_tab_no_match(input_path, prompt->env_ptr, \
-							prompt->cursor_position, prompt);
+		handle_tab_no_match(input_path, env_static(NULL), \
+				prompt->cursor_position, prompt);
 	else
 		handle_tab_yes_match(prompt, next_word_match, input, \
 							ft_strlen(current_word));

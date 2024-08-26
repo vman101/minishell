@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 18:20:59 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 19:33:09 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/24 13:27:15 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	subshell_child_execute(	char *input, \
 	ft_close(pipefd[0], "pipefd[0] in child parent");
 	ft_dup2(pipefd[1], STDOUT_FILENO, "execute_subshell stdout");
 	ft_close(pipefd[1], "close in execute_subshell");
-	m_tokenizer(input, environement, &exit_status);
+	m_tokenizer(input, (char **)environement, &exit_status, NULL);
 	lst_memory(NULL, NULL, END);
 	exit(exit_status);
 }
@@ -39,7 +39,7 @@ void	manage_buffer_size_subshel(char **input_subshell, uint32_t *buffer_size)
 	buffer_strlen = ft_strlen(*input_subshell);
 	if (buffer_strlen == *buffer_size - 101)
 		prompt_buffer_size_manage(input_subshell, *buffer_size, \
-								*buffer_size * 2);
+								*buffer_size * 2, PROMPT_INPUT_BUFFER_SIZE);
 	*buffer_size *= 2;
 }
 

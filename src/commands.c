@@ -6,16 +6,37 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/23 14:25:45 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 15:39:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	restore_fd(int original_stdin, int original_stdout)
+void	restore_fd(int std[2])
 {
-	dup2(original_stdin, STDIN_FILENO);
-	dup2(original_stdout, STDOUT_FILENO);
+	ft_dup2(std[0], STDIN_FILENO, "in restore_fd");
+	ft_dup2(std[1], STDOUT_FILENO, "in restore_fd");
+	ft_close(std[0], "in execution");
+	ft_close(std[1], "in execution");
+	std[0] = dup(STDIN_FILENO);
+	std[1] = dup(STDOUT_FILENO);
+	if (std[0] == -1 || std[1] == -1)
+	{
+		perror("dup");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+}
+
+void	close_fds(void *std_ptr)
+{
+	int	*std;
+
+	std = std_ptr;
+	ft_close(STDIN_FILENO, "close fds");
+	ft_close(STDOUT_FILENO, "close fds");
+	ft_close(STDERR_FILENO, "close fds");
+	ft_close(std[0], "close fds");
+	ft_close(std[1], "close fds");
 }
 
 void	print_tokens(t_token *tokens)
@@ -33,18 +54,21 @@ void	print_tokens(t_token *tokens)
 	printf("------------\n");
 }
 
-void	*m_tokenizer(const char *input, const char **env, int *exit_status)
+void	m_tokenizer(	const char *input, char **env, \
+						int *exit_status, int32_t std[2])
 {
 	t_token	*tokens;
 	t_ast	*tree;
 
-	tokens = lexical_analysis((char *)input);
-	if (tokens)
+	if (input)
 	{
-		tree = parse_tokens(tokens, exit_status);
-		if (tree)
-			execute_commands(tree, env, exit_status);
-		lst_memory(tokens, NULL, FREE);
+		tokens = lexical_analysis((char *)input);
+		if (tokens)
+		{
+			tree = parse_tokens(tokens, exit_status);
+			if (tree)
+				execute_commands(tree, (const char **)env, exit_status, std);
+			lst_memory(tokens, NULL, FREE);
+		}
 	}
-	return (NULL);
 }

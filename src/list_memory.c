@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:21:13 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 10:12:39 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/24 12:44:14 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ int	p_stderr(int stderr_fd, const char *error, const char *specifier)
 	if (dup2(stderr_fd, STDOUT_FILENO) == -1)
 		return (perror("dup2"), close(old_stdout), -1);
 	count = ft_printf(error, specifier);
+	ft_close(STDOUT_FILENO, "in p_stderr");
 	if (dup2(old_stdout, STDOUT_FILENO) == -1)
 		return (perror("dup2"), close(old_stdout), -1);
-	close(old_stdout);
+	ft_close(old_stdout, "in p_stderr");
 	return (count);
 }

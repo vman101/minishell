@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:36:35 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/23 14:42:30 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 14:22:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,14 @@ void	tree_destroy(void *tree_ptr)
 
 	i = 0;
 	tree = (t_ast *)tree_ptr;
-	while (tree[i].type != NODE_END)
+	while (tree && tree[i].type != NODE_END)
 	{
 		if (tree[i].has_redir_out == true)
 			ft_close(tree[i].fd_out, "fd_out in tree_destroy");
 		if (tree[i].is_heredoc)
 			ft_free(&tree->path_file_in);
-		ft_free(&tree[i].args);
+		if (tree[i].args)
+			ft_free(&tree[i].args);
 		i++;
 	}
 	ft_free(&tree);

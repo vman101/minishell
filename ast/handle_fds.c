@@ -6,11 +6,26 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/23 14:46:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 15:55:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+bool	fd_out(t_ast *command, int *exit_status)
+{
+	if (command->has_redir_out && command->path_file_out)
+	{
+		ft_open(&command->fd_out, command->path_file_out, command->flags, 0644);
+		if (command->fd_out > 0)
+		{
+			ft_dup2(command->fd_out, STDOUT_FILENO, "in hanlde_fds_child");
+		}
+		else
+			return (*exit_status = 1, false);
+	}
+	return (*exit_status = 0, true);
+}
 
 bool	handle_fds_child_proccess(t_ast *command, int32_t *exit_status)
 {
@@ -29,15 +44,13 @@ bool	handle_fds_child_proccess(t_ast *command, int32_t *exit_status)
 			ft_dup2(command->fd_in, STDIN_FILENO, "in hanlde_fds_child");
 		}
 		else
-		{
-			p_stderr(2, "minishell: %s: No such file or directory\n", \
-					command->path_file_in);
-			return (command->type = NODE_INVALID, *exit_status = 1, false);
-		}
+			return (p_stderr(2, "minishell: %s: No such file or directory\n", \
+				command->path_file_in), command->type = NODE_INVALID, \
+					*exit_status = 1, false);
 	}
-	if (command->has_redir_out)
-		ft_dup2(command->fd_out, STDOUT_FILENO, "in hanlde_fds_child");
-	return (true);
+	if (command->has_redir_out && command->path_file_out)
+		return (fd_out(command, exit_status));
+	return (*exit_status = 0, true);
 }
 
 void	handle_fds_parent_proccess(t_ast *command, int32_t *exit_status)
@@ -46,8 +59,10 @@ void	handle_fds_parent_proccess(t_ast *command, int32_t *exit_status)
 	{
 		if (command->fd_in == -1 && command->path_file_in == 0)
 			*exit_status = 1;
+		if (command->is_heredoc == true && command->path_file_in)
+			ft_free(&command->path_file_in);
 	}
-	if (command->has_redir_out)
+	if (command->has_redir_out && command->path_file_out && command->fd_out > 0)
 	{
 		ft_close(command->fd_out, "in hanlde_fds_parents");
 		command->fd_out = -1;
@@ -66,17 +81,4 @@ void	handle_pipe_in_parent(t_ast *command)
 	ft_dup2(command->pipefd[0], STDIN_FILENO, "dup2 in pipe_parent");
 	ft_close(command->pipefd[1], "close in pipe_parent");
 	ft_close(command->pipefd[0], "close in pipe_parent");
-}
-
-void	buildin_apply_pipe(t_ast *node, int32_t *exit_status)
-{
-	if (node->type == NODE_PIPE)
-	{
-		ft_dup2(node->pipefd[1], STDOUT_FILENO, "dup2 in buildin_execute");
-		ft_close(node->pipefd[1], "close in buildin_execute");
-	}
-	if (node->has_redir_in || node->has_redir_out)
-	{
-		handle_fds_child_proccess(node, exit_status);
-	}
 }

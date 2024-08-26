@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/23 14:36:50 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 14:25:55 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ static t_ast	collect_redirection(t_token *token, \
 	branch.fd_out = STDOUT_FILENO;
 	while (!is_delimiter_token(&token[i]) && branch.type != NODE_INVALID)
 	{
+		if (token[i + 1].token_type == TOKEN_SEMICOLON)
+			token[i + 1].token_type = TOKEN_NEWLINE;
 		if (token[i + 1].token_type == TOKEN_WORD)
 		{
 			if (!has_syntax_error)

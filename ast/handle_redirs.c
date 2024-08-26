@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/23 16:01:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 18:21:56 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,16 @@ void	handle_redir_in(t_ast *branch, \
 		temp = (char **)(char *[]){token_next->token_value, NULL};
 		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
-		branch->has_redir_in = true;
-		branch->path_file_in = token_next->token_value;
+		if (branch->has_redir_in)
+			ft_close(branch->fd_in, "in hanlde_redir_in");
+		ft_open(&branch->fd_in, token_next->token_value, O_RDONLY, 0);
+		if (branch->fd_in > 0)
+		{
+			branch->has_redir_in = true;
+			branch->path_file_in = token_next->token_value;
+		}
+		else
+			branch->type = NODE_INVALID;
 		token->token_type = TOKEN_DONE;
 		token_next->token_type = TOKEN_DONE;
 	}
@@ -46,10 +54,14 @@ void	handle_redir_out(	t_ast *branch, \
 		temp = (char **)(char *[]){token_next->token_value, NULL};
 		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
+		branch->flags = O_WRONLY | O_CREAT | O_TRUNC;
 		if (branch->has_redir_out == true)
-			ft_close(branch->fd_out, "fd_in in collect_redirection");
-		ft_open(&branch->fd_out, token_next->token_value, \
-				O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		{
+			ft_open(&branch->fd_out, branch->path_file_out, \
+					branch->flags, 0644);
+			ft_close(branch->fd_out, "in branch redir_out");
+		}
+		branch->path_file_out = token_next->token_value;
 		if (branch->fd_out == -1)
 			branch->type = NODE_INVALID;
 		branch->has_redir_out = true;
@@ -71,10 +83,14 @@ void	handle_redir_append(t_ast *branch, \
 		temp = (char **)(char *[]){token_next->token_value, NULL};
 		evaluate_input(&temp, &i, 0);
 		token_next->token_value = temp[0];
+		branch->flags = O_WRONLY | O_CREAT | O_APPEND;
 		if (branch->has_redir_out == true)
-			ft_close(branch->fd_out, "fd_append in collect_redirection");
-		ft_open(&branch->fd_out, token_next->token_value, \
-				O_WRONLY | O_CREAT | O_APPEND, 0644);
+		{
+			ft_open(&branch->fd_out, branch->path_file_out, \
+					branch->flags, 0644);
+			ft_close(branch->fd_out, "in branch redir_out");
+		}
+		branch->path_file_out = token_next->token_value;
 		if (branch->fd_out == -1)
 			branch->type = NODE_INVALID;
 		branch->has_redir_out = true;
@@ -99,8 +115,7 @@ void	handle_redir_heredoc(	t_ast *branch, \
 		if (!heredoc_has_been_done(token, \
 			token[1].token_value, branch->fd_in) && isatty(0))
 		{
-			token_heredoc_get(token, token[1].token_value, \
-							(const char **)environment);
+			token_heredoc_get(token, token[1].token_value);
 			print_value(token->token_value, branch->fd_in);
 		}
 		ft_close(branch->fd_in, "fd_in in heredoc");

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/23 17:02:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 18:31:41 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,19 +66,26 @@
 # define ENVIRONMENT_SIZE 512
 # define INITIAL_TOKEN_CAPACITY 16
 
+# define BUFFER_CAPACITY 64
+
+typedef struct s_history_buffer
+{
+	uint	write;
+	uint	read;
+	uint	buffer_capacity;
+	char	*buffer[BUFFER_CAPACITY];
+}	t_history_buffer;
+
 typedef struct s_prompt
 {
-	bool		exists;
-	char		*prompt;
-	uint32_t	cursor_position[2];
-	void		(*prompt_display_func)(char *);
-	uint32_t	prompt_length;
-	uint32_t	history_position_current;
-	uint32_t	history_count;
-	char		*command;
-	char		**history_entries;
-	char		**env_ptr;
-}				t_prompt;
+	bool				exists;
+	char				*prompt;
+	t_history_buffer	history;
+	uint32_t			cursor_position[2];
+	void				(*prompt_display_func)(char *);
+	uint32_t			prompt_length;
+	char				*command;
+}	t_prompt;
 
 typedef enum e_token_type
 {
@@ -101,8 +108,6 @@ typedef struct s_token
 	t_token_type	token_type;
 	char			*token_value;
 }	t_token;
-
-# define BUFFER_CAPACITY 64
 
 typedef struct s_ring_buffer
 {
@@ -133,9 +138,11 @@ typedef struct s_ast
 	char					*path_file_out;
 	bool					has_redir_in;
 	bool					has_redir_out;
+	bool					was_pipe;
 	int32_t					pipefd[2];
 	int						fd_in;
 	int						fd_out;
+	int						flags;
 	pid_t					cpid;
 }	t_ast;
 
@@ -154,7 +161,7 @@ typedef struct s_clean
 	struct s_clean	*next;
 }					t_clean;
 
-extern int32_t	g_signal_flag;
+extern int32_t volatile	g_signal_flag;
 
 /* Builtins */
 int32_t		ft_echo(char **args, int32_t *exit_status);
@@ -171,6 +178,8 @@ void		ft_exit(t_ast *tree, int *exit_status);
 void		*ft_realloc(void *ptr, int old_size, int new_size);
 
 /* Commands */
+bool		is_buildin(			t_ast *node);
+
 bool		buildin_execute(	t_ast *node, \
 								const char **environment, \
 								int *exit_status);
@@ -179,21 +188,25 @@ void		command_execute(	char const *command_path, \
 								char const *argv[], \
 								char const **env);
 
-void		*m_tokenizer(		const char *input, \
-								const char **env, \
-								int *exit_status);
+void		m_tokenizer(		const char *input, \
+								char **env, \
+								int *exit_status, \
+								int32_t std[2]);
 
 /* non_interactive */
 int32_t		minishell_single_command(	char *command, \
-									char **environment);
+										char **environment, \
+										int32_t std[2]);
 
 void		*ft_realloc_string(		char **string, uint32_t *new_size);
 char		*check_redir_input(void);
 
 void		setup_environment(		const char **environment);
+
 int			setup(					uint32_t argc, \
 									const char **argv, \
-									char **environment);
+									char **environment, \
+									int32_t std[2]);
 
 /* Handle signal */
 void		handle_sigint(int sig);
@@ -223,16 +236,16 @@ char		*find_absolute_path(	const char *path_variable, \
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
-t_prompt	prompt_create(const char **env, uint8_t mode);
-char		*prompt_get(const char **environment);
+t_prompt	prompt_create(uint8_t mode);
+char		*prompt_get(const char *prompt);
 
 uint32_t	prompt_display_string_set(	t_prompt *prompt, \
 										const char **environment, \
 										const char *prompt_string);
 
-void		handle_arrow_key_up(		t_prompt *prompt, \
-										char **input, \
-										uint32_t cursor_position_current[2]);
+void		handle_arrow_key_up(	t_history_buffer *history, \
+									char **input, \
+									uint32_t cursor_position_current[2]);
 
 /* Prompt_print.c */
 void		prompt_print_custom_string(char *string);
@@ -278,7 +291,8 @@ void		prompt_refresh_line(			char *input, \
 
 char		*prompt_buffer_size_manage(		char **input, \
 											uint32_t old_size, \
-											uint32_t size_to_add);
+											uint32_t size_to_add, \
+											uint32_t scalar);
 
 void		prompt_string_insert(			char *string_to_insert, \
 											char **current_input, \
@@ -330,7 +344,7 @@ void		get_next_word_match(	char **input, \
 
 void		handle_rapid_input(		char buffer[], \
 									uint32_t cursor_position[2], \
-									char *input, \
+									char **input, \
 									uint32_t cursor_position_base);
 
 void		handle_backspace(		char *input, \
@@ -347,8 +361,9 @@ void		ft_pipe(int pipefd[2], const char *specifier);
 void		ft_dup2(int fd_old, int fd_new, const char *specifier);
 void		ft_fork(pid_t *pid, const char *specifier);
 void		ft_open(int *fd, const char *path, int flag, int mode);
-int64_t		ft_read(int fd, char *character, char **input, uint32_t size_read);
+int64_t		ft_read(int fd, char *character, uint32_t size_read);
 void		ft_opendir(DIR **directory, const char *directory_path);
+void		close_fds(void *std_ptr);
 
 /* Wildcards */
 void		check_and_expand_wildcards(char	***input);
@@ -404,10 +419,8 @@ bool		unrecognized_input(char c);
 int			is_double_special(const char *input);
 t_token		create_token_double_special_symbol(char **input);
 bool		is_mutliple_lines(char *c);
-void		remove_qoutes_delimiter(char *delimiter, uint32_t length);
-void		token_heredoc_get(	t_token *token, \
-								const char *delimiter, \
-								const char **environment);
+void		remove_qoutes_delimiter(char *delimiter, uint32_t *length);
+void		token_heredoc_get(	t_token *token, const char *delimiter);
 
 /* token_heredoc.c */
 char		*heredoc_while_tokenizing(char *input);
@@ -416,9 +429,6 @@ char		*heredoc_loop(	char *input, \
 							char *temp_move, \
 							const char *delimiter, \
 							uint32_t delimiter_length);
-void		token_heredoc_get(	t_token *token, \
-								const char *delimiter, \
-								const char **environment);
 
 /* handle_heredoc.c */
 void		handle_heredoc(t_token tokens, int32_t fd);
@@ -461,20 +471,27 @@ void		print_ast(t_ast *head);
 
 /*handle_command.c*/
 
-void		handle_command(	t_ast *current, const char **env, \
-							int *exit_status, int std[2]);
-void		execute_commands(t_ast *tree, const char **env, int *exit_status);
-void		wait_pids(	t_ast *tree, \
-						uint pid_count, \
-						pid_t pid_final, \
-						int32_t *exit_status);
+void		handle_command(		t_ast *current, \
+								const char **env, \
+								int *exit_status, \
+								int std[2]);
+
+void		execute_commands(	t_ast *tree, \
+								const char **env, \
+								int *exit_status, \
+								int32_t std[2]);
+
+void		wait_pids(			t_ast *tree, \
+								uint pid_count, \
+								pid_t pid_final, \
+								int32_t *exit_status);
 
 /*handle_fds.c*/
 bool		handle_fds_child_proccess(t_ast *command, int32_t *exit_status);
 void		handle_fds_parent_proccess(t_ast *command, int32_t *exit_status);
 void		handle_pipe_in_child(t_ast *command);
 void		handle_pipe_in_parent(t_ast *command);
-void		buildin_apply_pipe(t_ast *node, int32_t *exit_status);
+bool		buildin_apply_pipe(t_ast *node, int32_t *exit_status);
 
 /*handle_logical_operator.c*/
 void		handle_logical_operator(t_ast **logical_node, int exit_status);
@@ -522,7 +539,7 @@ void		print_error_redir(				t_token_type token_type);
 
 void		print_error_logical_operator(	t_token_type token_type);
 
-void		restore_fd(int original_stdin, int original_stdout);
+void		restore_fd(int std[2]);
 
 /*parser.c*/
 void		fill_args(	char ***args, \

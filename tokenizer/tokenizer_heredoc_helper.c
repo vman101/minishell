@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 14:23:44 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/23 14:24:31 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 12:34:09 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_token	mark_tokens_till_heredoc(char *value, char **input)
 	while (value[value_length] && !ft_isspace(value[value_length]) \
 	&& (!is_special_char(value[value_length]) || value[value_length] == '$'))
 		value_length++;
-	remove_qoutes_delimiter(value, value_length);
+	remove_qoutes_delimiter(value, &value_length);
 	while (**input)
 	{
 		if (*(*input)++ == '\n')

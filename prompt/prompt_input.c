@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 00:21:22 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 17:40:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,11 @@ static char	*handle_input(	t_prompt *prompt, \
 	while (1)
 	{
 		ft_bzero(buffer, 100);
-		bytes_read = ft_read(0, buffer, &input, 20);
+		bytes_read = ft_read(0, buffer, 20);
 		if (g_signal_flag == 1)
 			return (ft_putstr_fd("^C\n", 1), NULL);
 		if (bytes_read > 3)
-			handle_rapid_input(buffer, cursor_position, input, \
+			handle_rapid_input(buffer, cursor_position, &input, \
 								prompt->prompt_length);
 		else if (bytes_read >= 1)
 		{
@@ -94,24 +94,12 @@ static char	*handle_input(	t_prompt *prompt, \
 	return (input);
 }
 
-static void	prompt_handle_history(t_prompt *prompt, char *input)
+static void	prompt_handle_history(t_history_buffer *buffer, char *input)
 {
-	if (!input)
-		return ;
-	prompt->command = input;
-	if (prompt->history_count == PROMPT_COMMAND_STACK_SIZE)
-	{
-		ft_memmove(prompt->history_entries[0], \
-					prompt->history_entries[1], \
-					PROMPT_COMMAND_STACK_SIZE);
-		prompt->history_entries[prompt->history_count] = prompt->command;
-	}
-	else
-	{
-		prompt->history_entries[prompt->history_count] = prompt->command;
-		prompt->history_count++;
-	}
-	prompt->history_position_current = prompt->history_count;
+	buffer->buffer[buffer->write++] = input;
+	buffer->write %= buffer->buffer_capacity;
+	buffer->buffer[buffer->write] = 0;
+	buffer->read = buffer->write;
 }
 
 char	*prompt_get_input(	t_prompt *prompt, \
@@ -131,9 +119,10 @@ char	*prompt_get_input(	t_prompt *prompt, \
 	if (!delimiter)
 		delimiter = "\n";
 	input = handle_input(prompt, input, prompt->cursor_position, delimiter);
+	prompt_handle_history(&prompt->history, input);
 	terminal_raw_mode_disable(ECHO | ECHOCTL | ICANON);
 	if (!input)
 		return (NULL);
-	prompt_handle_history(prompt, input);
+	prompt->command = input;
 	return (input);
 }

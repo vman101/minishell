@@ -6,14 +6,15 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 23:13:31 by victor            #+#    #+#             */
-/*   Updated: 2024/08/23 11:08:09 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/24 13:25:36 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
 int32_t	minishell_single_command(	char *command, \
-									char **environment)
+									char **environment, \
+									int32_t std[2])
 {
 	int32_t		exit_status;
 	uint32_t	input_length;
@@ -24,7 +25,7 @@ int32_t	minishell_single_command(	char *command, \
 	{
 		if (command[input_length - 1] == '\n')
 			command[input_length - 1] = 0;
-		m_tokenizer(command, (const char **)environment, &exit_status);
+		m_tokenizer(command, environment, &exit_status, std);
 	}
 	lst_memory(NULL, NULL, END);
 	exit(exit_status);
@@ -57,7 +58,7 @@ char	*check_redir_input(void)
 	while (bytes_read)
 	{
 		ft_bzero(&buffer, sizeof(buffer));
-		bytes_read = read(0, buffer, 511);
+		bytes_read = ft_read(0, buffer, 511);
 		if (bytes_read > 0)
 		{
 			if ((ft_strlen(input) + ft_strlen(buffer)) > capacity)
@@ -92,16 +93,22 @@ void	setup_environment(const char **environment)
 
 int	setup(	uint32_t argc, \
 			const char **argv, \
-			char **environment)
+			char **environment, \
+			int32_t std[2])
 {
 	char	*input;
 
 	setup_environment((const char **)environment);
+	std[0] = dup(STDIN_FILENO);
+	std[1] = dup(STDOUT_FILENO);
+	if (std[0] == -1 || std[1] == -1)
+		return (perror("dup"), lst_memory(NULL, NULL, CLEAN), 1);
+	lst_memory(std, close_fds, ADD);
 	if (!isatty(0))
 	{
 		input = check_redir_input();
 		if (input)
-			minishell_single_command(input, environment);
+			minishell_single_command(input, environment, std);
 	}
 	else if (argc > 1)
 	{
@@ -109,7 +116,7 @@ int	setup(	uint32_t argc, \
 			return (-1);
 		else
 			return (minishell_single_command((char *)argv[1], \
-					environment));
+					environment, std));
 	}
 	return (1);
 }

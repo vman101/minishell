@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 11:15:25 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/23 16:02:25 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 12:29:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,11 @@
 
 void	print_value(char *value, int fd)
 {
-	char	**temp;
 	int		i;
 
 	i = 0;
 	if (value && value[ft_strlen(value) - 1] == '\n')
 		value[ft_strlen(value) - (ft_strlen(value) > 0)] = 0;
-	temp = (char **)(char *[]){value, NULL};
-	evaluate_input(&temp, &i, 0);
-	value = temp[0];
 	ft_putendl_fd(value, fd);
 }
 

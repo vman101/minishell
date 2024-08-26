@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 16:52:07 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/23 15:51:53 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 16:35:04 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@ bool	check_exit_status(char *status)
 	i = 0;
 	if (!status || !*status)
 		return (false);
+	is_too_big = false;
 	while (*status && *status == '0')
 		status++;
 	if (*status == '+' || *status == '0')
 		status++;
 	number = ft_atol(status, &is_too_big);
+	if (is_too_big == true)
+		return (false);
 	number_string = ft_ltoa(number);
 	if (!number_string)
-	{
-		perror("malloc");
-		lst_memory(NULL, NULL, CLEAN);
-	}
+		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), 0);
 	if (ft_strncmp(status, number_string, ft_strlen(status)) == 0)
 		return (ft_free(&number_string), true);
 	ft_free(&number_string);
@@ -79,7 +79,7 @@ void	ft_exit(t_ast *tree, int *exit_status_prev)
 	exit_status = *exit_status_prev;
 	args_length = get_split_size((const char **)tree->args);
 	invalid_message_print = false;
-	/*ft_putendl_fd("exit", 2);*/
+	ft_putendl_fd("exit", 2);
 	if (args_length > 1)
 		if (exit_with_args(tree->args, &invalid_message_print, \
 					args_length, &exit_status))

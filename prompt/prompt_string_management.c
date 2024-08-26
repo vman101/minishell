@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/08/21 11:14:17 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/24 11:50:52 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,22 +46,29 @@ void	prompt_refresh_line(char *input, \
 
 char	*prompt_buffer_size_manage(	char **input, \
 									uint32_t old_size, \
-									uint32_t size_to_add)
+									uint32_t size_to_add, \
+									uint32_t scalar)
 {
 	char		*input_free_ptr;
 	uint32_t	size_multiplier;
+	uint32_t	new_size;
 
+	if (scalar == 0)
+		return (*input);
 	if ((old_size + size_to_add) > \
-			(PROMPT_INPUT_BUFFER_SIZE * \
-			((old_size / PROMPT_INPUT_BUFFER_SIZE) + 1)))
+			(scalar * \
+			((old_size / scalar) + 1)))
 	{
-		size_multiplier = (old_size / PROMPT_INPUT_BUFFER_SIZE) + 2;
+		new_size = old_size + size_to_add;
+		new_size += new_size % scalar;
+		size_multiplier = (old_size / scalar) + 2;
 		input_free_ptr = *input;
-		*input = ft_calloc(1, size_multiplier * PROMPT_INPUT_BUFFER_SIZE + 1);
+		*input = ft_calloc(1, new_size + 1);
 		if (!*input)
 			return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
 		ft_memcpy(*input, input_free_ptr, old_size);
-		ft_free(&input_free_ptr);
+		lst_memory(input_free_ptr, NULL, FREE);
+		lst_memory(*input, free, ADD);
 	}
 	return (*input);
 }

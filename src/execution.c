@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 22:54:19 by victor            #+#    #+#             */
-/*   Updated: 2024/08/23 17:06:26 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 15:34:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,15 @@ void	wait_pids(t_ast *tree, uint pid_count, \
 		if (tree[i].cpid != 0)
 		{
 			wait_pid_ret = wait(&ret_test);
-			if (wait_pid_ret == -1 && g_signal_flag != 1 && g_signal_flag != 3)
-				return (perror("wait"), lst_memory(NULL, NULL, CLEAN));
-			else if (wait_pid_ret == -1 && g_signal_flag == 3)
+			if (wait_pid_ret == -1 && g_signal_flag == 3)
 			{
 				ft_putstr_fd("Quit (core dumped)\n", 1);
 				continue ;
 			}
 			else if (wait_pid_ret == -1 && g_signal_flag == 1)
 				continue ;
+			else if (wait_pid_ret == -1)
+				return (perror("wait"), lst_memory(NULL, NULL, CLEAN));
 			if (wait_pid_ret == pid_final)
 				*exit_status = WEXITSTATUS(ret_test);
 			tree[i].cpid = 0;
@@ -68,16 +68,21 @@ static void	execution_loop_helper(	t_ast *tree, \
 {
 	if (tree[*i].type != NODE_PIPE)
 	{
-		restore_fd(std[0], std[1]);
+		restore_fd(std);
 		if (tree[*i].cpid != 0)
 			wait_pids(tree, *i, tree[*i].cpid, exit_status);
 	}
+	else
+	{
+		ft_dup2(std[1], STDOUT_FILENO, \
+				"in execution_loop execution_loop_helper");
+	}
 	if ((tree[*i].type == NODE_LOGICAL_OR \
 		&& *exit_status == 0))
-		i++;
+		(*i)++;
 	else if ((tree[*i].type == NODE_LOGICAL_AND \
 		&& *exit_status != 0))
-		i++;
+		(*i)++;
 }
 
 void	execution_loop(	t_ast *tree, \
@@ -105,29 +110,32 @@ void	execution_loop(	t_ast *tree, \
 	}
 }
 
-void	execute_commands(t_ast *tree, const char **env, int *exit_status)
+void	execute_commands(	t_ast *tree, const char **env, \
+							int *exit_status, int std[2])
+
 {
-	int32_t		stdin_org;
-	int32_t		stdout_org;
 	uint32_t	i;
+	bool		was_pipe;
 
 	i = 0;
-	stdin_org = dup(STDIN_FILENO);
-	stdout_org = dup(STDOUT_FILENO);
-	if (stdout_org == -1 || stdin_org == -1)
+	if (std[0] == -1 || std[1] == -1)
 	{
 		perror("dup");
 		lst_memory(NULL, NULL, CLEAN);
 	}
+	was_pipe = false;
 	while (tree[i].type != NODE_END)
 	{
-		execution_loop(&tree[i], env, exit_status, \
-				(int [2]){stdin_org, stdout_org});
-		execution_loop_helper(tree, &i, \
-								(int [2]){stdin_org, stdout_org}, \
-								exit_status);
+		if (was_pipe == true)
+		{
+			tree[i].was_pipe = true;
+			was_pipe = false;
+		}
+		execution_loop(&tree[i], env, exit_status, std);
+		execution_loop_helper(tree, &i, std, exit_status);
+		if (tree[i].type == NODE_PIPE)
+			was_pipe = true;
 		i++;
 	}
-	ft_close(stdin_org, "stdin in restore_fd");
-	ft_close(stdout_org, "stdout in restore_fd");
+	restore_fd(std);
 }

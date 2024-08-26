@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 23:00:51 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:07:07 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 15:39:58 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	handle_prefix(const char *pattern, const char *str,
 	size_t	len_prefix;
 
 	len_prefix = adr_next_wild - pattern;
-	if (str[0] == *(adr_next_wild + 1))
+	if (len_prefix == 0 && str[0] == *(adr_next_wild + 1))
 		return (-1);
 	return (ft_strncmp(pattern, str, len_prefix));
 }

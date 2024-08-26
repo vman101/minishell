@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:32:16 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/17 21:13:04 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 11:46:25 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_pipe(int pipefd[2], const char *specifier)
 {
 	if (pipe(pipefd) == -1)
 	{
-		p_stderr(2, "pipex: %s: ", specifier);
+		p_stderr(2, "minishell: %s: ", specifier);
 		perror("pipe");
 	}
 }
@@ -38,7 +38,7 @@ void	ft_dup2(int fd_old, int fd_new, const char *specifier)
 {
 	if (dup2(fd_old, fd_new) == -1)
 	{
-		p_stderr(2, "pipex: %s: ", specifier);
+		p_stderr(2, "minishell: %s: ", specifier);
 		perror("dup2");
 	}
 }
@@ -48,7 +48,7 @@ void	ft_fork(pid_t *pid, const char *specifier)
 	*pid = fork();
 	if (*pid == -1)
 	{
-		p_stderr(2, "pipex: %s: ", specifier);
+		p_stderr(2, "minishell: %s: ", specifier);
 		perror("fork");
 		lst_memory(NULL, NULL, CLEAN);
 	}

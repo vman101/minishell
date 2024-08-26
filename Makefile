@@ -6,13 +6,13 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/23 15:03:13 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/26 18:59:31 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3 
+CFLAGS		:= -Wall -Wextra -g3
 
 # DIRECTORIES
 SRCDIR		:= src
@@ -42,7 +42,7 @@ AST_SRC		:=	ast/ast_utils.c \
 				ast/parse_tokens.c ast/parser.c \
 				ast/syntax_check.c ast/handle_redirs.c \
 				ast/handle_heredoc.c ast/parse_tokens_helper.c \
-				ast/syntax_check_helper.c
+				ast/syntax_check_helper.c ast/buildin.c
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \
@@ -60,25 +60,15 @@ BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_export.c builtin/ft_exit.c \
 				builtin/ft_cd.c
 
-TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
-				src/environment_variables.c src/escape_sequences.c \
-				src/ft_echo.c src/ft_env.c src/ft_pwd.c \
-				src/input.c src/list_memory.c src/list.c \
-				src/path_utils.c src/prompt_string_management.c \
-				src/redirections.c src/tab_completion.c src/termios.c \
-				src/test.c src/utils.c src/utils2.c
-
 # OBJECT FILES
 OBJ			:= $(SRC:%.c=$(OBJDIR)/%.o)
 AST_OBJ		:= $(AST_SRC:ast/%.c=$(OBJDIR)/ast/%.o)
 BUILDIN_OBJ	:= $(BUILDIN_SRC:builtin/%.c=$(OBJDIR)/builtin/%.o)
 PROMPT_OBJ	:= $(PROMPT_SRC:prompt/%.c=$(OBJDIR)/prompt/%.o)
-TEST_OBJ	:= $(TEST_SRC:%.c=$(OBJDIR)/%.o)
 TOKEN_OBJ	:= $(TOKEN_SRC:tokenizer/%.c=$(OBJDIR)/tokenizer/%.o)
 
 NAME		:= minishell
-LIBS		:= libft/libft.a -lreadline
-TEST_NAME	:= test
+LIBS		:= libft/libft.a
 
 # Create object directory if none exists
 $(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer $(OBJDIR)/builtin $(OBJDIR)/prompt)

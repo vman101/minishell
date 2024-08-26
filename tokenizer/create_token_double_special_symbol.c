@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/23 14:30:57 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 12:37:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ bool	is_mutliple_lines(char *c)
 	return (false);
 }
 
-void	remove_qoutes_delimiter(char *delimiter, uint32_t length)
+void	remove_qoutes_delimiter(char *delimiter, uint32_t *length)
 {
 	uint32_t	i;
 	uint32_t	full_length;
@@ -52,10 +52,13 @@ void	remove_qoutes_delimiter(char *delimiter, uint32_t length)
 		return ;
 	i = 0;
 	full_length = ft_strlen(delimiter);
-	while (i < length)
+	while (i < *length)
 	{
 		if (delimiter[i] == '\"' || delimiter[i] == '\'')
+		{
 			ft_memmove(&delimiter[i], &delimiter[i + 1], full_length - i);
+			(*length)--;
+		}
 		i++;
 	}
 }

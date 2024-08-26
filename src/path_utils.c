@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:32:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/23 14:27:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/26 18:24:15 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	find_longest_path(const char *path)
 		return (0);
 	while (*path++)
 	{
-		if (*path == ':')
+		if (*path == ':' || !*path)
 		{
 			if (ret < i)
 			{
@@ -83,14 +83,20 @@ static char	*check_paths(	const char *path, \
 							char *input, \
 							int *exit_status)
 {
+	char	*tmp;
+
 	if (ft_memcmp(input, ".", 2) != 0 && ft_memcmp(input, "..", 3) != 0)
 	{
 		while (path)
 		{
-			ft_strlcpy(path_abs, path, ft_strchr(path, ':') - path + 1);
-			ft_strlcat(path_abs, "/", ft_strlen(path_abs) + 2);
-			ft_strlcat(path_abs, input, \
-					ft_strlen(input) + ft_strlen(path_abs) + 1);
+			tmp = ft_strchr(path, ':');
+			if (tmp)
+			{
+				ft_strlcpy(path_abs, path, tmp - path + 1);
+				ft_strlcat(path_abs, "/", ft_strlen(path_abs) + 2);
+				ft_strlcat(path_abs, input, \
+						ft_strlen(input) + ft_strlen(path_abs) + 1);
+			}
 			if (access(path_abs, F_OK) == 0)
 			{
 				if (access(path_abs, X_OK) == 0)
@@ -113,12 +119,9 @@ char	*find_absolute_path(	const char *path_variable, \
 
 	if (!input)
 		return (NULL);
-	if ((input && *input == 0) || ft_strchr(input, '/'))
+	if ((input && *input == 0) || ft_strchr(input, '/') || !path_variable)
 		return (print_error(input, exit_status));
-	if (path_variable)
-		path_variable = ft_strchr(path_variable, '/');
-	else
-		path_variable = "./";
+	path_variable = ft_strchr(path_variable, '/');
 	path_length = find_longest_path(path_variable);
 	if (!path_length)
 		return (NULL);

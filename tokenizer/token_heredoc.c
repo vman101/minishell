@@ -6,11 +6,12 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 10:44:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/22 15:58:18 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 17:50:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 
 static char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 {
@@ -29,14 +30,13 @@ static char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 }
 
 void	token_heredoc_get(	t_token *token, \
-							const char *delimiter, \
-							const char **environment)
+							const char *delimiter)
 {
 	static t_prompt	heredoc = {0};
 
 	if (heredoc.exists == false)
 	{
-		heredoc = prompt_create(environment, CUSTOM);
+		heredoc = prompt_create(CUSTOM);
 		heredoc.prompt_length = prompt_display_string_set(&heredoc, \
 				NULL, \
 				"heredoc> ");
@@ -79,12 +79,14 @@ char	*heredoc_loop(	char *input, \
 
 char	*handle_delimiter(char *input, char **temp_move)
 {
-	char	*delimiter;
+	char		*delimiter;
+	uint32_t	delimiter_length;
 
 	delimiter = input;
 	while (ft_isspace(*delimiter))
 		delimiter++;
-	remove_qoutes_delimiter(delimiter, ft_strlen(delimiter));
+	delimiter_length = ft_strlen(delimiter);
+	remove_qoutes_delimiter(delimiter, &delimiter_length);
 	*temp_move = delimiter;
 	while (*temp_move && !ft_isspace(**temp_move) \
 		&& !is_single_special(**temp_move))

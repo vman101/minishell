@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 23:04:15 by victor            #+#    #+#             */
-/*   Updated: 2024/08/19 23:05:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/26 15:45:44 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ int	match_found(const char *pattern, const char *str)
 	int		len_prefix;
 
 	if (*pattern == '*' && *(pattern + 1) == '\0')
+	{
+		if (str[0] == '.')
+			return (1);
 		return (0);
+	}
 	adr_next_wild = ft_strchr(pattern, '*');
 	if (adr_next_wild)
 	{
@@ -57,18 +61,14 @@ void	add_new_match(int *count, int *capacity,
 		lst_memory(*matches, free, ADD);
 		*capacity *= 2;
 	}
-	if (ft_memcmp(entry_name, ".\0", 2) != 0 && \
-					ft_memcmp(entry_name, "..\0", 3))
+	(*matches)[*count] = ft_strdup(entry_name);
+	if (!(*matches)[*count])
 	{
-		(*matches)[*count] = ft_strdup(entry_name);
-		if (!(*matches)[*count])
-		{
-			perror("strdup wildcards");
-			lst_memory(NULL, NULL, CLEAN);
-		}
-		lst_memory((*matches)[*count], free, ADD);
-		(*count)++;
+		perror("strdup wildcards");
+		lst_memory(NULL, NULL, CLEAN);
 	}
+	lst_memory((*matches)[*count], free, ADD);
+	(*count)++;
 }
 
 char	**expand_wildcard(const char *pattern)
