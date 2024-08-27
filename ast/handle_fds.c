@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/26 15:55:42 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 14:14:23 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ bool	fd_out(t_ast *command, int *exit_status)
 {
 	if (command->has_redir_out && command->path_file_out)
 	{
-		ft_open(&command->fd_out, command->path_file_out, command->flags, 0644);
 		if (command->fd_out > 0)
 		{
 			ft_dup2(command->fd_out, STDOUT_FILENO, "in hanlde_fds_child");

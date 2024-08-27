@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/26 18:59:31 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/27 15:24:15 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/subshell.c tokenizer/evaluate_input.c \
 				tokenizer/input_skip_patterns.c \
 				tokenizer/token_heredoc.c \
-				tokenizer/tokenizer_heredoc_helper.c
+				tokenizer/tokenizer_heredoc_helper.c tokenizer/evaluate_input_helper.c \
+				tokenizer/evaluate_input_helper2.c
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \

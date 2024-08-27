@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/27 11:34:20 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/27 15:23:45 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,6 @@ typedef struct s_ast
 	int32_t					pipefd[2];
 	int						fd_in;
 	int						fd_out;
-	int						flags;
 	pid_t					cpid;
 }	t_ast;
 
@@ -255,6 +254,12 @@ void		prompt_print_pwd(char *prompt);
 void		evaluate_input(	char **input[], \
 							int32_t *exit_status, \
 							bool *error_caught);
+
+uint32_t	get_spaces(char *input);
+uint32_t	determine_variables(char **input);
+void		split_string_by_space(char *to_split, char **input_new);
+void		adjust_input(char **input, char *new_string);
+uint32_t	determine_full_length(char *string, char **environment);
 
 uint32_t	evaluate_variable(	char ***input, \
 								int32_t *exit_status);

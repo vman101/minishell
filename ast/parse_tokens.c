@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/26 14:25:55 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 15:04:45 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,8 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 	capacity = INITIAL_TOKEN_CAPACITY;
 	branch->args = ft_calloc(capacity + 1, sizeof(char *));
 	if (!branch->args)
-	{
-		perror("calloc in parse tokens");
-		lst_memory(NULL, NULL, CLEAN);
-	}
+		return (perror("calloc in parse tokens"), \
+				lst_memory(NULL, NULL, CLEAN));
 	i = -1;
 	while (!is_delimiter_token(&tokens[++i]))
 	{
@@ -37,7 +35,8 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 	}
 	if (tokens[i].token_type == TOKEN_EOL)
 		return ;
-	branch->type = (t_node_type)tokens[i].token_type;
+	if (branch->type != NODE_INVALID)
+		branch->type = (t_node_type)tokens[i].token_type;
 	tokens[i].token_type = TOKEN_DONE;
 }
 

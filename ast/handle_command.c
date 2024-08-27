@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/26 15:36:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 15:22:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,11 +113,14 @@ void	handle_command(	t_ast *current, \
 	}
 	else
 	{
-		if (!is_buildin(current))
-			path = find_absolute_path(environment_variable_value_get("PATH", \
-						env), current->args[0], exit_status);
-		else
-			path = NULL;
+		path = NULL;
+		if (current->args && current->args[0] && current->args[0][0])
+		{
+			if (!is_buildin(current))
+				path = find_absolute_path(\
+						environment_variable_value_get("PATH", \
+							env), current->args[0], exit_status);
+		}
 		execute_command(current, exit_status, std, path);
 	}
 }

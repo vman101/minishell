@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:33:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/19 23:26:32 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/27 15:12:46 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,26 @@ char	**environment_create(const char **env)
 	return (environment_new);
 }
 
+void	clear_spaces(char *variable)
+{
+	uint32_t	i;
+	uint32_t	j;
+
+	i = 0;
+	while (variable[i])
+	{
+		j = 0;
+		if (variable[i] == ' ')
+		{
+			while (variable[i + j] && variable[i + j] == ' ')
+				j++;
+			ft_memmove(&variable[i + 1], \
+					&variable[i + j], ft_strlen(&variable[i]));
+		}
+		i++;
+	}
+}
+
 void	environment_variable_add(	char ***environment,
 									const char *variable_new_name,
 									const char *variable_new_value)
@@ -83,6 +103,7 @@ void	environment_variable_add(	char ***environment,
 	if (variable_new_value)
 		ft_strlcpy(variable_to_add + variable_new_name_length + 1, \
 					variable_new_value, variable_new_value_length + 1);
+	clear_spaces(variable_to_add);
 	(*environment)[environment_length_current] = variable_to_add;
 }
 
