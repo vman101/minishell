@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/27 15:23:32 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 17:28:56 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void	handle_redir_heredoc(	t_ast *branch, \
 										'm', 'p', token_id + 33, 0});
 		branch->is_heredoc = true;
 		ft_open(&branch->fd_in, branch->path_file_in, O_CREAT | O_WRONLY, 0644);
+		remove_quotes(token[1].token_value);
 		if (!heredoc_has_been_done(token, \
 			token[1].token_value, branch->fd_in) && isatty(0))
 		{

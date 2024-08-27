@@ -6,11 +6,29 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 11:15:25 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/26 12:29:37 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 17:30:49 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	remove_quotes(char *s)
+{
+	uint	i;
+
+	i = 0;
+	if (!s)
+		return ;
+	while (s[i])
+	{
+		if (s[i] == '\'' || s[i] == '\"')
+		{
+			ft_memmove(&s[i], &s[i] + 1, ft_strlen(&s[i]));
+		}
+		else
+			i++;
+	}
+}
 
 void	print_value(char *value, int fd)
 {

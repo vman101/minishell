@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/27 15:23:45 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 17:28:49 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -442,6 +442,7 @@ char		*heredoc_loop(	char *input, \
 void		handle_heredoc(t_token tokens, int32_t fd);
 bool		heredoc_has_been_done(t_token *token, char *value, int fd);
 void		print_value(char *value, int fd);
+void		remove_quotes(char *s);
 
 /*create_token_single_special_symbol.c*/
 int			is_single_special(const char input);

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/23 14:30:38 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 16:57:49 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void	ft_cd(	const char **environment, \
 		path = environment_variable_value_get("HOME", environment);
 		if (chdir(path) != 0)
 			return (*exit_status = 1, perror("cd"));
+		*exit_status = 0;
 	}
 	else
 		cd_correct((char *)args[1], environment, exit_status);

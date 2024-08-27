@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 23:13:31 by victor            #+#    #+#             */
-/*   Updated: 2024/08/24 13:25:36 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 16:58:26 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,22 @@ char	*check_redir_input(void)
 
 void	setup_environment(const char **environment)
 {
-	char	*shlvl;
+	char		*shlvl;
+	uint16_t	shlvl_value;
 
 	g_signal_flag = 0;
 	env_static((char **)environment);
 	setup_signal_handlers();
-	shlvl = ft_itoa(ft_atoi(environment_variable_value_get("SHLVL", \
-						(const char **)environment)) + 1);
+	shlvl_value = ft_atoi(environment_variable_value_get("SHLVL", \
+						(const char **)environment)) + 1;
+	if (shlvl_value == 1000)
+	{
+		ft_putendl_fd("minishell: \
+				warning: shell level (1000) too high, resetting to 1", 2);
+		shlvl = ft_strdup("1");
+	}
+	else
+		shlvl = ft_itoa(shlvl_value);
 	if (!shlvl)
 	{
 		perror("malloc");

@@ -6,13 +6,13 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/27 15:24:15 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/27 17:38:39 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3
+CFLAGS		:= -Werror -Wall -Wextra
 
 # DIRECTORIES
 SRCDIR		:= src

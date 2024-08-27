@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/26 17:49:47 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 17:12:24 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,6 @@ int	main(int argc, const char **argv, const char **env)
 		if (g_signal_flag == 3)
 			exit_status = 131;
 	}
+	ft_putendl_fd("exit", 2);
 	return (lst_memory(NULL, NULL, END), exit_status);
 }
