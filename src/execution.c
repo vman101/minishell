@@ -6,7 +6,7 @@
 /*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 22:54:19 by victor            #+#    #+#             */
-/*   Updated: 2024/08/26 15:34:12 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 11:34:39 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ void	execution_loop(	t_ast *tree, \
 		{
 			return (*exit_status = 1, (void)0);
 		}
+		evaluate_variable(&tree->args, exit_status);
 		evaluate_input(&tree->args, exit_status, &error_found);
 		if (tree->args && tree->args[0])
 			environment_variable_value_change(env, "_", tree->args[0]);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/26 18:31:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/27 11:34:20 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,9 @@ void		prompt_print_pwd(char *prompt);
 void		evaluate_input(	char **input[], \
 							int32_t *exit_status, \
 							bool *error_caught);
+
+uint32_t	evaluate_variable(	char ***input, \
+								int32_t *exit_status);
 
 /* input skip pattern */
 bool		is_delimiter_variable(char c);
